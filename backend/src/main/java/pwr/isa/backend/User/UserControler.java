@@ -14,19 +14,15 @@ public class UserControler {
         this.userService = userService;
     }
 
-    @GetMapping(path= "/test")
-    public String test1() {
-        return "test";
-    }
 
     @GetMapping(path= "/")
     public String readUsers() {
-        return "all users";
+        return userService.getAllUsers().toString();
     }
 
     @GetMapping(path= "/{id}")
-    public String readUser() {
-        return "user by id";
+    public String readUser(@PathVariable Long id) {
+        return userService.getUserById(id).toString();
     }
 
     @PostMapping(path= "/")
