@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceTest {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Autowired
-    public UserServiceTest(UserServiceImpl userServiceImpl) {
+    public UserServiceTest(UserService userServiceImpl) {
         this.userService = userServiceImpl;
     }
 

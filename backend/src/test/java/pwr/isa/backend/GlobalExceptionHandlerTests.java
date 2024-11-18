@@ -1,4 +1,4 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -7,39 +7,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import pwr.isa.backend.User.User;
+import pwr.isa.backend.User.UserDataUtil;
+import pwr.isa.backend.User.UserService;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class UserControlerService {
+public class GlobalExceptionHandlerTests {
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public UserControlerService(MockMvc mockMvc,ObjectMapper objectMapper) {
+    public GlobalExceptionHandlerTests(MockMvc mockMvc, ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
     }
 
     @Test
-    public void testThatUserIsCreatedSuccessfully() throws Exception {
-        User user = UserDataUtil.createValidUser();
+    public void testThatGlobalExceptionHandlerHandlesEntityNotFoundException() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/v1/users/1")
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
+
+    @Test
+    public void testThatGlobalExceptionHandlerHandlesIllegalArgumentException() throws Exception {
+        User user = UserDataUtil.createInvalidUserNoEmail();
         user.setID(null);
-        String userJson = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/v1/users/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson)
+                        .content(objectMapper.writeValueAsString(user))
         ).andExpect(
-                MockMvcResultMatchers.status().isCreated()
+                MockMvcResultMatchers.status().isBadRequest()
         );
     }
 }

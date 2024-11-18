@@ -1,5 +1,7 @@
 package pwr.isa.backend.User;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,32 +18,38 @@ public class UserControler {
 
 
     @GetMapping(path= "/")
-    public String readUsers() {
-        return userService.getAllUsers().toString();
+    public Iterable<User> readUsers() {
+        return userService.getAllUsers();
     }
 
     @GetMapping(path= "/{id}")
-    public String readUser(@PathVariable Long id) {
-        return userService.getUserById(id).toString();
+    public ResponseEntity<User> readUser(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.FOUND);
     }
 
     @PostMapping(path= "/")
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
     @PutMapping(path= "/{id}")
-    public String updateUser() {
-        return "update user";
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long id,
+            @RequestBody User user) {
+        user.setID(id);
+        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);
     }
 
     @PatchMapping(path= "/{id}")
-    public String patchUser() {
-        return "patch user";
+    public ResponseEntity<User> patchUser(
+            @PathVariable Long id,
+            @RequestBody User user) {
+        return new ResponseEntity<>(userService.patchUser(user), HttpStatus.OK);
     }
 
     @DeleteMapping(path= "/{id}")
-    public String deleteUser() {
-        return "delete user";
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
