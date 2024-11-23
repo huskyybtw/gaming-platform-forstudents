@@ -1,8 +1,8 @@
 package pwr.isa.backend.User;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -22,5 +22,4 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
 }

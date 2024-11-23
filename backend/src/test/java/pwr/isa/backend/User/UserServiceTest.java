@@ -17,14 +17,14 @@ public class UserServiceTest {
     private final UserService userService;
 
     @Autowired
-    public UserServiceTest(UserService userServiceImpl) {
-        this.userService = userServiceImpl;
+    public UserServiceTest(UserService userService) {
+        this.userService = userService;
     }
 
     @Test
     public void testThatUserIsCreatedAndSavedCorrectlyInDB() {
         User user = UserDataUtil.createValidUser();
-
+        user.setID(null);
         userService.createUser(user);
         assertThat(userService.getUserById(user.getID())).isEqualTo(user);
     }

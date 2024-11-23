@@ -11,11 +11,9 @@ public class UserControler {
 
     private UserService userService;
 
-
     public UserControler(UserService userService) {
         this.userService = userService;
     }
-
 
     @GetMapping(path= "/")
     public Iterable<User> readUsers() {
@@ -36,15 +34,14 @@ public class UserControler {
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
             @RequestBody User user) {
-        user.setID(id);
-        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(user,id), HttpStatus.OK);
     }
 
     @PatchMapping(path= "/{id}")
     public ResponseEntity<User> patchUser(
             @PathVariable Long id,
             @RequestBody User user) {
-        return new ResponseEntity<>(userService.patchUser(user), HttpStatus.OK);
+        return new ResponseEntity<>(userService.patchUser(user,id), HttpStatus.OK);
     }
 
     @DeleteMapping(path= "/{id}")
@@ -52,4 +49,6 @@ public class UserControler {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
 }

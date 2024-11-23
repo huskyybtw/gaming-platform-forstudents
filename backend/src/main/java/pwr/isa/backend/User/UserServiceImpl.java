@@ -4,6 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.EmailValidator;
 
+import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,14 +31,15 @@ public class UserServiceImpl implements UserService {
 
     // ROOM FOR IMPROVEMENTS
     @Override
-    public User updateUser(User user) {
+    public User updateUser(User user,Long id) {
+        user.setID(id);
         if(!userRepository.existsById(user.getID())) {
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
 
         // CHECK IF EMAIL IS NOT ALREADY PRESENT IN DB
         User foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser != null && foundUser.getEmail() != user.getEmail()) {
+        if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
@@ -52,37 +55,46 @@ public class UserServiceImpl implements UserService {
     }
 
     // ROOM FOR IMPROVEMENTS
-    public User patchUser(User user) {
-        Optional<User> existing = userRepository.findById(user.getID());
-        if (existing.isEmpty()) {
+    @Override
+    public User patchUser(User user,Long id) {
+        user.setID(id);
+        Optional<User> target = userRepository.findById(user.getID());
+
+        if(!target.isPresent()){
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
 
-        if(Optional.ofNullable(user.getEmail()).isPresent()) {
-            if(!EmailValidator.isValid(user.getEmail())) {
-                throw new IllegalArgumentException("Invalid email");
+        for (Field field : User.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                Object sourceValue = field.get(user);
+
+                if ("id".equals(field.getName())) {
+                    continue;
+                }
+
+                if ("email".equals(field.getName())) {
+                    if(!EmailValidator.isValid(user.getEmail())) {
+                        throw new IllegalArgumentException("Invalid email");
+                    }
+
+                    User foundUser = userRepository.findByEmail(user.getEmail());
+                    if (foundUser != null && Objects.equals(foundUser.getEmail(), user.getEmail())) {
+                        throw new IllegalArgumentException("User with this email already exists");
+                    }
+
+                    field.set(target.get(), sourceValue);
+                    continue;
+                }
+
+                if (sourceValue != null) {
+                    field.set(target.get(), sourceValue);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
-
-            User foundUser = userRepository.findByEmail(user.getEmail());
-            if (foundUser != null && foundUser.getEmail() != user.getEmail()) {
-                throw new IllegalArgumentException("User with this email already exists");
-            }
-
-            existing.get().setEmail(user.getEmail());
         }
-
-        if(Optional.ofNullable(user.getPassword()).isPresent()) {
-            if (user.getPassword().isBlank()) {
-                throw new IllegalArgumentException("Password cannot be empty");
-            }
-            existing.get().setPassword(user.getPassword());
-        }
-
-        if(Optional.ofNullable(user.getRole()).isPresent()) {
-            existing.get().setRole(user.getRole());
-        }
-
-        return userRepository.save(existing.get());
+        return userRepository.save(target.get());
     }
 
     @Override
