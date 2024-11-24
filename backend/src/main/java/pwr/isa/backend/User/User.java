@@ -1,4 +1,5 @@
 package pwr.isa.backend.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,4 +23,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @JsonIgnore
+    @Builder.Default
+    private boolean enabled = false;
 }
+
