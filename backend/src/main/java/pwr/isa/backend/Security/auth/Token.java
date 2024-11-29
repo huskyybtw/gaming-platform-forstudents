@@ -1,4 +1,4 @@
-package pwr.isa.backend.auth;
+package pwr.isa.backend.Security.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -25,7 +25,21 @@ public class UserServiceImpl implements UserService {
         if(!EmailValidator.isValid(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email");
         }
+        user.setRole(UserRole.USER);
+        return userRepository.save(user);
+    }
 
+    @Override
+    public User createAdmin(User user) {
+        if(userRepository.findByEmail(user.getEmail()) != null) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+
+        if(!EmailValidator.isValid(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email");
+        }
+
+        user.setRole(UserRole.ADMIN);
         return userRepository.save(user);
     }
 
@@ -39,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
         // CHECK IF EMAIL IS NOT ALREADY PRESENT IN DB
         User foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
+        if (foundUser != null && !foundUser.getEmail().equals(user.getEmail())) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 

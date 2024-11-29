@@ -3,6 +3,7 @@ package pwr.isa.backend.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Security.auth.TokenService;
 
 
 @RestController
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserControler {
 
     private UserService userService;
+    private TokenService tokenService;
 
-    public UserControler(UserService userService) {
+    public UserControler(UserService userService,TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping(path= "/")
@@ -30,7 +33,7 @@ public class UserControler {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
-    @PutMapping(path= "/{id}")
+    @PutMapping(path= "{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
             @RequestBody User user) {
@@ -49,6 +52,4 @@ public class UserControler {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 }

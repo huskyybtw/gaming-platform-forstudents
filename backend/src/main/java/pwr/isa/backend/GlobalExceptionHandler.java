@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import pwr.isa.backend.Exceptions.UserNotAuthorizedException;
+import pwr.isa.backend.Exceptions.NotAuthorizedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotAuthorizedException.class)
-    public ResponseEntity<String> handleUserNotAuthorizedException(UserNotAuthorizedException e) {
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<String> handleUserNotAuthorizedException(NotAuthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 }
