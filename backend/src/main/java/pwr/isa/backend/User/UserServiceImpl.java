@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
         // CHECK IF EMAIL IS NOT ALREADY PRESENT IN DB
         User foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser != null && !foundUser.getEmail().equals(user.getEmail())) {
+        if (foundUser != null && Objects.equals(foundUser.getEmail(), user.getEmail())) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
