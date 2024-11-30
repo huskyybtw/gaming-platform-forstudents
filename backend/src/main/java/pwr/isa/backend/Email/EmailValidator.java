@@ -1,4 +1,4 @@
-package pwr.isa.backend;
+package pwr.isa.backend.Email;
 
 public class EmailValidator {
     public static boolean isValid(String email) {

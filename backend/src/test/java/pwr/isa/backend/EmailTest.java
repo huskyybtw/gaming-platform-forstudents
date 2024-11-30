@@ -1,6 +1,8 @@
 package pwr.isa.backend;
 
 import org.junit.jupiter.api.Test;
+import pwr.isa.backend.Email.EmailValidator;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

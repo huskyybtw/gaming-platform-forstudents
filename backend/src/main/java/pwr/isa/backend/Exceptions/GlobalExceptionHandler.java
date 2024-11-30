@@ -1,11 +1,10 @@
-package pwr.isa.backend;
+package pwr.isa.backend.Exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import pwr.isa.backend.Exceptions.NotAuthorizedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
