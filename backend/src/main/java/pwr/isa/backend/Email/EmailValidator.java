@@ -15,9 +15,10 @@ public class EmailValidator {
         }
 
         // @student.pwr.edu.pl @gmail as placeholder
-        if(!email.endsWith("@gmail.com")){
-            return false;
-        }
+        // turned off for now
+        //if(!email.endsWith("@gmail.com")){
+        //    return false;
+        //}
         return true;
     }
 }

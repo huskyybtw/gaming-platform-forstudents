@@ -30,14 +30,16 @@ public class UserServiceImpl implements UserService {
         if(!EmailValidator.isValid(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email");
         }
+        user.setID(null);
         user.setRole(UserRole.USER);
-        emailService.sendEmail(user.getEmail(),user.getID());
+        //emailService.sendEmail(user.getEmail(),user.getID());
         return userRepository.save(user);
     }
 
     @Override
     public User createAdmin(User user) {
         user.setPassword(SHA256.hash(user.getPassword()));
+
         if(userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
@@ -45,7 +47,8 @@ public class UserServiceImpl implements UserService {
         if(!EmailValidator.isValid(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email");
         }
-
+        user.setID(null);
+        user.setEnabled(true);
         user.setRole(UserRole.ADMIN);
         return userRepository.save(user);
     }
@@ -55,6 +58,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user,Long id) {
         user.setID(id);
         user.setPassword(SHA256.hash(user.getPassword()));
+
         if(!userRepository.existsById(user.getID())) {
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
