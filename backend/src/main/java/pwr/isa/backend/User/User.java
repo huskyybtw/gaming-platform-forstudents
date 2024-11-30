@@ -12,6 +12,7 @@ import lombok.*;
 @Entity
 @Table(name = "Users")
 public class User {
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
     private Long ID;
@@ -21,6 +22,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private UserRole role;
 

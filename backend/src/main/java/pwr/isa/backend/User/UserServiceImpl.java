@@ -3,11 +3,12 @@ package pwr.isa.backend.User;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.EmailValidator;
+import pwr.isa.backend.Security.SHA256;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Optional;
-
+// TODO BUG Z SPRAWDZANIEM CZY EMAIL JEST JUŻ W BAZIE EXCEPTION SIE NIE RZUCA NIE MAM POJECIA CZEMU
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+        user.setPassword(SHA256.hash(user.getPassword()));
         if(userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createAdmin(User user) {
+        user.setPassword(SHA256.hash(user.getPassword()));
         if(userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
@@ -47,13 +50,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user,Long id) {
         user.setID(id);
+        user.setPassword(SHA256.hash(user.getPassword()));
         if(!userRepository.existsById(user.getID())) {
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
 
         // CHECK IF EMAIL IS NOT ALREADY PRESENT IN DB
         User foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser != null && Objects.equals(foundUser.getEmail(), user.getEmail())) {
+        if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
             throw new IllegalArgumentException("User with this email already exists");
         }
 
@@ -87,13 +91,20 @@ public class UserServiceImpl implements UserService {
                     continue;
                 }
 
+                if("password".equals(field.getName())) {
+                    if (sourceValue != null) {
+                        field.set(target.get(), SHA256.hash((String) sourceValue));
+                    }
+                    continue;
+                }
+
                 if ("email".equals(field.getName())) {
                     if(!EmailValidator.isValid(user.getEmail())) {
                         throw new IllegalArgumentException("Invalid email");
                     }
 
                     User foundUser = userRepository.findByEmail(user.getEmail());
-                    if (foundUser != null && Objects.equals(foundUser.getEmail(), user.getEmail())) {
+                    if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
                         throw new IllegalArgumentException("User with this email already exists");
                     }
 

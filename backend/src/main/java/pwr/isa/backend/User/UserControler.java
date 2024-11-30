@@ -3,6 +3,7 @@ package pwr.isa.backend.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.Security.auth.TokenService;
 
 
