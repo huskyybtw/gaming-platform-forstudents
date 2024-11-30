@@ -8,10 +8,9 @@ import org.springframework.web.servlet.HandlerMapping;
 import pwr.isa.backend.Exceptions.AccessForbidenException;
 import pwr.isa.backend.Exceptions.NotAuthorizedException;
 import pwr.isa.backend.Security.auth.TokenService;
-import pwr.isa.backend.User.User;
-import pwr.isa.backend.User.UserRole;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.entity.UserRole;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 

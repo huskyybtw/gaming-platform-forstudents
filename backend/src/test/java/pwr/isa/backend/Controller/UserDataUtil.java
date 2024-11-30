@@ -1,6 +1,8 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.Controller;
 
 import lombok.NoArgsConstructor;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.entity.UserRole;
 
 @NoArgsConstructor
 public final class UserDataUtil {

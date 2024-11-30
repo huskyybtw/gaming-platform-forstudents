@@ -3,8 +3,8 @@ package pwr.isa.backend.Security.auth;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.Exceptions.NotAuthorizedException;
 import pwr.isa.backend.Security.SHA256;
-import pwr.isa.backend.User.User;
-import pwr.isa.backend.User.UserRepository;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.repository.UserRepository;
 
 import java.util.Date;
 import java.util.HashMap;

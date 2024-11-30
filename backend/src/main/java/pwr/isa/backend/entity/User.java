@@ -1,4 +1,4 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

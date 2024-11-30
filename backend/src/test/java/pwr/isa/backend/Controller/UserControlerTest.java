@@ -1,4 +1,4 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.service.UserService;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)

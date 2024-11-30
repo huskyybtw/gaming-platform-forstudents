@@ -1,4 +1,4 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.entity;
 
 public enum UserRole {
     ADMIN,

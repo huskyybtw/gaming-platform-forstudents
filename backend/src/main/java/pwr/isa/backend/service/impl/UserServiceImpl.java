@@ -1,9 +1,13 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.EmailValidator;
 import pwr.isa.backend.Security.SHA256;
+import pwr.isa.backend.repository.UserRepository;
+import pwr.isa.backend.entity.UserRole;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.service.UserService;
 
 import java.lang.reflect.Field;
 import java.util.Objects;

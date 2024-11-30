@@ -1,5 +1,7 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.service;
 
+
+import pwr.isa.backend.entity.User;
 
 public interface UserService {
     User createUser(User user);

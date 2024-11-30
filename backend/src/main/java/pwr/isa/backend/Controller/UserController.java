@@ -1,20 +1,21 @@
-package pwr.isa.backend.User;
+package pwr.isa.backend.Controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.Security.auth.TokenService;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.service.UserService;
 
 
 @RestController
 @RequestMapping("api/v1/users")
-public class UserControler {
+public class UserController {
 
     private UserService userService;
     private TokenService tokenService;
 
-    public UserControler(UserService userService,TokenService tokenService) {
+    public UserController(UserService userService, TokenService tokenService) {
         this.userService = userService;
         this.tokenService = tokenService;
     }

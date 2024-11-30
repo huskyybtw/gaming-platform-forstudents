@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pwr.isa.backend.User.User;
+import pwr.isa.backend.entity.User;
 
 import java.util.Date;
 

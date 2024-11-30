@@ -1,5 +1,5 @@
 package pwr.isa.backend.Security.auth;
-import pwr.isa.backend.User.User;
+import pwr.isa.backend.entity.User;
 
 public interface TokenService {
     Token generateToken(String email, String password);

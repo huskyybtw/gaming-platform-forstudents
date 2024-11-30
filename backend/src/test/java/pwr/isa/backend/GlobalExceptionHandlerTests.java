@@ -11,9 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import pwr.isa.backend.User.User;
-import pwr.isa.backend.User.UserDataUtil;
-import pwr.isa.backend.User.UserService;
+import pwr.isa.backend.entity.User;
+import pwr.isa.backend.Controller.UserDataUtil;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
