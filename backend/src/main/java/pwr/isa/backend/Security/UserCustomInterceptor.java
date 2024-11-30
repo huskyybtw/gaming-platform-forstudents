@@ -9,7 +9,7 @@ import pwr.isa.backend.Exceptions.NotAuthorizedException;
 import pwr.isa.backend.Security.auth.TokenService;
 import pwr.isa.backend.User.User;
 import pwr.isa.backend.User.UserRole;
-// Na ten moment sprawdzamy czy token ma permisje usera lub admina
+
 @Component
 public class UserCustomInterceptor implements HandlerInterceptor {
 
@@ -23,6 +23,10 @@ public class UserCustomInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String customHeader = request.getHeader("auth");
 
+        if("GET".equals(request.getMethod())){
+            return true;
+        }
+
         if (customHeader == null) {
             throw new NotAuthorizedException("Token not provided");
         }
@@ -30,7 +34,7 @@ public class UserCustomInterceptor implements HandlerInterceptor {
         User assignedUser = tokenService.checkToken(customHeader);
 
         if(assignedUser.getRole() == null){
-            throw new NotAuthorizedException("Account not activated");
+            throw new NotAuthorizedException("User have no role assigned");
         }
 
         if(assignedUser.getRole().equals(UserRole.ADMIN)){
@@ -40,8 +44,6 @@ public class UserCustomInterceptor implements HandlerInterceptor {
         if (!assignedUser.getRole().equals(UserRole.USER)) {
             throw new AccessForbidenException("User is not authorized to access this resource");
         }
-
-        String path = request.getRequestURI();
 
         return true;
     }
