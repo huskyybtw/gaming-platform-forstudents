@@ -2,7 +2,8 @@ package pwr.isa.backend.User;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import pwr.isa.backend.EmailValidator;
+import pwr.isa.backend.Email.EmailService;
+import pwr.isa.backend.Email.EmailValidator;
 import pwr.isa.backend.Security.SHA256;
 
 import java.lang.reflect.Field;
@@ -12,9 +13,11 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -27,13 +30,16 @@ public class UserServiceImpl implements UserService {
         if(!EmailValidator.isValid(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email");
         }
+        user.setID(null);
         user.setRole(UserRole.USER);
+        //emailService.sendEmail(user.getEmail(),user.getID());
         return userRepository.save(user);
     }
 
     @Override
     public User createAdmin(User user) {
         user.setPassword(SHA256.hash(user.getPassword()));
+
         if(userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
@@ -41,7 +47,8 @@ public class UserServiceImpl implements UserService {
         if(!EmailValidator.isValid(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email");
         }
-
+        user.setID(null);
+        user.setEnabled(true);
         user.setRole(UserRole.ADMIN);
         return userRepository.save(user);
     }
@@ -51,6 +58,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user,Long id) {
         user.setID(id);
         user.setPassword(SHA256.hash(user.getPassword()));
+
         if(!userRepository.existsById(user.getID())) {
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
@@ -142,8 +150,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean exsists(Long id) {
+    public boolean exists(Long id) {
         return userRepository.existsById(id);
+    }
+
+    @Override
+    public User activateUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
+        user.setEnabled(true);
+        return userRepository.save(user);
     }
 
 }

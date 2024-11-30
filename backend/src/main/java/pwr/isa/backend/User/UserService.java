@@ -9,6 +9,7 @@ public interface UserService {
     User patchUser(User user,Long id);
     void deleteUser(Long id);
     Iterable<User> getAllUsers();
-    boolean exsists(Long id);
+    boolean exists(Long id);
+    User activateUser(Long id);
 
 }
