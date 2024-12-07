@@ -21,17 +21,18 @@ public class UserCustomInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String customHeader = request.getHeader("auth");
+        String authorization = request.getHeader("Authorization");
 
         if("GET".equals(request.getMethod())){
             return true;
         }
 
-        if (customHeader == null) {
+        if (authorization == null) {
             throw new NotAuthorizedException("Token not provided");
         }
 
-        User assignedUser = tokenService.checkToken(customHeader);
+        String token = authorization.substring(7);
+        User assignedUser = tokenService.checkToken(token);
 
         if(assignedUser.getRole() == null){
             throw new NotAuthorizedException("User have no role assigned");
