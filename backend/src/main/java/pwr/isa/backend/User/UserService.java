@@ -10,6 +10,6 @@ public interface UserService {
     void deleteUser(Long id);
     Iterable<User> getAllUsers();
     boolean exists(Long id);
-    User activateUser(Long id);
+    void activateUser(Long id);
 
 }

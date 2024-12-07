@@ -32,8 +32,15 @@ public class UserServiceImpl implements UserService {
         }
         user.setID(null);
         user.setRole(UserRole.USER);
-        //emailService.sendEmail(user.getEmail(),user.getID());
-        return userRepository.save(user);
+        userRepository.save(user);
+        try {
+            emailService.sendEmail(user.getEmail(), user.getID());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+
+        return user;
     }
 
     @Override
@@ -155,11 +162,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User activateUser(Long id) {
+    public void activateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
         user.setEnabled(true);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 }
