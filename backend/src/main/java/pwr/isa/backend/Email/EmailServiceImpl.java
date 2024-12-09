@@ -35,7 +35,6 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public void sendEmail(String userEmail, Long userId) throws Exception {
         String confirm = "test" + userEmail;
-        confirmations.put(confirm, userId);
 
         String emailTemplate = new String(HTMLinputStream.readAllBytes(), UTF_8);
 
@@ -51,6 +50,7 @@ public class EmailServiceImpl implements EmailService{
         helper.setText(emailTemplate, true);
 
         mailSender.send(message);
+        confirmations.put(confirm, userId);
     }
 
     @Override

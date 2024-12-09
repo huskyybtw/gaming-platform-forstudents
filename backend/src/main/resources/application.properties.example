@@ -1,0 +1,20 @@
+spring.datasource.url=jdbc:postgresql://localhost:5432/dbname
+spring.datasource.username=username
+spring.datasource.password=password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=create-drop
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=example@gmail.com
+spring.mail.password=1111 1111 1111 1111
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+app.BASE_URL=http://localhost:8080
+app.SALT=secret
+
+app.RIOT_API_KEY=RGAPI-12ad4094-ec91-4816-baff-dsf07dfz507
+
+
