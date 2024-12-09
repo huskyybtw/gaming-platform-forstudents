@@ -1,10 +1,9 @@
-package pwr.isa.backend.RIOT;
+package pwr.isa.backend.RIOT.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pwr.isa.backend.RIOT.DTO.LeagueDTO;
 
 @NoArgsConstructor
 @AllArgsConstructor

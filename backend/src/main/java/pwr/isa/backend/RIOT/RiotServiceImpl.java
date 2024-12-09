@@ -13,6 +13,11 @@ import java.util.Map;
 /*
     * Service that collects data from RIOT API and binds it into PlayerDTO
     * For now only support EUNE region
+    *
+    * TODO - refactor names
+    * TODO - add retrying for failed requests
+    * TODO - add validation
+    * TODO ? - add support for multiple regions
  */
 
 @Service
@@ -38,6 +43,8 @@ public class RiotServiceImpl implements RiotService {
         List<LeagueDTO> leagueDTO = getLeagueDTO(summonerDTO.getSummonerId());
 
         return PlayerDTO.builder()
+                .gameName(username)
+                .tagLine(tag)
                 .summonerid(summonerDTO.getSummonerId())
                 .accountId(summonerDTO.getAccountId())
                 .puuid(summonerDTO.getPuuid())

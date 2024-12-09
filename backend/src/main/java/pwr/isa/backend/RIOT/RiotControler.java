@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pwr.isa.backend.RIOT.DTO.AccountDTO;
 import pwr.isa.backend.RIOT.DTO.LeagueDTO;
 import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
+import pwr.isa.backend.RIOT.DTO.PlayerDTO;
 
 import java.util.List;
 import java.util.Map;

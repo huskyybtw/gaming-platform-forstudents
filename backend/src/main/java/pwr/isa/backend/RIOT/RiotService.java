@@ -1,9 +1,6 @@
 package pwr.isa.backend.RIOT;
 
-import pwr.isa.backend.RIOT.DTO.AccountDTO;
-import pwr.isa.backend.RIOT.DTO.LeagueDTO;
-import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
-import pwr.isa.backend.RIOT.DTO.SummonerDTO;
+import pwr.isa.backend.RIOT.DTO.*;
 
 import java.util.List;
 import java.util.Map;
