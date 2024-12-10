@@ -11,7 +11,6 @@ import pwr.isa.backend.Security.auth.TokenService;
 import pwr.isa.backend.User.User;
 import pwr.isa.backend.User.UserRole;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,7 +36,7 @@ public class UserSpecificCustomInterceptor implements HandlerInterceptor {
         }
 
         String token = authorization.substring(7);
-        User assignedUser = tokenService.checkToken(token);
+        User assignedUser = tokenService.getUserFromToken(token);
 
         if(assignedUser.getRole() == null){
             throw new NotAuthorizedException("User have no role assigned");
@@ -52,7 +51,6 @@ public class UserSpecificCustomInterceptor implements HandlerInterceptor {
         Long pathId = null;
         if (pathVariables != null && pathVariables.containsKey("id")) {
             try {
-                // Parse the ID as a Long
                 pathId = Long.parseLong(pathVariables.get("id"));
             } catch (NumberFormatException e) {
                 throw new AccessForbidenException("Incorrect ID format");

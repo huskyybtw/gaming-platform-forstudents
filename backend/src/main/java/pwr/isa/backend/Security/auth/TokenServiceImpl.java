@@ -47,7 +47,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public User checkToken(String token) {
+    public User getUserFromToken(String token) {
         Token FoundToken = TOKENS.get(token);
 
         if(FoundToken == null) {
@@ -72,7 +72,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public boolean validateToken(String token, Long id) {
+    public boolean isAuthorized(String token, Long id) {
         Token FoundToken = TOKENS.get(token);
 
         if(FoundToken == null) {

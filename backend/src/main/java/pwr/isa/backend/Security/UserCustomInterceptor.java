@@ -32,7 +32,7 @@ public class UserCustomInterceptor implements HandlerInterceptor {
         }
 
         String token = authorization.substring(7);
-        User assignedUser = tokenService.checkToken(token);
+        User assignedUser = tokenService.getUserFromToken(token);
 
         if(assignedUser.getRole() == null){
             throw new NotAuthorizedException("User have no role assigned");

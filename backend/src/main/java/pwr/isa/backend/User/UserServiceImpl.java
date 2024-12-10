@@ -9,7 +9,10 @@ import pwr.isa.backend.Security.SHA256;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Optional;
-// TODO BUG Z SPRAWDZANIEM CZY EMAIL JEST JUŻ W BAZIE EXCEPTION SIE NIE RZUCA NIE MAM POJECIA CZEMU
+/*
+ TODO BUG Z SPRAWDZANIEM CZY EMAIL JEST JUŻ W BAZIE EXCEPTION SIE NIE RZUCA NIE MAM POJECIA CZEMU
+ TODO VALIDACJA JAKO DEKORATOR
+ */
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;

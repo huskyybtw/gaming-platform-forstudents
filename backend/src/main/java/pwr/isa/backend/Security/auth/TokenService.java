@@ -4,6 +4,6 @@ import pwr.isa.backend.User.User;
 public interface TokenService {
     Token generateToken(String email, String password);
     void deleteToken(String token);
-    boolean validateToken(String token,Long id);
-    User checkToken (String token);
+    boolean isAuthorized(String token, Long id);
+    User getUserFromToken(String token);
 }
