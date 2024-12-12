@@ -21,6 +21,4 @@ public class MatchDetailsDTO {
     String gameVersion;
 
     List<ParticipantDTO> participant;
-
-
 }
