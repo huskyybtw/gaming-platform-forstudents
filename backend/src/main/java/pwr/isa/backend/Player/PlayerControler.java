@@ -14,28 +14,37 @@ public class PlayerControler {
         this.playerService = playerService;
     }
 
-    @GetMapping("/")
-    public Iterable<Player> getAllPlayers() {
+    @GetMapping(path= "/")
+    public Iterable<Player> readPlayers() {
         return playerService.getAllPlayers();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
+    @GetMapping(path= "/{id}")
+    public ResponseEntity<Player> readPlayer(@PathVariable Long id) {
         return new ResponseEntity<>(playerService.getPlayerById(id), HttpStatus.FOUND);
     }
 
-    @PostMapping("/")
+    @PostMapping(path= "/")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
-        return new ResponseEntity<>(playerService.updatePlayer(player, id), HttpStatus.OK);
+    @PutMapping(path= "/{id}")
+    public ResponseEntity<Player> updatePlayer(
+            @PathVariable Long id,
+            @RequestBody Player player) {
+        return new ResponseEntity<>(playerService.updatePlayer(player,id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
+    @PatchMapping(path= "/{id}")
+    public ResponseEntity<Player> patchPlayer(
+            @PathVariable Long id,
+            @RequestBody Player player) {
+        return new ResponseEntity<>(playerService.patchPlayer(player,id), HttpStatus.OK);
+    }
+
+    @DeleteMapping(path= "/{id}")
+    public ResponseEntity<Player> deletePlayer(@PathVariable Long id) {
         playerService.deletePlayer(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
