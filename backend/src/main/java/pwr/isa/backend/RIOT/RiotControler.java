@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("testing")
+@RequestMapping("testing/riotService")
 public class RiotControler {
     private RiotService riotService;
 

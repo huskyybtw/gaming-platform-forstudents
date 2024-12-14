@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.User.UserService;
 
 import java.io.InputStream;
@@ -34,7 +35,8 @@ public class EmailServiceImpl implements EmailService{
 
     @Override
     public void sendEmail(String userEmail, Long userId) throws Exception {
-        String confirm = "test" + userEmail;
+        String simple = SHA256.hash(userEmail);
+        String confirm = simple + userEmail;
 
         String emailTemplate = new String(HTMLinputStream.readAllBytes(), UTF_8);
 

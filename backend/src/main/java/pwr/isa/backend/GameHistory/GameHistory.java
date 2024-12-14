@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
 
 
@@ -17,7 +16,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "game_history")
-public class GameHistory {
+public class GameHistory implements Comparable<GameHistory> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_history_id_seq")
     Long Id;
@@ -44,4 +43,9 @@ public class GameHistory {
     Long team200user3;
     Long team200user4;
     Long team200user5;
+
+    @Override
+    public int compareTo(GameHistory o) {
+        return getEndOfMatchDate().compareTo(o.getEndOfMatchDate());
+    }
 }

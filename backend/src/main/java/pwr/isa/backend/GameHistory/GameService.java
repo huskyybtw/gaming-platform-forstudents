@@ -1,5 +1,6 @@
 package pwr.isa.backend.GameHistory;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
 
 public interface GameService {
@@ -11,6 +12,9 @@ public interface GameService {
     GameHistory updateGameHistory(GameHistory gameHistory, Long id);
     void deleteGameHistory(Long id);
     GameHistory stageGame();
-    GameHistory startGame(Long id);
+    GameHistory startGame(GameHistory gameHistory,Long id);
     GameHistory endGame(Long id, MatchDetailsDTO matchDetailsDTO);
+
+    @Scheduled(fixedRate = 60 * 1000)
+    void checkGames();
 }

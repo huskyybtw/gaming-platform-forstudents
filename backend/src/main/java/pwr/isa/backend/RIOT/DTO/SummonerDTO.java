@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class SummonerDTO {
-    @JsonProperty("id")
     String SummonerId;
     String accountId;
     String puuid;

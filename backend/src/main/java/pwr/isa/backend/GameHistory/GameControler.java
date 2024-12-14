@@ -21,7 +21,8 @@ public class GameControler {
     }
 
     @GetMapping("/")
-    public Iterable<GameHistory> readGameHistories() {
+    public Iterable<GameHistory> readGameHistories(
+    ) {
         return gameHistoryService.getAllGameHistories();
     }
 
@@ -61,14 +62,16 @@ public class GameControler {
 
 
     @PatchMapping("/stage/{id}")
-    public GameHistory startGame(@PathVariable Long id) {
-        return gameHistoryService.startGame(id);
+    public GameHistory startGame(
+            @RequestBody GameHistory gameHistory,
+            @PathVariable Long id) {
+        return gameHistoryService.startGame(gameHistory, id);
     }
 
     @PutMapping("/stage/{id}")
     public GameHistory endGame(@PathVariable Long id) {
         String matchId = "test";
-        MatchDetailsDTO matchDetailsDTO =riotService.getMatchDetailsDTO(matchId);
+        MatchDetailsDTO matchDetailsDTO = riotService.getMatchDetailsDTO(matchId);
         return gameHistoryService.endGame(id,matchDetailsDTO);
     }
 }

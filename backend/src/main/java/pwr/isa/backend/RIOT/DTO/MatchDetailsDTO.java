@@ -19,6 +19,6 @@ public class MatchDetailsDTO {
     String endOfGameResult;
     Integer gameDuration;
     String gameVersion;
-
+    int winner;
     List<ParticipantDTO> participant;
 }

@@ -37,7 +37,6 @@ public class RiotServiceImpl implements RiotService {
     }
     @Override
     public PlayerDTO getPlayerDTO(String username, String tag) {
-        PlayerDTO playerDTO = new PlayerDTO();
         AccountDTO accountDTO = getAccountDTO(username, tag);
         SummonerDTO summonerDTO = getSummonerDTO(accountDTO.getPuuid());
         List<LeagueDTO> leagueDTO = getLeagueDTO(summonerDTO.getSummonerId());
@@ -90,7 +89,6 @@ public class RiotServiceImpl implements RiotService {
         MatchDetailsDTO matchDetailsDTO = new MatchDetailsDTO();
 
         Map<String, Object> matchData = getMatchMetaData(matchid);
-        Map<String, Object> metadata = (Map<String, Object>) matchData.get("metadata");
 
         matchDetailsDTO.setMatchId(matchid);
 
