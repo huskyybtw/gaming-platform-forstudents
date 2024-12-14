@@ -25,29 +25,43 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         // Ustaw lastUpdate na aktualną datę
-        player.setLastUpdate(Timestamp.from(Instant.now()));
+        player.setLastUpdate(Timestamp.from(Instant.now())); // chyba niepotrzebne???
 
         return playerRepository.save(player);
     }
 
     @Override
     public Player updatePlayer(Player player, Long id) {
-        player.setID(id);
-        if (!playerRepository.existsById(player.getID())) {
-            throw new EntityNotFoundException("Player with ID " + player.getID() + " not found");
+        // czy rekord istnieje
+        Player existingPlayer = playerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Player with ID " + id + " not found"));
+
+        // czy pole 'user' pozostaje niezmienne
+        if (!Objects.equals(existingPlayer.getUser(), player.getUser())) {
+            throw new IllegalArgumentException("User cannot be changed");
         }
 
-        // Sprawdzamy czy nick jest unikalny (jeśli jest zmieniony)
+        // walidacja 'nickname'
+        if (player.getNickname() == null || player.getNickname().isBlank()) {
+            throw new IllegalArgumentException("Nickname cannot be null or empty");// nie potrzebne chyba???
+        }
         Player foundPlayer = playerRepository.findByNickname(player.getNickname());
-        if (foundPlayer != null && !Objects.equals(foundPlayer.getID(), player.getID())) {
+        if (foundPlayer != null && !Objects.equals(foundPlayer.getID(), id)) {
             throw new IllegalArgumentException("Player with this nickname already exists");
         }
 
-        // Zaktualizuj lastUpdate
-        player.setLastUpdate(Timestamp.from(Instant.now()));
+        // Ustaw pola z przesłanego obiektu
+        existingPlayer.setNickname(player.getNickname()); // Przypisz nickname
+        existingPlayer.setOpgg(player.getOpgg());         // Można nadpisać opgg
+        existingPlayer.setDescription(player.getDescription()); // Nadpisz description
 
-        return playerRepository.save(player);
+        //Aktualizacja znacznika czasu
+        existingPlayer.setLastUpdate(Timestamp.from(Instant.now()));
+
+        // Zapisz zaktualizowany rekord do bazy danych
+        return playerRepository.save(existingPlayer);
     }
+
 
     @Override
     public Player patchPlayer(Player player, Long id) {
@@ -82,7 +96,7 @@ public class PlayerServiceImpl implements PlayerService {
                     continue;
                 }
 
-                // jeśli sourceValue == null, to nie nadpisujemy pola.
+                // jeśli sourceValue == null, to nie nadpisujemy
                 if (sourceValue != null) {
                     field.set(existingPlayer, sourceValue);
                 }
