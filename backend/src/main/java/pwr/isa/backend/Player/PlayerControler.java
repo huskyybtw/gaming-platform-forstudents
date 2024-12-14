@@ -15,7 +15,7 @@ public class PlayerControler {
     }
 
     @GetMapping(path= "/")
-    public Iterable<Player> readPlayers() { 
+    public Iterable<Player> readPlayers() {
         return playerService.getAllPlayers();
     }
 

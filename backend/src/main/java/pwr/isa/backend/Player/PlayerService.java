@@ -1,4 +1,4 @@
-package pwr.isa.backend.Player;
+package pwr.isa.backend.Player; //
 
 public interface PlayerService {
     Player createPlayer(Player player);

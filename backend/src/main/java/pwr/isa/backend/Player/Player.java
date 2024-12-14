@@ -20,7 +20,7 @@ public class Player {
     private Long ID;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId // To mówi, że pole 'ID' jest mapowane z klucza usera
+    @MapsId // 'ID' jest mapowane z klucza usera
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
 
