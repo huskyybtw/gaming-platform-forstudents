@@ -2,6 +2,7 @@ package pwr.isa.backend.Player;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import pwr.isa.backend.User.UserRepository;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -37,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new EntityNotFoundException("Player with ID " + id + " not found"));
 
         // czy pole 'user' pozostaje niezmienne
-        if (!Objects.equals(existingPlayer.getUser(), player.getUser())) {
+        if (!Objects.equals(existingPlayer.getUserId(), player.getUserId())) {
             throw new IllegalArgumentException("User cannot be changed");
         }
 

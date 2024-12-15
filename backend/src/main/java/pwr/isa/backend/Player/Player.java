@@ -19,10 +19,7 @@ public class Player {
     @Id
     private Long ID;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId // 'ID' jest mapowane z klucza usera
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
-    private User user;
+    Long UserId;
 
     @Column(unique = true, nullable = false)
     private String nickname;
