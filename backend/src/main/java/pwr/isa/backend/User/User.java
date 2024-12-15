@@ -12,7 +12,7 @@ import pwr.isa.backend.Player.Player;
 @Builder
 @Entity
 @Table(name = "Users")
-@SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+
 public class User {
 
     @Id
