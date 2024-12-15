@@ -17,6 +17,8 @@ public class PlayerServiceImpl implements PlayerService {
         this.playerRepository = playerRepository;
     }
 
+
+
     @Override
     public Player createPlayer(Player player) {
         // Sprawdź, czy nickname już istnieje
@@ -25,7 +27,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         // Ustaw lastUpdate na aktualną datę
-        player.setLastUpdate(Timestamp.from(Instant.now())); // chyba niepotrzebne???
+        player.setLastUpdate(Timestamp.from(Instant.now()));
 
         return playerRepository.save(player);
     }
@@ -46,7 +48,7 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Nickname cannot be null or empty");// nie potrzebne chyba???
         }
         Player foundPlayer = playerRepository.findByNickname(player.getNickname());
-        if (foundPlayer != null && !Objects.equals(foundPlayer.getID(), id)) {
+        if (foundPlayer != null && !Objects.equals(foundPlayer.getId(), id)) {
             throw new IllegalArgumentException("Player with this nickname already exists");
         }
 
@@ -65,11 +67,11 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player patchPlayer(Player player, Long id) {
-        player.setID(id);
-        Optional<Player> target = playerRepository.findById(player.getID());
+        player.setId(id);
+        Optional<Player> target = playerRepository.findById(player.getId());
 
         if (!target.isPresent()) {
-            throw new EntityNotFoundException("Player with ID " + player.getID() + " not found");
+            throw new EntityNotFoundException("Player with ID " + player.getId() + " not found");
         }
 
         Player existingPlayer = target.get();

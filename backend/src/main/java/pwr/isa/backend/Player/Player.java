@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import pwr.isa.backend.User.User;
-
+import pwr.isa.backend.Rating.PlayerRating;
 import java.sql.Timestamp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,13 +13,18 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "Players")
+@Table(name = "player")
 public class Player {
 
     @Id
-    private Long ID;
+    private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+
+
+    @OneToOne()//fetch = FetchType.LAZY, optional = false
     @MapsId // 'ID' jest mapowane z klucza usera
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
@@ -35,4 +40,7 @@ public class Player {
 
     @Column(nullable = false)
     private Timestamp lastUpdate;
+
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PlayerRating playerRating;
 }

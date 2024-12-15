@@ -8,4 +8,4 @@ public interface PlayerService {
     void deletePlayer(Long id);
     Iterable<Player> getAllPlayers();
     boolean exists(Long id);
-}
+} 
