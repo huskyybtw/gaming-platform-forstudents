@@ -1,13 +1,10 @@
 package pwr.isa.backend.Rating;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/ratings")
+@RequestMapping("api/v1/rating")
 public class RatingControler {
 
     private final RatingService ratingService;
@@ -16,57 +13,45 @@ public class RatingControler {
         this.ratingService = ratingService;
     }
 
-    // Endpoints dla TeamRating
-    @PostMapping("/teams")
-    public ResponseEntity<TeamRating> createTeamRating(@RequestBody TeamRating teamRating) {
-        return new ResponseEntity<>(ratingService.createTeamRating(teamRating), HttpStatus.CREATED);
+    // Player rating endpoints
+    @PostMapping("/player/{userId}")
+    public ResponseEntity<PlayerRating> createOrUpdatePlayerRating(
+            @PathVariable Long userId,
+            @RequestParam Integer rating) {
+        PlayerRating updatedRating = ratingService.createOrUpdatePlayerRating(userId, rating);
+        return ResponseEntity.ok(updatedRating);
     }
 
-    @GetMapping("/teams/{id}")
-    public ResponseEntity<TeamRating> getTeamRating(@PathVariable Long id) {
-        return ResponseEntity.ok(ratingService.getTeamRatingById(id));
+    @GetMapping("/player/{userId}")
+    public ResponseEntity<PlayerRating> getPlayerRating(@PathVariable Long userId) {
+        PlayerRating playerRating = ratingService.getPlayerRating(userId);
+        return ResponseEntity.ok(playerRating);
     }
 
-    @GetMapping("/teams")
-    public ResponseEntity<List<TeamRating>> getAllTeamRatings() {
-        return ResponseEntity.ok(ratingService.getAllTeamRatings());
-    }
-
-    @PutMapping("/teams/{id}")
-    public ResponseEntity<TeamRating> updateTeamRating(@PathVariable Long id, @RequestBody TeamRating updatedRating) {
-        return ResponseEntity.ok(ratingService.updateTeamRating(id, updatedRating));
-    }
-
-    @DeleteMapping("/teams/{id}")
-    public ResponseEntity<Void> deleteTeamRating(@PathVariable Long id) {
-        ratingService.deleteTeamRating(id);
+    @DeleteMapping("/player/{userId}")
+    public ResponseEntity<Void> deletePlayerRating(@PathVariable Long userId) {
+        ratingService.deletePlayerRating(userId);
         return ResponseEntity.noContent().build();
     }
 
-    // Endpoints dla PlayerRating
-    @PostMapping("/players")
-    public ResponseEntity<PlayerRating> createPlayerRating(@RequestBody PlayerRating playerRating) {
-        return new ResponseEntity<>(ratingService.createPlayerRating(playerRating), HttpStatus.CREATED);
+    // Team rating endpoints
+    @PostMapping("/team/{teamId}")
+    public ResponseEntity<TeamRating> createOrUpdateTeamRating(
+            @PathVariable Long teamId,
+            @RequestParam Integer rating) {
+        TeamRating updatedRating = ratingService.createOrUpdateTeamRating(teamId, rating);
+        return ResponseEntity.ok(updatedRating);
     }
 
-    @GetMapping("/players/{id}")
-    public ResponseEntity<PlayerRating> getPlayerRating(@PathVariable Long id) {
-        return ResponseEntity.ok(ratingService.getPlayerRatingById(id));
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<TeamRating> getTeamRating(@PathVariable Long teamId) {
+        TeamRating teamRating = ratingService.getTeamRating(teamId);
+        return ResponseEntity.ok(teamRating);
     }
 
-    @GetMapping("/players")
-    public ResponseEntity<List<PlayerRating>> getAllPlayerRatings() {
-        return ResponseEntity.ok(ratingService.getAllPlayerRatings());
-    }
-
-    @PutMapping("/players/{id}")
-    public ResponseEntity<PlayerRating> updatePlayerRating(@PathVariable Long id, @RequestBody PlayerRating updatedRating) {
-        return ResponseEntity.ok(ratingService.updatePlayerRating(id, updatedRating));
-    }
-
-    @DeleteMapping("/players/{id}")
-    public ResponseEntity<Void> deletePlayerRating(@PathVariable Long id) {
-        ratingService.deletePlayerRating(id);
+    @DeleteMapping("/team/{teamId}")
+    public ResponseEntity<Void> deleteTeamRating(@PathVariable Long teamId) {
+        ratingService.deleteTeamRating(teamId);
         return ResponseEntity.noContent().build();
     }
 }
