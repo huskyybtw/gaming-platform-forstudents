@@ -111,8 +111,14 @@ public class GameServiceImpl implements GameService {
                 team200.add(player.getUserId());
             }
         }
-
-        gameHistory.setMatchStatus(MatchStatus.ON_GOING);
+        /*
+            NA CZAS JAK NIE MAM OD MICHALA
+            querry puuid from player repository
+            fetch matchId from riotService ussing puuid
+            String matchId = riotService.getUserMatches().get(0);
+            foundGame.setMatchId(matchId);
+         */
+        foundGame.setMatchStatus(MatchStatus.ON_GOING);
 
 
         onGoingGames.add(foundGame);
@@ -128,6 +134,11 @@ public class GameServiceImpl implements GameService {
                 // check if game has ended
                 // if ended, set status to FINISHED
                 // remove from onGoingGames
+                MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.getMatchId());
+
+                if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
+
+
             }
         }
         onGoingGames.removeAll(toRemove);

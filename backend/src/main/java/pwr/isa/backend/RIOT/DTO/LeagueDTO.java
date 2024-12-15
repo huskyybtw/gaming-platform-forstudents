@@ -15,7 +15,6 @@ public class LeagueDTO {
     String tier;
     String rank;
     String summonerId;
-    String summonerName;
     int leaguePoints;
     int wins;
     int losses;

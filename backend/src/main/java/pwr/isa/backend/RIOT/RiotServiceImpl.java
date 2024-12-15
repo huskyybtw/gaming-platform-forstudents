@@ -44,10 +44,11 @@ public class RiotServiceImpl implements RiotService {
         return PlayerDTO.builder()
                 .gameName(username)
                 .tagLine(tag)
-                .summonerid(summonerDTO.getSummonerId())
                 .accountId(summonerDTO.getAccountId())
                 .puuid(summonerDTO.getPuuid())
-                .gameName(summonerDTO.getName())
+                .summonerid(summonerDTO.getSummonerId())
+                .gameName(accountDTO.getGameName())
+                .tagLine(accountDTO.getTagLine())
                 .profileIconId(summonerDTO.getProfileIconId())
                 .revisionDate(summonerDTO.getRevisionDate())
                 .summonerLevel(summonerDTO.getSummonerLevel())
@@ -155,6 +156,14 @@ public class RiotServiceImpl implements RiotService {
         }
         matchDetailsDTO.setParticipant(participants);
 
+
+        List<Map<String,Object>> teams = (List<Map<String, Object>>) info.get("teams");
+        for (Map<String, Object> team : teams) {
+            if ((boolean) team.get("win") == true) {
+                matchDetailsDTO.setWinner((int) team.get("teamId"));
+            }
+        }
+
         return matchDetailsDTO;
     }
 
@@ -164,6 +173,16 @@ public class RiotServiceImpl implements RiotService {
                 .uri("/lol/match/v5/matches/" + matchid + "?api_key=" + API_KEY)
                 .retrieve()
                 .bodyToMono(Map.class)
+                .block();
+    }
+
+    @Override
+    public List<String> getUserMatches(String puuid){
+        return EUROPE_WEB_CLIENT.get()
+                .uri("/lol/match/v5/matches/by-puuid/" + puuid + "/ids?start=0&count=10&api_key=" + API_KEY)
+                .retrieve()
+                .bodyToFlux(String.class)
+                .collectList()
                 .block();
     }
 

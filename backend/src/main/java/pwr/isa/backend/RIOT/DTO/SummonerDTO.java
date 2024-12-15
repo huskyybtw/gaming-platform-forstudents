@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class SummonerDTO {
-    String SummonerId;
+    @JsonProperty("id")
+    String summonerId;
+
     String accountId;
     String puuid;
-    String name;
     int profileIconId;
     long revisionDate;
     long summonerLevel;
