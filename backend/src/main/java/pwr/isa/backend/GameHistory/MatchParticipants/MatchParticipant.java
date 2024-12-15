@@ -18,7 +18,7 @@ import pwr.isa.backend.GameHistory.GameHistory;
 @Table(name = "match_participant")
 public class MatchParticipant {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "match_participant_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long userId;
     Long matchId;

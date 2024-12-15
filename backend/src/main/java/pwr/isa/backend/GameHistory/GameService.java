@@ -3,6 +3,8 @@ package pwr.isa.backend.GameHistory;
 import org.springframework.scheduling.annotation.Scheduled;
 import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
 
+import java.util.List;
+
 public interface GameService {
     GameHistory getGameHistoryById(Long id);
     Iterable<GameHistory> getAllGameHistories();
@@ -17,4 +19,6 @@ public interface GameService {
 
     @Scheduled(fixedRate = 60 * 1000)
     void checkGames();
+
+    List<GameHistory> sortGames(List<Long> matchIds, int limit);
 }

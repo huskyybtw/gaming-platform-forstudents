@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
         user.setID(null);
         user.setRole(UserRole.USER);
         userRepository.save(user);
+
         try {
             emailService.sendEmail(user.getEmail(), user.getID());
         }

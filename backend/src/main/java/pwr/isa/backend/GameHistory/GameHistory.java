@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,18 +32,6 @@ public class GameHistory implements Comparable<GameHistory> {
 
     @Column(columnDefinition = "json")
     String jsonData;
-
-    Long team100user1;
-    Long team100user2;
-    Long team100user3;
-    Long team100user4;
-    Long team100user5;
-
-    Long team200user1;
-    Long team200user2;
-    Long team200user3;
-    Long team200user4;
-    Long team200user5;
 
     @Override
     public int compareTo(GameHistory o) {

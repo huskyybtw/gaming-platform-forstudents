@@ -89,7 +89,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Scheduled(fixedRate = TOKEN_EXPIRATION_TIME)
+    @Scheduled(fixedRate = 36000)
     public void deactivateTokens() {
         for (Token token : TOKENS.values()) {
 
