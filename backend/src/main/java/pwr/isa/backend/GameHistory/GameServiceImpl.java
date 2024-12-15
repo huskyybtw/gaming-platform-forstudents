@@ -101,16 +101,6 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException("Game have incorrect amount of players, could not start the game");
         }
 
-        // Jak na razie nie korzystam
-        List<Long> team100 = new ArrayList<>();
-        List<Long> team200 = new ArrayList<>();
-        for (var player : players) {
-            if(player.getRiot_team_number() == 100){
-                team100.add(player.getUserId());
-            } else {
-                team200.add(player.getUserId());
-            }
-        }
         /*
             NA CZAS JAK NIE MAM OD MICHALA
             querry puuid from player repository
@@ -118,6 +108,7 @@ public class GameServiceImpl implements GameService {
             String matchId = riotService.getUserMatches().get(0);
             foundGame.setMatchId(matchId);
          */
+        
         foundGame.setMatchStatus(MatchStatus.ON_GOING);
 
 
@@ -138,7 +129,9 @@ public class GameServiceImpl implements GameService {
 
                 if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
 
-
+                game.setMatchStatus(MatchStatus.FINISHED);
+                endGame(game.getId(), match);
+                toRemove.add(game);
             }
         }
         onGoingGames.removeAll(toRemove);
@@ -149,14 +142,28 @@ public class GameServiceImpl implements GameService {
         GameHistory gameHistory = gameHistoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Game with ID " + id + " not found"));
 
-        if(gameHistory.getMatchStatus() != MatchStatus.ON_GOING) {
+        if(gameHistory.getMatchStatus() != MatchStatus.FINISHED) {
             throw new IllegalArgumentException("Game is not on going");
         }
 
-        gameHistory.setMatchStatus(MatchStatus.FINISHED);
+
         gameHistory.setWinner(matchDetailsDTO.getWinner());
         gameHistory.setEndOfMatchDate(new Date());
         gameHistory.setJsonData(matchDetailsDTO.toString());
+
+        List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(id);
+
+        if(players.size() != 10) {
+            throw new RuntimeException("Game have incorrect amount of players, could not start the game");
+        }
+
+        for (var player : players) {
+            if(player.getRiot_team_number() == gameHistory.getWinner()){
+                // + ranking
+            } else {
+                // - ranking
+            }
+        }
         return gameHistoryRepository.save(gameHistory);
     }
 

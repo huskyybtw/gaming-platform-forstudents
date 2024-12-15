@@ -2,6 +2,7 @@ package pwr.isa.backend.Security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -14,6 +15,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         this.userCustomInterceptor = userCustomInterceptor;
         this.userSpecificCustomInterceptor = userSpecificCustomInterceptor;
     }
+
     // every GET method is ignored
     // if token is assigned to admin, it has access to all endpoints
     // userInterceptor ensures valid token is provided for all endpoints
@@ -22,8 +24,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userCustomInterceptor)
                 .addPathPatterns("/api/v1/user/**")
-                .excludePathPatterns("/api/v1/users");
+                .excludePathPatterns("/api/v1/users",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**");
         registry.addInterceptor(userSpecificCustomInterceptor)
-                .addPathPatterns("/api/v1/admin/**");
+                .addPathPatterns("/api/v1/admin/**")
+                .excludePathPatterns("/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**");
     }
 }
