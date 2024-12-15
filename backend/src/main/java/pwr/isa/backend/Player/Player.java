@@ -17,6 +17,8 @@ import java.sql.Timestamp;
 public class Player {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnoreProperties
     private Long ID;
 
     Long UserId;

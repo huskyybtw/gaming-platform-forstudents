@@ -25,6 +25,8 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Player with this nickname already exists");
         }
 
+        // sprawdz czy user id takie istnieje
+
         // Ustaw lastUpdate na aktualną datę
         player.setLastUpdate(Timestamp.from(Instant.now())); // chyba niepotrzebne???
 
