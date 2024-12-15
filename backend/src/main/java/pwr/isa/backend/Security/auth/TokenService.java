@@ -6,4 +6,6 @@ public interface TokenService {
     void deleteToken(String token);
     boolean isAuthorized(String token, Long id);
     User getUserFromToken(String token);
+    void validateToken(Token token);
+    void deactivateTokens();
 }
