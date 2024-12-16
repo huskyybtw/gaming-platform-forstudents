@@ -30,3 +30,7 @@ public class PlayerRating {
         this.rating = rating;
     }
 }
+//{
+//        "userId": 1,
+//        "rating": 900
+//        }

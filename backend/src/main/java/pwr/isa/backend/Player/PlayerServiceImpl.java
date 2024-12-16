@@ -13,9 +13,10 @@ import java.util.Optional;
 @Service //
 public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepository playerRepository;
-
-    public PlayerServiceImpl(PlayerRepository playerRepository) {
+    private final UserRepository userRepository;
+    public PlayerServiceImpl(PlayerRepository playerRepository, UserRepository userRepository) {
         this.playerRepository = playerRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -25,13 +26,55 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Player with this nickname already exists");
         }
 
-        // sprawdz czy user id takie istnieje
+        // Sprawdź, czy userId jest podany i czy istnieje taki użytkownik
+        if (player.getUserId() == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        boolean userExists = userRepository.existsById(player.getUserId());
+        if (!userExists) {
+            throw new EntityNotFoundException("User with ID " + player.getUserId() + " not found");
+        }
+
+        // Sprawdź, czy ten userId nie jest już przypisany do innego gracza
+        Player playerWithSameUser = playerRepository.findByUserId(player.getUserId());
+        if (playerWithSameUser != null) {
+            throw new IllegalArgumentException("This user is already assigned to another player");
+        }
 
         // Ustaw lastUpdate na aktualną datę
-        player.setLastUpdate(Timestamp.from(Instant.now())); // chyba niepotrzebne???
+        player.setLastUpdate(Timestamp.from(Instant.now()));
 
         return playerRepository.save(player);
     }
+
+
+
+//    @Override
+//    public Player createPlayer(Player player) {
+//        // Sprawdź, czy nickname już istnieje
+//        if (playerRepository.findByNickname(player.getNickname()) != null) {
+//            throw new IllegalArgumentException("Player with this nickname already exists");
+//        }
+//
+//        // Sprawdź czy userId jest podany
+//        Long userId = player.getUserId();
+//        if (userId == null) {
+//            throw new IllegalArgumentException("UserId cannot be null");
+//        }
+//
+//        // Sprawdź, czy użytkownik o takim ID istnieje
+//        boolean userExists = userRepository.existsById(userId);
+//        if (!userExists) {
+//            throw new EntityNotFoundException("User with ID " + userId + " not found");
+//        }
+//
+//        // Ustaw lastUpdate na aktualną datę
+//        player.setLastUpdate(Timestamp.from(Instant.now()));
+//
+//        return playerRepository.save(player);
+//    }
+
 
     @Override
     public Player updatePlayer(Player player, Long id) {

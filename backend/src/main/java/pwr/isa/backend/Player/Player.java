@@ -20,8 +20,9 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnoreProperties
     private Long ID;
-
-    Long UserId;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Long userId;
+    //Long UserId;
 
     @Column(unique = true, nullable = false)
     private String nickname;
@@ -35,3 +36,9 @@ public class Player {
     @Column(nullable = false)
     private Timestamp lastUpdate;
 }
+//{
+//        "nickname": "Pla32yqweryOne",
+//        "opgg": "http://opgg.example.com/playerone",
+//        "description": "An elite player of strategy games",
+//        "userId": 1
+//        }
