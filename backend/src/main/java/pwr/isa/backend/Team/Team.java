@@ -31,3 +31,9 @@ public class Team {
     @Column(length = 500)
     private String description;
 }
+//{
+//        "teamName": "TeamAlpha",
+//        "teamCapitan": 1,
+//        "userIds": [2, 3, 4],
+//        "description": "A team aiming to dominate the league."
+//        }

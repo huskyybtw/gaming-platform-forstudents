@@ -1,6 +1,9 @@
 package pwr.isa.backend.Team;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
+import pwr.isa.backend.User.User;
 
 import java.util.List;
 
@@ -12,14 +15,29 @@ public class TeamServiceImpl implements TeamService {
     public TeamServiceImpl(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
     }
+//poprawka teamcapitan
+
 
     @Override
     public Team createTeam(Team team) {
         if (teamRepository.findByTeamName(team.getTeamName()).isPresent()) {
-            throw new IllegalArgumentException("Team name already exists.");
+            throw new IllegalArgumentException("Team with this name already exists");
         }
+        if (team.getTeamCapitan() == null) {
+            throw new IllegalArgumentException("Team must have a captain");
+        }
+
         return teamRepository.save(team);
     }
+
+
+//    @Override
+//    public Team createTeam(Team team) {
+//        if (teamRepository.findByTeamName(team.getTeamName()).isPresent()) {
+//            throw new IllegalArgumentException("Team name already exists.");
+//        }
+//        return teamRepository.save(team);
+//    }
 
     @Override
     public Team getTeamById(Long id) {

@@ -43,6 +43,13 @@ public class RatingService {
     public PlayerRating createPlayerRating(PlayerRating playerRating) {
         return playerRatingRepository.save(playerRating);
     }
+    public PlayerRating patchPlayerRating(Long id, PlayerRating partialUpdate) {
+        PlayerRating existingRating = getPlayerRatingById(id); // Pobierz istniejący PlayerRating
+        if (partialUpdate.getRating() != null) {
+            existingRating.setRating(partialUpdate.getRating()); // Aktualizuj tylko rating, jeśli został podany
+        }
+        return playerRatingRepository.save(existingRating);
+    }
 
     public PlayerRating getPlayerRatingById(Long id) {
         return playerRatingRepository.findById(id)

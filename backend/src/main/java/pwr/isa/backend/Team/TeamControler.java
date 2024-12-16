@@ -4,15 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/teams")
 public class TeamControler {
 
-    private final TeamServiceImpl teamService;
+    private final TeamService teamService;
 
-    public TeamControler(TeamServiceImpl teamService) {
+    public TeamControler(TeamService teamService) {
         this.teamService = teamService;
     }
 
@@ -23,17 +21,17 @@ public class TeamControler {
 
     @GetMapping("/{id}")
     public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
-        return ResponseEntity.ok(teamService.getTeamById(id));
+        return new ResponseEntity<>(teamService.getTeamById(id), HttpStatus.OK);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Team>> getAllTeams() {
-        return ResponseEntity.ok(teamService.getAllTeams());
+    public Iterable<Team> getAllTeams() {
+        return teamService.getAllTeams();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Team> updateTeam(@PathVariable Long id, @RequestBody Team team) {
-        return ResponseEntity.ok(teamService.updateTeam(id, team));
+    public ResponseEntity<Team> updateTeam(@PathVariable Long id, @RequestBody Team updatedTeam) {
+        return new ResponseEntity<>(teamService.updateTeam(id, updatedTeam), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

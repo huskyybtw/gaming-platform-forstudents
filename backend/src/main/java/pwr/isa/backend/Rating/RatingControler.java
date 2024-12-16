@@ -36,6 +36,11 @@ public class RatingControler {
     public ResponseEntity<TeamRating> updateTeamRating(@PathVariable Long id, @RequestBody TeamRating updatedRating) {
         return ResponseEntity.ok(ratingService.updateTeamRating(id, updatedRating));
     }
+    @PatchMapping("/players/{id}")
+    public ResponseEntity<PlayerRating> patchPlayerRating(@PathVariable Long id, @RequestBody PlayerRating partialUpdate) {
+        PlayerRating updatedRating = ratingService.patchPlayerRating(id, partialUpdate);
+        return ResponseEntity.ok(updatedRating);
+    }
 
     @DeleteMapping("/teams/{id}")
     public ResponseEntity<Void> deleteTeamRating(@PathVariable Long id) {
