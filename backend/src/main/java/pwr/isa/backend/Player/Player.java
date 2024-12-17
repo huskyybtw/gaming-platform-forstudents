@@ -13,6 +13,7 @@ import java.sql.Timestamp;
     * Wszedzie powinnismy szukac za pomoca user_id
     * TODO - W przyszlosci to naprawic
  */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -25,25 +26,30 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnoreProperties
-    private Long Id;
+    private Long id;
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
     private String nickname;
-
+    private String tagLine;
     private String opgg;
-
     private String description;
 
     @Column(nullable = false)
     private Timestamp lastUpdate;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
-    private Integer rating = 1000;;
+    private Integer rating = 1000;
+
+
+    // FROM RIOT API
+
+    String puuid;
+    // SUMMONER-V4
+    String summonerid;
+    String accountId;
+    int profileIconId;
+    long summonerLevel;
+
+
 }
-//      {
-//        "nickname": "Pla32yqweryOne",
-//        "opgg": "http://opgg.example.com/playerone",
-//        "description": "An elite player of strategy games",
-//        "userId": 1
-//        }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface RiotService {
-    PlayerDTO getPlayerDTO(String username, String tag);
+    PlayerDetailsDTO getPlayerDTO(String username, String tag);
     AccountDTO getAccountDTO(String username, String tag);
     SummonerDTO getSummonerDTO(String puuid);
     List<LeagueDTO> getLeagueDTO(String summonerId);

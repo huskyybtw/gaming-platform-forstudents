@@ -14,4 +14,6 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
     // find list of players order by id limit= limit offset= offset
     @Query(value = "SELECT * FROM players ORDER BY rating LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Player> findBestPlayers(int limit, int offset);
+
+    Player findByTagLine(String tagLine);
 }

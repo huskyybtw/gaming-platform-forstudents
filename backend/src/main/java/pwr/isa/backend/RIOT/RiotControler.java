@@ -19,7 +19,7 @@ public class RiotControler {
     }
 
     @GetMapping(path= "/player")
-    public PlayerDTO getPlayerDTO(
+    public PlayerDetailsDTO getPlayerDTO(
             @RequestParam("username") String username,
             @RequestParam("tag") String tag) {
         return riotService.getPlayerDTO(username, tag);
