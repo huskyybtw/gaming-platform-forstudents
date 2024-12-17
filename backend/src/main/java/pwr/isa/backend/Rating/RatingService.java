@@ -1,14 +1,20 @@
 package pwr.isa.backend.Rating;
 
+import pwr.isa.backend.Player.Player;
+import pwr.isa.backend.Team.Team;
+
+import java.util.List;
+
 public interface RatingService {
 
-    // PLAYER RATING
-    PlayerRating createOrUpdatePlayerRating(Long userId, Integer rating);
-    PlayerRating getPlayerRating(Long userId);
-    void deletePlayerRating(Long userId);
 
-    // TEAM RATING
-    TeamRating createOrUpdateTeamRating(Long teamId, Integer rating);
-    TeamRating getTeamRating(Long teamId);
-    void deleteTeamRating(Long teamId);
+    // PLAYER RATING METHODS
+    Player updatePlayerRating(Long userId, Integer difference);
+    Integer getPlayerRating(Long userId);
+    List<Player> getBestPlayers(int limit, int offset);
+
+    // TEAM RATING METHODS
+    Team updateTeamRating(Long teamId, Integer difference);
+    Integer getTeamRating(Long teamId);
+    List<Team> getBestTeams(int limit, int offset);
 }

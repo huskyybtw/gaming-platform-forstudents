@@ -17,6 +17,7 @@ import java.util.*;
     *
     * GameHistory doesnt contain participants at the moment
     * So at the moment we are not getting participants in games
+    * Mozna naprawic robiac gameHistory DTO
  */
 
 @Service

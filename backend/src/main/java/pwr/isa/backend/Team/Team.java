@@ -23,14 +23,6 @@ public class Team {
 
     private Long teamCaptain;
 
-
-    // Relacja jeden-do-jeden z encją TeamRating
-    //@OneToOne(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private TeamRating teamRating;
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
+    private Integer rating = 1000;
 }
-//{
-//        "teamName": "TeamAlpha",
-//        "teamCaptain": 1,
-//        "userIds": [2, 3, 4],
-//        "description": "A team aiming to dominate the league."
-//}

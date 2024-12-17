@@ -2,6 +2,10 @@ package pwr.isa.backend.Rating;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Player.Player;
+import pwr.isa.backend.Team.Team;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/rating")
@@ -14,44 +18,48 @@ public class RatingControler {
     }
 
     // Player rating endpoints
-    @PostMapping("/player/{userId}")
-    public ResponseEntity<PlayerRating> createOrUpdatePlayerRating(
+    @PatchMapping("/player/{userId}")
+    public ResponseEntity<Player> updatePlayerRating(
             @PathVariable Long userId,
-            @RequestParam Integer rating) {
-        PlayerRating updatedRating = ratingService.createOrUpdatePlayerRating(userId, rating);
-        return ResponseEntity.ok(updatedRating);
+            @RequestParam Integer difference) {
+        Player updatedPlayer = ratingService.updatePlayerRating(userId, difference);
+        return ResponseEntity.ok(updatedPlayer);
     }
 
     @GetMapping("/player/{userId}")
-    public ResponseEntity<PlayerRating> getPlayerRating(@PathVariable Long userId) {
-        PlayerRating playerRating = ratingService.getPlayerRating(userId);
+    public ResponseEntity<Integer> getPlayerRating(@PathVariable Long userId) {
+        Integer playerRating = ratingService.getPlayerRating(userId);
         return ResponseEntity.ok(playerRating);
     }
 
-    @DeleteMapping("/player/{userId}")
-    public ResponseEntity<Void> deletePlayerRating(@PathVariable Long userId) {
-        ratingService.deletePlayerRating(userId);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/player/best")
+    public ResponseEntity<List<Player>> getBestPlayers(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int offset) {
+        List<Player> bestPlayers = ratingService.getBestPlayers(limit, offset);
+        return ResponseEntity.ok(bestPlayers);
     }
 
     // Team rating endpoints
-    @PostMapping("/team/{teamId}")
-    public ResponseEntity<TeamRating> createOrUpdateTeamRating(
+    @PatchMapping("/team/{teamId}")
+    public ResponseEntity<Team> updateTeamRating(
             @PathVariable Long teamId,
-            @RequestParam Integer rating) {
-        TeamRating updatedRating = ratingService.createOrUpdateTeamRating(teamId, rating);
-        return ResponseEntity.ok(updatedRating);
+            @RequestParam Integer difference) {
+        Team updatedTeam = ratingService.updateTeamRating(teamId, difference);
+        return ResponseEntity.ok(updatedTeam);
     }
 
     @GetMapping("/team/{teamId}")
-    public ResponseEntity<TeamRating> getTeamRating(@PathVariable Long teamId) {
-        TeamRating teamRating = ratingService.getTeamRating(teamId);
+    public ResponseEntity<Integer> getTeamRating(@PathVariable Long teamId) {
+        Integer teamRating = ratingService.getTeamRating(teamId);
         return ResponseEntity.ok(teamRating);
     }
 
-    @DeleteMapping("/team/{teamId}")
-    public ResponseEntity<Void> deleteTeamRating(@PathVariable Long teamId) {
-        ratingService.deleteTeamRating(teamId);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/team/best")
+    public ResponseEntity<List<Team>> getBestTeams(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int offset) {
+        List<Team> bestTeams = ratingService.getBestTeams(limit, offset);
+        return ResponseEntity.ok(bestTeams);
     }
 }

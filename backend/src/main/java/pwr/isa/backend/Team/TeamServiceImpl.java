@@ -28,13 +28,16 @@ public class TeamServiceImpl implements TeamService {
         this.teamUsersRepository = teamUsersRepository;
     }
 
+
+    @Transactional
     @Override
     public TeamDTO createTeam(Team team) {
         validateTeamName(team.getTeamName(), null);
         validateTeamCaptain(team.getTeamCaptain());
 
-        Team savedTeam = teamRepository.save(team);
-        return buildTeamDTO(savedTeam, new ArrayList<>());
+        Team createdTeam = teamRepository.save(team);
+        teamUsersRepository.addTeamUser(createdTeam.getId(), createdTeam.getTeamCaptain());
+        return buildTeamDTO(createdTeam, new ArrayList<>());
     }
 
     @Transactional

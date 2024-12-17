@@ -1,5 +1,6 @@
 package pwr.isa.backend.Team.TeamUsers;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,9 +16,11 @@ public interface TeamUsersRepository extends CrudRepository<TeamUser, Long> {
     @Query(value = "SELECT team_id FROM team_users WHERE team_id = :userId", nativeQuery = true)
     List<Long> findTeamsByUserId(@Param("userId") Long userId);
 
+    @Modifying
     @Query(value = "INSERT INTO team_users (team_id, user_id) VALUES (:teamId, :userId)", nativeQuery = true)
     void addTeamUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
 
+    @Modifying
     @Query(value = "DELETE FROM team_users WHERE team_id = :teamId AND user_id = :userId", nativeQuery = true)
     void deleteTeamUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
 

@@ -3,7 +3,6 @@ package pwr.isa.backend.Player;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import pwr.isa.backend.User.User;
 
 import java.sql.Timestamp;
 
@@ -38,6 +37,9 @@ public class Player {
 
     @Column(nullable = false)
     private Timestamp lastUpdate;
+
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
+    private Integer rating = 1000;;
 }
 //      {
 //        "nickname": "Pla32yqweryOne",
