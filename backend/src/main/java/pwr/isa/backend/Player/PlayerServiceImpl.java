@@ -3,6 +3,7 @@ package pwr.isa.backend.Player;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.User.UserRepository;
+import pwr.isa.backend.User.UserService;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -15,16 +16,16 @@ import java.util.Objects;
 @Service
 public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepository playerRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public PlayerServiceImpl(PlayerRepository playerRepository, UserRepository userRepository) {
+    public PlayerServiceImpl(PlayerRepository playerRepository, UserService userRepository) {
         this.playerRepository = playerRepository;
-        this.userRepository = userRepository;
+        this.userService = userRepository;
     }
 
     @Override
     public Player createPlayer(Player player) {
-        boolean userExists = userRepository.existsById(player.getUserId());
+        boolean userExists = userService.exists(player.getUserId());
         Player playerWithSameUser = playerRepository.findByUserId(player.getUserId());
 
         if (player.getUserId() == null || !userExists || playerWithSameUser != null) {
@@ -78,7 +79,7 @@ public class PlayerServiceImpl implements PlayerService {
                     if (field.getName().equals("nickname")) {
                         String newNickname = (String) sourceValue;
 
-                        validateNickname(newNickname, target.getId());
+                        validateNickname(newNickname, target.getUserId());
                     }
                     field.set(target, sourceValue);
                 }
@@ -126,7 +127,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         Player foundPlayer = playerRepository.findByNickname(nickname);
-        if (foundPlayer != null && !Objects.equals(foundPlayer.getId(), excludedPlayerId)) {
+        if (foundPlayer != null && !Objects.equals(foundPlayer.getUserId(), excludedPlayerId)) {
             throw new IllegalArgumentException("Player with this nickname already exists");
         }
     }

@@ -5,9 +5,12 @@ import java.util.List;
 public interface TeamService {
     Team createTeam(Team team);
     Team updateTeam(Long id, Team updatedTeam);
-    Team patchTeam(Long id, Team updatedTeam); // Dodana metoda dla PATCH
+
+    Team addPlayerToTeam(Long teamId, Long userId);
+    Team removePlayerFromTeam(Long teamId, Long userId);
+
     void deleteTeam(Long id);
-    Team getTeamById(Long id);
-    List<Team> getAllTeams();
+    TeamDTO getTeamById(Long id);
+    List<TeamDTO> getAllTeams();
 }
 

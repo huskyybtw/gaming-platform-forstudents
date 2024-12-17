@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//relację między zespołem (Team) a jego członkami (User).
 public class Team {
 
     @Id
@@ -27,14 +26,8 @@ public class Team {
     @Column(name = "description")
     private String description;
 
-    // Relacja wiele-do-jednego z encją User (kapitan zespołu)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "team_captain_id", nullable = false)
-    private User teamCaptain;
+    private Long teamCaptain;
 
-    // Relacja jeden-do-wiele z encją TeamUser (członkowie zespołu)
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeamUser> teamMembers;
 
     // Relacja jeden-do-jeden z encją TeamRating
     @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,7 +35,7 @@ public class Team {
 }
 //{
 //        "teamName": "TeamAlpha",
-//        "teamCapitan": 1,
+//        "teamCaptain": 1,
 //        "userIds": [2, 3, 4],
 //        "description": "A team aiming to dominate the league."
-//        }
+//}

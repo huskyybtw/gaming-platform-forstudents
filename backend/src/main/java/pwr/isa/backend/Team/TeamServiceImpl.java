@@ -3,91 +3,67 @@ package pwr.isa.backend.Team;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pwr.isa.backend.Team.TeamUsers.TeamUsersRepository;
+import pwr.isa.backend.User.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/*
+    TODO Obiekt team nie ma w sobie pola z użytkownikami
+    Można zmienic by zawsze returnowac TeamDTO
+    Można tez tak zostawic do rozmyślenia
+ */
 @Service
 @Transactional
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamUsersRepository teamUsersRepository;
+    private final UserService userService;
 
-    public TeamServiceImpl(TeamRepository teamRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository,
+                           TeamUsersRepository teamUsersRepository,
+                           UserService userService) {
         this.teamRepository = teamRepository;
+        this.userService = userService;
+        this.teamUsersRepository = teamUsersRepository;
     }
 
     @Override
     public Team createTeam(Team team) {
-        // Sprawdzenie, czy nazwa zespołu została podana
-        if (team.getTeamName() == null || team.getTeamName().isBlank()) {
-            throw new IllegalArgumentException("Team name cannot be null or empty");
-        }
+        validateTeamName(team.getTeamName(), null);
+        validateTeamCaptain(team.getTeamCaptain());
 
-        // Sprawdzenie unikalności nazwy zespołu
-        boolean exists = teamRepository.findByTeamName(team.getTeamName()).isPresent();
-        if (exists) {
-            throw new IllegalArgumentException("A team with this name already exists");
-        }
-
-        // Opcjonalne dodatkowe walidacje (np. sprawdzenie poprawności kapitana)
-        if (team.getTeamCaptain() == null) {
-            throw new IllegalArgumentException("Team captain cannot be null");
-        }
-
-        // Zapis zespołu do bazy danych
         return teamRepository.save(team);
     }
-
 
     @Override
     public Team updateTeam(Long id, Team updatedTeam) {
         Team existingTeam = teamRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
 
-        // Pełna aktualizacja (PUT):
+        validateTeamName(updatedTeam.getTeamName(), null);
+        validateTeamCaptain(updatedTeam.getTeamCaptain());
 
-        // Aktualizacja teamName –bnazwa drużyny musi być jakas
-        if (updatedTeam.getTeamName() != null && !updatedTeam.getTeamName().isBlank()) {
-            existingTeam.setTeamName(updatedTeam.getTeamName());
-        }
-        // Jeśli jest null lub puste, nie zmieniamy istniejącej nazwy.
+        return teamRepository.save(updatedTeam);
+    }
 
-        // Aktualizacja description – opcjonalne pole, jeśli null, zachowujemy starą wartość
-        if (updatedTeam.getDescription() != null) {
-            existingTeam.setDescription(updatedTeam.getDescription());
-        }
-        // Jeśli null, opis pozostaje bez zmian.
+    /*
+        TODO team ma max 5 osob walidacja
+        do przemyslenia co robimy jesli chcemy na raz dodac wiecej niz jedna osobe
+        analogicznie z usuwaniem
+    */
+    @Override
+    public Team addPlayerToTeam(Long teamId, Long userId) {
 
-        // Aktualizacja teamCaptain – jeśli null, zachowujemy poprzednią wartość
-        if (updatedTeam.getTeamCaptain() != null) {
-            existingTeam.setTeamCaptain(updatedTeam.getTeamCaptain());
-        }
-        // Jeśli null, zachowujemy poprzednią wartość kapitana.
-
-        return teamRepository.save(existingTeam);
+        return null;
     }
 
     @Override
-    public Team patchTeam(Long id, Team updatedTeam) {
-        Team existingTeam = teamRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
+    public Team removePlayerFromTeam(Long teamId, Long userId) {
 
-        // PATCH:
-        // Aktualizujemy tylko pola, które zostały podane
-
-        if (updatedTeam.getTeamName() != null && !updatedTeam.getTeamName().isBlank()) {
-            existingTeam.setTeamName(updatedTeam.getTeamName());
-        }
-
-        if (updatedTeam.getDescription() != null) {
-            existingTeam.setDescription(updatedTeam.getDescription());
-        }
-
-        if (updatedTeam.getTeamCaptain() != null) {
-            existingTeam.setTeamCaptain(updatedTeam.getTeamCaptain());
-        }
-
-        return teamRepository.save(existingTeam);
+        return null;
     }
 
     @Override
@@ -99,13 +75,59 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team getTeamById(Long id) {
-        return teamRepository.findById(id)
+    public TeamDTO getTeamById(Long id) {
+        Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
+        List<Long> users = teamUsersRepository.findUsersByTeamId(id);
+
+        return TeamDTO.builder()
+                .team(team)
+                .users(users)
+                .build();
     }
 
     @Override
-    public List<Team> getAllTeams() {
-        return (List<Team>) teamRepository.findAll();
+    public List<TeamDTO> getAllTeams() {
+        Iterable<Team> teams = teamRepository.findAll();
+        List<TeamDTO> teamDTOS = new ArrayList<>();
+
+        for (Team team : teams) {
+            List<Long> users = teamUsersRepository.findUsersByTeamId(team.getId());
+            teamDTOS.add(TeamDTO.builder()
+                    .team(team)
+                    .users(users)
+                    .build());
+        }
+
+        return teamDTOS;
+    }
+
+    void validateTeamName(String teamName, Long id) {
+        if (teamName == null || teamName.isBlank()) {
+            throw new IllegalArgumentException("Team name cannot be null or empty");
+        }
+
+        boolean exists = teamRepository.findByTeamName(teamName).isPresent();
+        if (exists) {
+            throw new IllegalArgumentException("A team with this name already exists");
+        }
+
+        if (id != null) {
+            Team team = teamRepository.findByTeamName(teamName)
+                    .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
+            if (!team.getId().equals(id)) {
+                throw new IllegalArgumentException("A team with this name already exists");
+            }
+        }
+    }
+
+    void validateTeamCaptain(Long teamCaptain) {
+        if (teamCaptain == null) {
+            throw new IllegalArgumentException("Team captain cannot be null");
+        }
+
+        if (!userService.exists(teamCaptain)) {
+            throw new IllegalArgumentException("User with id: " + teamCaptain + " does not exist");
+        }
     }
 }

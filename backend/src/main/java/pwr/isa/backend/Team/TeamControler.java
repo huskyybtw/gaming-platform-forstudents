@@ -18,23 +18,39 @@ public class TeamControler {
 
     // GET: Pobierz wszystkie zespoły
     @GetMapping("/")
-    public ResponseEntity<List<Team>> getAllTeams() {
-        List<Team> teams = teamService.getAllTeams();
-        return ResponseEntity.ok(teams); // 200
+    public ResponseEntity<List<TeamDTO>> getAllTeams() {
+        List<TeamDTO> teams = teamService.getAllTeams();
+        return ResponseEntity.ok(teams);
     }
 
     // GET: Pobierz zespół po ID
     @GetMapping("/{id}")
-    public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
-        Team team = teamService.getTeamById(id);
-        return ResponseEntity.ok(team); // 200
+    public ResponseEntity<TeamDTO> getTeamById(@PathVariable Long id) {
+        TeamDTO team = teamService.getTeamById(id);
+        return ResponseEntity.ok(team);
     }
 
     // POST: Utwórz nowy zespół
     @PostMapping("/")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         Team createdTeam = teamService.createTeam(team);
-        return new ResponseEntity<>(createdTeam, HttpStatus.CREATED); // 201
+        return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{teamId}/players/{userId}")
+    public ResponseEntity<Team> addPlayerToTeam(
+            @PathVariable Long teamId,
+            @PathVariable Long userId) {
+        Team team = teamService.addPlayerToTeam(teamId, userId);
+        return ResponseEntity.ok(team);
+    }
+
+    @DeleteMapping("/{teamId}/players/{userId}")
+    public ResponseEntity<Team> removePlayerFromTeam(
+            @PathVariable Long teamId,
+            @PathVariable Long userId) {
+        Team team = teamService.removePlayerFromTeam(teamId, userId);
+        return ResponseEntity.ok(team);
     }
 
     // PUT: Pełna aktualizacja zespołu
@@ -46,19 +62,11 @@ public class TeamControler {
         return ResponseEntity.ok(team); // 200
     }
 
-    // PATCH: Częściowa aktualizacja zespołu
-    @PatchMapping("/{id}")
-    public ResponseEntity<Team> patchTeam(
-            @PathVariable Long id,
-            @RequestBody Team updatedTeam) {
-        Team team = teamService.patchTeam(id, updatedTeam);
-        return ResponseEntity.ok(team); // 200
-    }
 
     // DELETE: Usuń zespół
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);
-        return ResponseEntity.noContent().build(); // 204
+        return ResponseEntity.noContent().build();
     }
 }
