@@ -15,6 +15,10 @@ import java.util.Optional;
     BO PRZENOSILEM WALIDACJE DO INNYCH FUNCKJI Z CHATEM
  */
 
+/*
+    TODO Pouwzgledniać transakcje
+*/
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;

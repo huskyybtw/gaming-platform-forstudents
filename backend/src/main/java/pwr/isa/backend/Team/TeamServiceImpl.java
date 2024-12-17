@@ -14,6 +14,10 @@ import java.util.List;
     Można zmienic by zawsze returnowac TeamDTO
     Można tez tak zostawic do rozmyślenia
  */
+
+/*
+    TODO Pouwzgledniać transakcje
+*/
 @Service
 @Transactional
 public class TeamServiceImpl implements TeamService {
@@ -30,12 +34,16 @@ public class TeamServiceImpl implements TeamService {
         this.teamUsersRepository = teamUsersRepository;
     }
 
+
+    @Transactional
     @Override
     public Team createTeam(Team team) {
         validateTeamName(team.getTeamName(), null);
         validateTeamCaptain(team.getTeamCaptain());
 
-        return teamRepository.save(team);
+        Team createdTeam = teamRepository.save(team);
+        teamUsersRepository.addTeamUser(createdTeam.getId(), createdTeam.getTeamCaptain());
+        return createdTeam;
     }
 
     @Override
