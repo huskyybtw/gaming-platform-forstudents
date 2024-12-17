@@ -2,10 +2,11 @@ package pwr.isa.backend.Player; //
 
 public interface PlayerService {
     Player createPlayer(Player player);
-    Player getPlayerById(Long id);
-    Player updatePlayer(Player player, Long id);
-    Player patchPlayer(Player player, Long id);
-    void deletePlayer(Long id);
+    Player getPlayerById(Long userId);
+    Player updatePlayer(Player player, Long userId);
+    Player patchPlayer(Player player, Long userId);
+    void deletePlayer(Long userId);
+
     Iterable<Player> getAllPlayers();
-    boolean exists(Long id);
-} 
+    boolean existsByUserId(Long userId);
+}

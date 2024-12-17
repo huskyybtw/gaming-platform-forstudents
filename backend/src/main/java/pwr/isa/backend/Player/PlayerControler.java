@@ -19,34 +19,33 @@ public class PlayerControler {
         return playerService.getAllPlayers();
     }
 
-    @GetMapping(path= "/{id}")
-    public ResponseEntity<Player> readPlayer(@PathVariable Long id) {
-        return new ResponseEntity<>(playerService.getPlayerById(id), HttpStatus.FOUND);
+    @GetMapping(path= "/{userId}")
+    public ResponseEntity<Player> readPlayer(@PathVariable Long userId) {
+        return new ResponseEntity<>(playerService.getPlayerById(userId), HttpStatus.FOUND);
     }
 
     @PostMapping(path= "/")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
-        return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);//tu
+        return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);
     }
 
-
-    @PutMapping(path= "/{id}")
+    @PutMapping(path= "/{userId}")
     public ResponseEntity<Player> updatePlayer(
-            @PathVariable Long id,
+            @PathVariable Long userId,
             @RequestBody Player player) {
-        return new ResponseEntity<>(playerService.updatePlayer(player,id), HttpStatus.OK);
+        return new ResponseEntity<>(playerService.updatePlayer(player, userId), HttpStatus.OK);
     }
 
-    @PatchMapping(path= "/{id}")
+    @PatchMapping(path= "/{userId}")
     public ResponseEntity<Player> patchPlayer(
-            @PathVariable Long id,
+            @PathVariable Long userId,
             @RequestBody Player player) {
-        return new ResponseEntity<>(playerService.patchPlayer(player,id), HttpStatus.OK);
+        return new ResponseEntity<>(playerService.patchPlayer(player, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping(path= "/{id}")
-    public ResponseEntity<Player> deletePlayer(@PathVariable Long id) {
-        playerService.deletePlayer(id);
+    @DeleteMapping(path= "/{userId}")
+    public ResponseEntity<Player> deletePlayer(@PathVariable Long userId) {
+        playerService.deletePlayer(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

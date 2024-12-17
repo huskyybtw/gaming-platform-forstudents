@@ -7,6 +7,13 @@ import pwr.isa.backend.User.User;
 
 import java.sql.Timestamp;
 
+
+/*
+    * Player entity
+    * Id jest kosmetyczne
+    * Wszedzie powinnismy szukac za pomoca user_id
+    * TODO - W przyszlosci to naprawic
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -22,21 +29,17 @@ public class Player {
     private Long Id;
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
-    //Long UserId;
 
-    @Column(unique = true, nullable = false)
     private String nickname;
 
-    @Column(nullable = true)
     private String opgg;
 
-    @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
     private Timestamp lastUpdate;
 }
-//{
+//      {
 //        "nickname": "Pla32yqweryOne",
 //        "opgg": "http://opgg.example.com/playerone",
 //        "description": "An elite player of strategy games",
