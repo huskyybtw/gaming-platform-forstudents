@@ -9,80 +9,54 @@ import pwr.isa.backend.Security.SHA256;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Optional;
+
 /*
- TODO BUG Z SPRAWDZANIEM CZY EMAIL JEST JUŻ W BAZIE EXCEPTION SIE NIE RZUCA NIE MAM POJECIA CZEMU
- TODO VALIDACJA JAKO DEKORATOR
+    TODO PRZETESTOWAC CZY NAPEWNO DZIALAJA WSZYSTKIE FUNKCJE
+    BO PRZENOSILEM WALIDACJE DO INNYCH FUNCKJI Z CHATEM
  */
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository,EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
 
     @Override
     public User createUser(User user) {
+        validateNewUser(user);
+
         user.setPassword(SHA256.hash(user.getPassword()));
-        if(userRepository.findByEmail(user.getEmail()) != null) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
-        
-        if(!EmailValidator.isValid(user.getEmail())) {
-            throw new IllegalArgumentException("Invalid email");
-        }
         user.setID(null);
         user.setRole(UserRole.USER);
-        userRepository.save(user);
 
-        try {
-            emailService.sendEmail(user.getEmail(), user.getID());
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Failed to send email", e);
-        }
+        userRepository.save(user);
+        sendActivationEmail(user);
 
         return user;
     }
 
     @Override
     public User createAdmin(User user) {
+        validateNewUser(user);
+
         user.setPassword(SHA256.hash(user.getPassword()));
-
-        if(userRepository.findByEmail(user.getEmail()) != null) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
-
-        if(!EmailValidator.isValid(user.getEmail())) {
-            throw new IllegalArgumentException("Invalid email");
-        }
         user.setID(null);
         user.setEnabled(true);
         user.setRole(UserRole.ADMIN);
+
         return userRepository.save(user);
     }
 
-    // ROOM FOR IMPROVEMENTS
     @Override
-    public User updateUser(User user,Long id) {
+    public User updateUser(User user, Long id) {
         user.setID(id);
+        validateExistingUser(user);
+
         user.setPassword(SHA256.hash(user.getPassword()));
-
-        if(!userRepository.existsById(user.getID())) {
-            throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
-        }
-
-        // CHECK IF EMAIL IS NOT ALREADY PRESENT IN DB
-        User foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
-            throw new IllegalArgumentException("User with this email already exists");
-        }
-
-        if(!EmailValidator.isValid(user.getEmail())) {
-            throw new IllegalArgumentException("Invalid email");
-        }
 
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password cannot be empty");
@@ -91,13 +65,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    // ROOM FOR IMPROVEMENTS
     @Override
-    public User patchUser(User user,Long id) {
+    public User patchUser(User user, Long id) {
         user.setID(id);
         Optional<User> target = userRepository.findById(user.getID());
 
-        if(!target.isPresent()){
+        if (target.isEmpty()) {
             throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
         }
 
@@ -110,7 +83,7 @@ public class UserServiceImpl implements UserService {
                     continue;
                 }
 
-                if("password".equals(field.getName())) {
+                if ("password".equals(field.getName())) {
                     if (sourceValue != null) {
                         field.set(target.get(), SHA256.hash((String) sourceValue));
                     }
@@ -118,15 +91,7 @@ public class UserServiceImpl implements UserService {
                 }
 
                 if ("email".equals(field.getName())) {
-                    if(!EmailValidator.isValid(user.getEmail())) {
-                        throw new IllegalArgumentException("Invalid email");
-                    }
-
-                    User foundUser = userRepository.findByEmail(user.getEmail());
-                    if (foundUser != null && !Objects.equals(foundUser.getEmail(), user.getEmail())) {
-                        throw new IllegalArgumentException("User with this email already exists");
-                    }
-
+                    validateEmail(user.getEmail());
                     field.set(target.get(), sourceValue);
                     continue;
                 }
@@ -143,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        if(!userRepository.existsById(id)) {
+        if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User with ID " + id + " not found");
         }
         userRepository.deleteById(id);
@@ -173,4 +138,39 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    // Validation and Utility Methods
+
+    private void validateNewUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+        validateEmail(user.getEmail());
+    }
+
+    private void validateExistingUser(User user) {
+        if (!userRepository.existsById(user.getID())) {
+            throw new EntityNotFoundException("User with ID " + user.getID() + " not found");
+        }
+
+        User foundUser = userRepository.findByEmail(user.getEmail());
+        if (foundUser != null && !Objects.equals(foundUser.getID(), user.getID())) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+
+        validateEmail(user.getEmail());
+    }
+
+    private void validateEmail(String email) {
+        if (!EmailValidator.isValid(email)) {
+            throw new IllegalArgumentException("Invalid email");
+        }
+    }
+
+    private void sendActivationEmail(User user) {
+        try {
+            emailService.sendEmail(user.getEmail(), user.getID());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
 }
