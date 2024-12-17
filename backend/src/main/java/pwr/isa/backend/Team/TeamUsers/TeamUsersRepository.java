@@ -23,4 +23,6 @@ public interface TeamUsersRepository extends CrudRepository<TeamUser, Long> {
     @Modifying
     @Query(value = "DELETE FROM team_users WHERE team_id = :teamId AND user_id = :userId", nativeQuery = true)
     void deleteTeamUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
+
+    void deleteAllByTeamId(Long teamId);
 }

@@ -8,16 +8,10 @@ import pwr.isa.backend.User.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 /*
-    TODO Obiekt team nie ma w sobie pola z użytkownikami
-    Można zmienic by zawsze returnowac TeamDTO
-    Można tez tak zostawic do rozmyślenia
+    * TODO do przetestowania
  */
-
-/*
-    TODO Pouwzgledniać transakcje
-*/
 @Service
 @Transactional
 public class TeamServiceImpl implements TeamService {
@@ -37,63 +31,93 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     @Override
-    public Team createTeam(Team team) {
+    public TeamDTO createTeam(Team team) {
         validateTeamName(team.getTeamName(), null);
         validateTeamCaptain(team.getTeamCaptain());
 
         Team createdTeam = teamRepository.save(team);
         teamUsersRepository.addTeamUser(createdTeam.getId(), createdTeam.getTeamCaptain());
-        return createdTeam;
+        return buildTeamDTO(createdTeam, new ArrayList<>());
     }
 
+    @Transactional
     @Override
-    public Team updateTeam(Long id, Team updatedTeam) {
+    public TeamDTO updateTeam(Long id, Team updatedTeam) {
         Team existingTeam = teamRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
 
-        validateTeamName(updatedTeam.getTeamName(), null);
+        validateTeamName(updatedTeam.getTeamName(), id);
         validateTeamCaptain(updatedTeam.getTeamCaptain());
 
-        return teamRepository.save(updatedTeam);
+        existingTeam.setTeamName(updatedTeam.getTeamName());
+        existingTeam.setDescription(updatedTeam.getDescription());
+        existingTeam.setTeamCaptain(updatedTeam.getTeamCaptain());
+
+        Team savedTeam = teamRepository.save(existingTeam);
+
+        List<Long> users = teamUsersRepository.findUsersByTeamId(id);
+
+        return buildTeamDTO(savedTeam, users);
     }
 
-    /*
-        TODO team ma max 5 osob walidacja
-        do przemyslenia co robimy jesli chcemy na raz dodac wiecej niz jedna osobe
-        analogicznie z usuwaniem
-    */
+    @Transactional
     @Override
-    public Team addPlayerToTeam(Long teamId, Long userId) {
+    public TeamDTO addPlayerToTeam(Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + teamId));
 
-        return null;
+        if (!userService.exists(userId)) {
+            throw new IllegalArgumentException("User with id: " + userId + " does not exist");
+        }
+
+        List<Long> currentUsers = teamUsersRepository.findUsersByTeamId(teamId);
+        if (currentUsers.contains(userId)) {
+            throw new IllegalArgumentException("User with id: " + userId + " is already in the team");
+        }
+
+        teamUsersRepository.addTeamUser(teamId, userId);
+        currentUsers.add(userId);
+
+        return buildTeamDTO(team, currentUsers);
     }
 
+    @Transactional
     @Override
-    public Team removePlayerFromTeam(Long teamId, Long userId) {
+    public TeamDTO removePlayerFromTeam(Long teamId, Long userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + teamId));
 
-        return null;
+        List<Long> currentUsers = teamUsersRepository.findUsersByTeamId(teamId);
+        if (!currentUsers.contains(userId)) {
+            throw new IllegalArgumentException("User with id: " + userId + " is not in the team");
+        }
+
+        teamUsersRepository.deleteTeamUser(teamId, userId);
+        currentUsers.remove(userId);
+
+        return buildTeamDTO(team, currentUsers);
     }
 
+    @Transactional
     @Override
     public void deleteTeam(Long id) {
         if (!teamRepository.existsById(id)) {
             throw new EntityNotFoundException("Team not found with id: " + id);
         }
+        teamUsersRepository.deleteAllByTeamId(id);
         teamRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public TeamDTO getTeamById(Long id) {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
         List<Long> users = teamUsersRepository.findUsersByTeamId(id);
-
-        return TeamDTO.builder()
-                .team(team)
-                .users(users)
-                .build();
+        return buildTeamDTO(team, users);
     }
 
+    @Transactional
     @Override
     public List<TeamDTO> getAllTeams() {
         Iterable<Team> teams = teamRepository.findAll();
@@ -101,13 +125,17 @@ public class TeamServiceImpl implements TeamService {
 
         for (Team team : teams) {
             List<Long> users = teamUsersRepository.findUsersByTeamId(team.getId());
-            teamDTOS.add(TeamDTO.builder()
-                    .team(team)
-                    .users(users)
-                    .build());
+            teamDTOS.add(buildTeamDTO(team, users));
         }
 
         return teamDTOS;
+    }
+
+    private TeamDTO buildTeamDTO(Team team, List<Long> users) {
+        return TeamDTO.builder()
+                .team(team)
+                .users(users != null ? users : new ArrayList<>())
+                .build();
     }
 
     void validateTeamName(String teamName, Long id) {
@@ -115,15 +143,9 @@ public class TeamServiceImpl implements TeamService {
             throw new IllegalArgumentException("Team name cannot be null or empty");
         }
 
-        boolean exists = teamRepository.findByTeamName(teamName).isPresent();
-        if (exists) {
-            throw new IllegalArgumentException("A team with this name already exists");
-        }
-
-        if (id != null) {
-            Team team = teamRepository.findByTeamName(teamName)
-                    .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
-            if (!team.getId().equals(id)) {
+        Optional<Team> team = teamRepository.findByTeamName(teamName);
+        if (team.isPresent()) {
+            if (id == null || !team.get().getId().equals(id)) {
                 throw new IllegalArgumentException("A team with this name already exists");
             }
         }

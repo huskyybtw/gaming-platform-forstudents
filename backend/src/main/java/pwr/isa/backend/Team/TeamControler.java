@@ -32,33 +32,33 @@ public class TeamControler {
 
     // POST: Utwórz nowy zespół
     @PostMapping("/")
-    public ResponseEntity<Team> createTeam(@RequestBody Team team) {
-        Team createdTeam = teamService.createTeam(team);
+    public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
+        TeamDTO createdTeam = teamService.createTeam(team);
         return new ResponseEntity<>(createdTeam, HttpStatus.CREATED);
     }
 
     @PostMapping("/{teamId}/players/{userId}")
-    public ResponseEntity<Team> addPlayerToTeam(
+    public ResponseEntity<TeamDTO> addPlayerToTeam(
             @PathVariable Long teamId,
             @PathVariable Long userId) {
-        Team team = teamService.addPlayerToTeam(teamId, userId);
+        TeamDTO team = teamService.addPlayerToTeam(teamId, userId);
         return ResponseEntity.ok(team);
     }
 
     @DeleteMapping("/{teamId}/players/{userId}")
-    public ResponseEntity<Team> removePlayerFromTeam(
+    public ResponseEntity<TeamDTO> removePlayerFromTeam(
             @PathVariable Long teamId,
             @PathVariable Long userId) {
-        Team team = teamService.removePlayerFromTeam(teamId, userId);
+        TeamDTO team = teamService.removePlayerFromTeam(teamId, userId);
         return ResponseEntity.ok(team);
     }
 
     // PUT: Pełna aktualizacja zespołu
     @PutMapping("/{id}")
-    public ResponseEntity<Team> updateTeam(
+    public ResponseEntity<TeamDTO> updateTeam(
             @PathVariable Long id,
             @RequestBody Team updatedTeam) {
-        Team team = teamService.updateTeam(id, updatedTeam);
+        TeamDTO team = teamService.updateTeam(id, updatedTeam);
         return ResponseEntity.ok(team); // 200
     }
 
