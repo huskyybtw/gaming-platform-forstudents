@@ -1,36 +1,26 @@
 package pwr.isa.backend.Rating;
 
 import jakarta.persistence.*;
+import lombok.*;
+import pwr.isa.backend.Player.Player;
 
 @Entity
-@Table(name = "Player_Rating")
+@Table(name = "player_rating")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PlayerRating {
 
     @Id
-    @Column(name = "User_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "Rating", nullable = false)
-    private Long rating;
+    @OneToOne
+    @JoinColumn(name = "player_id", nullable = false, unique = true)
+    private Player player;
 
-    // Gettery i Settery
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getRating() {
-        return rating;
-    }
-
-    public void setRating(Long rating) {
-        this.rating = rating;
-    }
+    @Column(nullable = false)
+    private Integer rating;
 }
-//{
-//        "userId": 1,
-//        "rating": 900
-//        }
+
