@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class PlayerDTO {
+public class PlayerDetailsDTO {
     // ACCOUNT-V1
     String puuid;
     String gameName;

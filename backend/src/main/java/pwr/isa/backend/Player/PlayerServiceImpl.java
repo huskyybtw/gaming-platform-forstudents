@@ -2,12 +2,17 @@ package pwr.isa.backend.Player;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pwr.isa.backend.RIOT.DTO.LeagueDTO;
+import pwr.isa.backend.RIOT.DTO.PlayerDetailsDTO;
+import pwr.isa.backend.RIOT.RiotService;
 import pwr.isa.backend.User.UserRepository;
 import pwr.isa.backend.User.UserService;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 /*
@@ -17,12 +22,17 @@ import java.util.Objects;
 public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepository playerRepository;
     private final UserService userService;
+    private final RiotService riotService;
 
-    public PlayerServiceImpl(PlayerRepository playerRepository, UserService userRepository) {
+    public PlayerServiceImpl(PlayerRepository playerRepository,
+                             UserService userRepository,
+                             RiotService riotService) {
         this.playerRepository = playerRepository;
         this.userService = userRepository;
+        this.riotService = riotService;
     }
 
+    @Transactional
     @Override
     public Player createPlayer(Player player) {
         boolean userExists = userService.exists(player.getUserId());
@@ -33,12 +43,15 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         validateNickname(player.getNickname(), null);
+        validateTagLine(player.getTagLine(), null);
 
+        playerRepository.save(player);
         updateLastUpdateTimestamp(player);
 
-        return playerRepository.save(player);
+        return refreshPlayer(player.getId());
     }
 
+    @Transactional
     @Override
     public Player updatePlayer(Player player, Long userId) {
         Player existingPlayer = playerRepository.findByUserId(userId);
@@ -52,16 +65,19 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         validateNickname(player.getNickname(), userId);
+        validateTagLine(player.getTagLine(), userId);
 
         existingPlayer.setNickname(player.getNickname());
+        existingPlayer.setTagLine(player.getTagLine());
         existingPlayer.setOpgg(player.getOpgg());
         existingPlayer.setDescription(player.getDescription());
-
+        playerRepository.save(existingPlayer);
         updateLastUpdateTimestamp(existingPlayer);
 
-        return playerRepository.save(existingPlayer);
+        return refreshPlayer(existingPlayer.getUserId());
     }
 
+    @Transactional
     @Override
     public Player patchPlayer(Player player, Long userId) {
         Player target = playerRepository.findByUserId(userId);
@@ -81,6 +97,12 @@ public class PlayerServiceImpl implements PlayerService {
 
                         validateNickname(newNickname, target.getUserId());
                     }
+
+                    if (field.getName().equals("tagLine")) {
+                        String newTagLine = (String) sourceValue;
+
+                        validateTagLine(newTagLine, target.getUserId());
+                    }
                     field.set(target, sourceValue);
                 }
 
@@ -88,9 +110,30 @@ public class PlayerServiceImpl implements PlayerService {
                 throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
         }
-
+        playerRepository.save(target);
         updateLastUpdateTimestamp(target);
-        return playerRepository.save(target);
+        return refreshPlayer(target.getUserId());
+    }
+
+    @Override
+    public Player refreshPlayer(Long userId) {
+        Player player = playerRepository.findByUserId(userId);
+        PlayerDetailsDTO playerDetailsDTO =  riotService.getPlayerDTO(player.getNickname(), player.getTagLine());
+
+        player.setPuuid(playerDetailsDTO.getPuuid());
+        player.setSummonerid(playerDetailsDTO.getSummonerid());
+        player.setAccountId(playerDetailsDTO.getAccountId());
+        player.setProfileIconId(playerDetailsDTO.getProfileIconId());
+        player.setSummonerLevel(playerDetailsDTO.getSummonerLevel());
+
+        updateLastUpdateTimestamp(player);
+        return playerRepository.save(player);
+    }
+
+    @Transactional
+    @Override
+    public List<LeagueDTO> getPlayerRank(Long userId) {
+        return riotService.getLeagueDTO(playerRepository.findByUserId(userId).getSummonerid());
     }
 
     @Override
@@ -111,7 +154,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Iterable<Player> getAllPlayers() {
+    public Iterable<Player> getAllPlayers(int limit, int offset, boolean sortByRating) {
+        if (sortByRating) {
+            return playerRepository.findBestPlayers(limit, offset);
+        }
         return playerRepository.findAll();
     }
 
@@ -119,6 +165,26 @@ public class PlayerServiceImpl implements PlayerService {
     public boolean existsByUserId(Long userId) {
         Player foundPlayer = playerRepository.findByUserId(userId);
         return foundPlayer != null;
+    }
+
+    private void validateTagLine(String tagLine, Long excludedPlayerId) {
+        if (tagLine == null || tagLine.isBlank()) {
+            throw new IllegalArgumentException("Tag line cannot be null or empty");
+        }
+
+
+        if (tagLine.length() < 3 || tagLine.length() > 5) {
+            throw new IllegalArgumentException("Tag line must be between 3 and 5 characters long");
+        }
+
+        if (!tagLine.matches("^[a-zA-Z0-9]+$")) {
+            throw new IllegalArgumentException("Tag line must contain only alphanumeric characters");
+        }
+
+        Player foundPlayer = playerRepository.findByTagLine(tagLine);
+        if (foundPlayer != null && !Objects.equals(foundPlayer.getUserId(), excludedPlayerId)) {
+            throw new IllegalArgumentException("Player with this nickname already exists");
+        }
     }
 
     private void validateNickname(String nickname, Long excludedPlayerId) {

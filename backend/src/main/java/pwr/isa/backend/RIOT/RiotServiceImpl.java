@@ -36,12 +36,12 @@ public class RiotServiceImpl implements RiotService {
                 .build();
     }
     @Override
-    public PlayerDTO getPlayerDTO(String username, String tag) {
+    public PlayerDetailsDTO getPlayerDTO(String username, String tag) {
         AccountDTO accountDTO = getAccountDTO(username, tag);
         SummonerDTO summonerDTO = getSummonerDTO(accountDTO.getPuuid());
         List<LeagueDTO> leagueDTO = getLeagueDTO(summonerDTO.getSummonerId());
 
-        return PlayerDTO.builder()
+        return PlayerDetailsDTO.builder()
                 .gameName(username)
                 .tagLine(tag)
                 .accountId(summonerDTO.getAccountId())
