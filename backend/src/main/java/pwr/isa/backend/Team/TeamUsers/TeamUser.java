@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "team_user")
+@Entity(name = "team_users")
+@Table(name = "team_users")
 public class TeamUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id; // Corrected to lowercase for consistency with Java conventions
+    Long id;
 
     @Column(name = "team_id", nullable = false)
     Long teamId;
