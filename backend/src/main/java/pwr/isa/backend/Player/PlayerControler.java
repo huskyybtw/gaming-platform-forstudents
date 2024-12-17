@@ -26,8 +26,9 @@ public class PlayerControler {
 
     @PostMapping(path= "/")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
-        return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);
+        return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);//tu
     }
+
 
     @PutMapping(path= "/{id}")
     public ResponseEntity<Player> updatePlayer(
