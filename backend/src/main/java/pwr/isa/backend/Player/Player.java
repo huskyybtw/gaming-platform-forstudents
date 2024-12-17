@@ -19,7 +19,7 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnoreProperties
-    private Long ID;
+    private Long Id;
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
     //Long UserId;
