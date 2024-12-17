@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+//TODO Do przetestowania
 public class TeamPosterServiceImpl implements TeamPosterService {
     private final TeamPosterRepository teamPosterRepository;
 
@@ -19,13 +20,6 @@ public class TeamPosterServiceImpl implements TeamPosterService {
     public Iterable<TeamPoster> getAllTeamPosters(int limit, int offset, boolean sortByRating) {
         //  Jeśli sortByRating = true...
         // Domyślnie sortujemy po dacie (created_at).
-
-        if (limit <= 0) {
-            limit = 10; // domyślny limit jeśli użytkownik nie podał??
-        }
-        if (offset < 0) {
-            offset = 0; // domyślny offset jeśli użytkownik nie podał??
-        }
 
         return teamPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);//??
     }
