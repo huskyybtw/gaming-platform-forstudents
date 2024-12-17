@@ -31,51 +31,35 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("User id is not valid or already assigned to another player");
         }
 
-        if (playerRepository.findByNickname(player.getNickname()) != null) {
-            throw new IllegalArgumentException("Player with this nickname already exists");
-        }
+        validateNickname(player.getNickname(), null);
 
-        player.setLastUpdate(Timestamp.from(Instant.now()));
+        updateLastUpdateTimestamp(player);
 
         return playerRepository.save(player);
     }
 
     @Override
     public Player updatePlayer(Player player, Long userId) {
-        // czy rekord istnieje
         Player existingPlayer = playerRepository.findByUserId(userId);
 
         if (existingPlayer == null) {
             throw new EntityNotFoundException("Player with user ID " + userId + " not found");
         }
 
-        // czy pole 'user' pozostaje niezmienne
         if (!Objects.equals(existingPlayer.getUserId(), player.getUserId())) {
             throw new IllegalArgumentException("User cannot be changed");
         }
 
-        // walidacja 'nickname'
-        if (player.getNickname() == null || player.getNickname().isBlank()) {
-            throw new IllegalArgumentException("Nickname cannot be null or empty");// nie potrzebne chyba???
-        }
+        validateNickname(player.getNickname(), userId);
 
-        Player foundPlayer = playerRepository.findByNickname(player.getNickname());
-        if (foundPlayer != null && !Objects.equals(foundPlayer.getId(), userId)) {
-            throw new IllegalArgumentException("Player with this nickname already exists");
-        }
+        existingPlayer.setNickname(player.getNickname());
+        existingPlayer.setOpgg(player.getOpgg());
+        existingPlayer.setDescription(player.getDescription());
 
-        // Ustaw pola z przesłanego obiektu
-        existingPlayer.setNickname(player.getNickname()); // Przypisz nickname
-        existingPlayer.setOpgg(player.getOpgg());         // Można nadpisać opgg
-        existingPlayer.setDescription(player.getDescription()); // Nadpisz description
+        updateLastUpdateTimestamp(existingPlayer);
 
-        //Aktualizacja znacznika czasu
-        existingPlayer.setLastUpdate(Timestamp.from(Instant.now()));
-
-        // Zapisz zaktualizowany rekord do bazy danych
         return playerRepository.save(existingPlayer);
     }
-
 
     @Override
     public Player patchPlayer(Player player, Long userId) {
@@ -94,9 +78,7 @@ public class PlayerServiceImpl implements PlayerService {
                     if (field.getName().equals("nickname")) {
                         String newNickname = (String) sourceValue;
 
-                        if (playerRepository.findByNickname(newNickname) != null && !newNickname.equals(target.getNickname())) {
-                            throw new IllegalArgumentException("Player with this nickname already exists");
-                        }
+                        validateNickname(newNickname, target.getId());
                     }
                     field.set(target, sourceValue);
                 }
@@ -106,10 +88,9 @@ public class PlayerServiceImpl implements PlayerService {
             }
         }
 
-        target.setLastUpdate(Timestamp.from(Instant.now()));
+        updateLastUpdateTimestamp(target);
         return playerRepository.save(target);
     }
-
 
     @Override
     public void deletePlayer(Long userId) {
@@ -138,4 +119,20 @@ public class PlayerServiceImpl implements PlayerService {
         Player foundPlayer = playerRepository.findByUserId(userId);
         return foundPlayer != null;
     }
+
+    private void validateNickname(String nickname, Long excludedPlayerId) {
+        if (nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("Nickname cannot be null or empty");
+        }
+
+        Player foundPlayer = playerRepository.findByNickname(nickname);
+        if (foundPlayer != null && !Objects.equals(foundPlayer.getId(), excludedPlayerId)) {
+            throw new IllegalArgumentException("Player with this nickname already exists");
+        }
+    }
+
+    private void updateLastUpdateTimestamp(Player player) {
+        player.setLastUpdate(Timestamp.from(Instant.now()));
+    }
 }
+
