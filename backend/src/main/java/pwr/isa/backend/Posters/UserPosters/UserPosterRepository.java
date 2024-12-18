@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserPosterRepository extends CrudRepository<UserPoster, Long> {
 
-    @Query(value = "SELECT * FROM user_posters ORDER BY created_at ASC LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM user_posters ORDER BY created_at ASC LIMIT :limit OFFSET :offset", nativeQuery = true) // order by created_at
     List<UserPoster> findAllWithLimitAndOffsetSortedByDate(@Param("limit") int limit, @Param("offset") int offset);
 
     Optional<UserPoster> findByUserId(Long userId);
