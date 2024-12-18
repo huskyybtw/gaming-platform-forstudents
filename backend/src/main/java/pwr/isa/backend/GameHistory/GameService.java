@@ -13,9 +13,11 @@ public interface GameService {
     GameHistory createGameHistory(GameHistory gameHistory);
     GameHistory updateGameHistory(GameHistory gameHistory, Long id);
     void deleteGameHistory(Long id);
-    GameHistory stageGame();
-    GameHistory startGame(GameHistory gameHistory,Long id);
+    GameHistory startGame(Long id);
     GameHistory endGame(Long id, MatchDetailsDTO matchDetailsDTO);
+
+    @Scheduled(fixedRate = 60 * 10000)
+    void findRiotMatchId();
 
     @Scheduled(fixedRate = 60 * 1000)
     void checkGames();
