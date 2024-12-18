@@ -25,4 +25,5 @@ public class TeamPoster {
     private String description;
     private Date CreatedAt;
     private Date DueDate;
+    private Date UpdatedAt;
 }
