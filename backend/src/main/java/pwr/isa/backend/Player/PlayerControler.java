@@ -21,7 +21,7 @@ public class PlayerControler {
     public Iterable<Player> readPlayers(
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false) boolean sortByRating
+            @RequestParam(required = false,defaultValue = "false") boolean sortByRating
     ) {
         return playerService.getAllPlayers(limit, offset, sortByRating);
     }
