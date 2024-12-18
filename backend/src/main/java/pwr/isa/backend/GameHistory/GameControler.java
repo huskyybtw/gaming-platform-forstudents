@@ -63,9 +63,8 @@ public class GameControler {
 
     @PatchMapping("/stage/{id}")
     public GameHistory startGame(
-            @RequestBody GameHistory gameHistory,
             @PathVariable Long id) {
-        return gameHistoryService.startGame(gameHistory, id);
+        return gameHistoryService.startGame(id);
     }
 
     @PutMapping("/stage/{id}")

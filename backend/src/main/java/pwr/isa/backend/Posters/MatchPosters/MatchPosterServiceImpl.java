@@ -170,8 +170,11 @@ public class MatchPosterServiceImpl implements MatchPosterService{
 
     @Override
     public MatchPosterDTO startMatch(Long posterId) {
-        // gameService.startGame(posterId);
-        return null;
+        MatchPoster found = matchPosterRepository.findById(posterId)
+                .orElseThrow(() -> new IllegalArgumentException("Match poster not found"));
+        gameService.startGame(posterId);
+        found.setArchived(true);
+        return buildMatchPosterDTO(posterId);
     }
 
     private List<MatchParticipant> validatePlayer(Long matchId, Long userId) {

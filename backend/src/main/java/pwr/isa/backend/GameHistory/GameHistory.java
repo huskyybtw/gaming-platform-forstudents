@@ -19,17 +19,18 @@ import java.util.Date;
 public class GameHistory implements Comparable<GameHistory> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_history_id_seq")
-    Long Id;
+    private Long Id;
 
-    Long matchId;
-    Date stagingDate;
-    Date endOfMatchDate;
+    private Long matchId;
+    private Date startDate;
+    private Date endOfMatchDate;
+
     @Enumerated(EnumType.STRING)
-    MatchStatus matchStatus;
-    int winner;
+    private MatchStatus matchStatus;
+    private int winner;
 
     @Column(columnDefinition = "json")
-    String jsonData;
+    private String jsonData;
 
     @Override
     public int compareTo(GameHistory o) {

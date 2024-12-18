@@ -168,6 +168,20 @@ public class RiotServiceImpl implements RiotService {
     }
 
     @Override
+    public void getLiveMatchDTO(String puuid) {
+        Map<String, Object> liveMatchData = getLiveMatchInfo(puuid);
+    }
+
+    @Override
+    public Map getLiveMatchInfo(String puuid) {
+        return EUNE_WEB_CLIENT.get()
+                .uri("/lol/spectator/v5/active-games/by-summoner/{encryptedPUUID}" + puuid + "?api_key=" + API_KEY)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+    }
+
+    @Override
     public Map getMatchMetaData(String matchid) {
         return EUROPE_WEB_CLIENT.get()
                 .uri("/lol/match/v5/matches/" + matchid + "?api_key=" + API_KEY)

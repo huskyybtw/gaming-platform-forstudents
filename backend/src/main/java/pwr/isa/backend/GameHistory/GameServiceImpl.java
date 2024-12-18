@@ -5,8 +5,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipant;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipantsRepository;
+import pwr.isa.backend.Player.Player;
+import pwr.isa.backend.Player.PlayerRepository;
+import pwr.isa.backend.Posters.MatchPosters.MatchPosterRepository;
 import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
-import pwr.isa.backend.RIOT.RiotServiceImpl;
+import pwr.isa.backend.RIOT.RiotService;
+import pwr.isa.backend.Rating.RatingService;
 
 import java.util.*;
 
@@ -25,15 +29,24 @@ public class GameServiceImpl implements GameService {
 
     private final GameHistoryRepository gameHistoryRepository;
     private final MatchParticipantsRepository matchParticipantsRepository;
-    private final RiotServiceImpl riotService;
+    private final MatchPosterRepository matchPosterRepository;
+    private final PlayerRepository playerRepository;
+    private final RiotService riotService;
+    private final RatingService ratingService;
     private final HashSet<GameHistory> onGoingGames = new HashSet<>();
+    private final HashSet<GameHistory> startedGames = new HashSet<>();
 
     public GameServiceImpl(GameHistoryRepository gameHistoryRepository,
                            MatchParticipantsRepository matchParticipantsRepository,
-                           RiotServiceImpl riotService) {
+                           MatchPosterRepository matchPosterRepository,
+                           PlayerRepository playerRepository,
+                           RiotService riotService, RatingService ratingService) {
         this.gameHistoryRepository = gameHistoryRepository;
         this.matchParticipantsRepository = matchParticipantsRepository;
+        this.matchPosterRepository = matchPosterRepository;
+        this.playerRepository = playerRepository;
         this.riotService = riotService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -80,29 +93,51 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    public GameHistory startGame(GameHistory gameHistory,Long id) {
-        GameHistory foundGame = gameHistoryRepository.findById(id).
-            orElseThrow(()-> new EntityNotFoundException("Game with ID " + id + " not found"));
+    public GameHistory startGame(Long matchId) {
+        GameHistory newGame = GameHistory.builder()
+                                    .matchStatus(MatchStatus.ON_GOING)
+                                    .matchId(matchId)
+                                    .startDate(new Date())
+                                    .build();
 
-        List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(id);
+        List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(matchId);
 
         if(players.size() != 10) {
             throw new RuntimeException("Game have incorrect amount of players, could not start the game");
         }
+        newGame.setMatchStatus(MatchStatus.ON_GOING);
 
-        /*
-            NA CZAS JAK NIE MAM OD MICHALA
-            querry puuid from player repository
-            fetch matchId from riotService ussing puuid
-            String matchId = riotService.getUserMatches().get(0);
-            foundGame.setMatchId(matchId);
-         */
-        
-        foundGame.setMatchStatus(MatchStatus.ON_GOING);
+        startedGames.add(newGame);
+        return gameHistoryRepository.save(newGame);
+    }
 
+    @Scheduled(fixedRate = 60 * 10000)
+    @Override
+    public void findRiotMatchId(){
+        ArrayList<GameHistory> toRemove = new ArrayList<>();
+        for(GameHistory game : startedGames) {
+            if(game.getMatchStatus() == MatchStatus.ON_GOING) {
 
-        onGoingGames.add(foundGame);
-        return gameHistoryRepository.save(foundGame);
+            }
+                List<Long> matchParticipants =  matchParticipantsRepository.findPlayersByMatchId(game.getMatchId());
+
+                List<Player> players = new ArrayList<>();
+                players.add(playerRepository.findById(matchParticipants.get(0)).get());
+                players.add(playerRepository.findById(matchParticipants.get(0)).get());
+
+                /*
+                riotService.getLiveMatchDTO(players.get(0).getPuuid());
+                riotService.getLiveMatchDTO(players.get(1).getPuuid());
+
+                porownach otrzymane match id jest dziala to mecz sie zaczal
+                game.setMatchId();
+                gameHistoryRepository.save(game);
+                */
+
+                onGoingGames.add(game);
+                toRemove.add(game);
+        }
+        toRemove.forEach(startedGames::remove);
     }
 
     @Scheduled(fixedRate = 60 * 1000)
@@ -111,16 +146,14 @@ public class GameServiceImpl implements GameService {
         ArrayList<GameHistory> toRemove = new ArrayList<>();
         for(GameHistory game : onGoingGames) {
             if(game.getMatchStatus() == MatchStatus.ON_GOING) {
-                // check if game has ended
-                // if ended, set status to FINISHED
-                // remove from onGoingGames
-                //MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.riotMatchId);
+                /*
 
-                //if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
-
+                MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.getMatchId());
+                if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
                 game.setMatchStatus(MatchStatus.FINISHED);
-                //endGame(game.getId(), match);
+                endGame(game.getId(), match);
                 toRemove.add(game);
+                 */
             }
         }
         onGoingGames.removeAll(toRemove);
@@ -140,17 +173,20 @@ public class GameServiceImpl implements GameService {
         gameHistory.setEndOfMatchDate(new Date());
         gameHistory.setJsonData(matchDetailsDTO.toString());
 
-        List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(id);
+        List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
 
         if(players.size() != 10) {
             throw new RuntimeException("Game have incorrect amount of players, could not start the game");
         }
 
+        /*
+           Placeholder +25 - 25 w przyszlosci algorytm
+         */
         for (var player : players) {
             if(player.getRiot_team_number() == gameHistory.getWinner()){
-                // + ranking
+                ratingService.updatePlayerRating(player.getUserId(), 25);
             } else {
-                // - ranking
+                ratingService.updatePlayerRating(player.getUserId(), -25);
             }
         }
         return gameHistoryRepository.save(gameHistory);
