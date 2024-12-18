@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "team_users")
 @Table(name = "team_users")
 public class TeamUser {
+    @JsonIgnoreProperties
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

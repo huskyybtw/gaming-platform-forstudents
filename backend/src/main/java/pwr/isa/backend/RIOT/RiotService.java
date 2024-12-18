@@ -11,6 +11,11 @@ public interface RiotService {
     SummonerDTO getSummonerDTO(String puuid);
     List<LeagueDTO> getLeagueDTO(String summonerId);
     MatchDetailsDTO getMatchDetailsDTO(String matchId);
+
+    void getLiveMatchDTO(String puuid);
+
+    Map getLiveMatchInfo(String puuid);
+
     Map getMatchMetaData(String matchId);
 
     List<String> getUserMatches(String puuid);
