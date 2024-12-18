@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -16,14 +17,15 @@ public class UserPosterServiceImpl implements UserPosterService {
     }
 
     @Override
-    public Iterable<UserPoster> getAllUserPosters(int limit, int offset, boolean sortByRating) {
-        // Domyślne sortowanie po dacie (created_at).
-        return userPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
+    public Iterable<UserPoster> getAllUserPosters(int limit, int offset) {
+        // Pobieramy plakaty posortowane po dacie z limitem i offsetem
+        List<UserPoster> posters = userPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
+        return posters;
     }
 
     @Override
     public UserPoster getUserPosterById(Long userId) {
-        // Podobnie jak w TeamPosterServiceImpl, korzystamy z metody znajdującej plakat po userId
+        // Wyszukujemy plakat po userId
         return userPosterRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("UserPoster not found for userId: " + userId));
     }
@@ -32,14 +34,12 @@ public class UserPosterServiceImpl implements UserPosterService {
     public UserPoster createUserPoster(UserPoster userPoster) {
         validateUserPoster(userPoster);
 
-        // Sprawdzamy, czy dla danego userId istnieje już plakat
         Optional<UserPoster> existingPoster = userPosterRepository.findByUserId(userPoster.getUserId());
         if (existingPoster.isPresent()) {
             // Jeśli istnieje, aktualizujemy go zamiast tworzyć nowy
             return updateUserPoster(userPoster, existingPoster.get().getId());
         }
 
-        // Jeśli nie istnieje, tworzymy nowy
         return userPosterRepository.save(userPoster);
     }
 

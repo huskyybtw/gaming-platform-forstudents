@@ -1,8 +1,5 @@
 package pwr.isa.backend.Posters.UserPosters;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +15,8 @@ public class UserPosterControler {
     @GetMapping(path= "/")
     public Iterable<UserPoster> readUserPosters(
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false) boolean sortByRating) {
-        return userPosterService.getAllUserPosters(limit, offset, sortByRating);
+            @RequestParam(defaultValue = "0") int offset) {
+        return userPosterService.getAllUserPosters(limit, offset);
     }
 
     @GetMapping(path= "/{userId}")
@@ -45,4 +41,3 @@ public class UserPosterControler {
         userPosterService.deleteUserPoster(userId);
     }
 }
-
