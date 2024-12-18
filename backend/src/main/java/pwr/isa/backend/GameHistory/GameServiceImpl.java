@@ -78,23 +78,11 @@ public class GameServiceImpl implements GameService {
         gameHistoryRepository.deleteById(id);
     }
 
-    @Override
-    public GameHistory stageGame() {
-        return GameHistory.builder()
-                .Id(null)
-                .stagingDate(new Date())
-                .matchStatus(MatchStatus.STAGING)
-                .build();
-    }
 
     @Override
     public GameHistory startGame(GameHistory gameHistory,Long id) {
         GameHistory foundGame = gameHistoryRepository.findById(id).
             orElseThrow(()-> new EntityNotFoundException("Game with ID " + id + " not found"));
-
-        if(foundGame.getMatchStatus() != MatchStatus.STAGING) {
-            throw new IllegalArgumentException("Game is not in staging state");
-        }
 
         List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(id);
 
@@ -126,12 +114,12 @@ public class GameServiceImpl implements GameService {
                 // check if game has ended
                 // if ended, set status to FINISHED
                 // remove from onGoingGames
-                MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.getMatchId());
+                //MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.riotMatchId);
 
-                if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
+                //if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
 
                 game.setMatchStatus(MatchStatus.FINISHED);
-                endGame(game.getId(), match);
+                //endGame(game.getId(), match);
                 toRemove.add(game);
             }
         }

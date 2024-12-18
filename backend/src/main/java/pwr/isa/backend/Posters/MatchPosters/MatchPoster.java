@@ -1,5 +1,4 @@
-package pwr.isa.backend.GameHistory.MatchParticipants;
-
+package pwr.isa.backend.Posters.MatchPosters;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -8,7 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pwr.isa.backend.GameHistory.GameHistory;
+
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -16,15 +16,18 @@ import pwr.isa.backend.GameHistory.GameHistory;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "match_participant")
-public class MatchParticipant {
-    @JsonIgnore
+@Table(name = "match_posters")
+public class MatchPoster {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    Long userId;
-    Long matchId;
-    Long teamId;
-    int riot_team_number;
-    String riotMatchId;
+    private Long id;
+
+    private Long ownerId;
+    private String description;
+    private Date CreatedAt;
+    private Date DueDate;
+    private Date UpdatedAt;
+    private Boolean ranked;
+    @JsonIgnore
+    private Boolean archived;
 }

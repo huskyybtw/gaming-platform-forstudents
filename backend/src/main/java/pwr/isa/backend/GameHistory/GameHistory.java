@@ -20,9 +20,8 @@ public class GameHistory implements Comparable<GameHistory> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_history_id_seq")
     Long Id;
-    @Column(unique = true)
-    String matchId;
 
+    Long matchId;
     Date stagingDate;
     Date endOfMatchDate;
     @Enumerated(EnumType.STRING)

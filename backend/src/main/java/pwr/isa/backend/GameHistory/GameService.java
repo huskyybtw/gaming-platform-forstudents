@@ -13,7 +13,6 @@ public interface GameService {
     GameHistory createGameHistory(GameHistory gameHistory);
     GameHistory updateGameHistory(GameHistory gameHistory, Long id);
     void deleteGameHistory(Long id);
-    GameHistory stageGame();
     GameHistory startGame(GameHistory gameHistory,Long id);
     GameHistory endGame(Long id, MatchDetailsDTO matchDetailsDTO);
 
