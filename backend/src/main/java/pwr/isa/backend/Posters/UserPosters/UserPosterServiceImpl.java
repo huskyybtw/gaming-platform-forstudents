@@ -1,45 +1,83 @@
 package pwr.isa.backend.Posters.UserPosters;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
-public class UserPosterServiceImpl implements UserPosterService{
+@Transactional
+public class UserPosterServiceImpl implements UserPosterService {
     private final UserPosterRepository userPosterRepository;
 
     public UserPosterServiceImpl(UserPosterRepository userPosterRepository) {
         this.userPosterRepository = userPosterRepository;
     }
-    /*
-        TODO Zaimplementowac metody
-        TODO Uwzglednic walidacje
-        TODO uwzglednic tranzakcje
-        TODO przetestowac
-    */
-    // zwroc wszystkie postery uwzgledniajac limit offset
-    // jesli sortowanie to posortuj pierw
-    // musisz napisac querry w repository
+
     @Override
     public Iterable<UserPoster> getAllUserPosters(int limit, int offset, boolean sortByRating) {
-        return null;
+        // Domyślne sortowanie po dacie (created_at).
+        return userPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
     }
 
     @Override
     public UserPoster getUserPosterById(Long userId) {
-        return null;
+        // Podobnie jak w TeamPosterServiceImpl, korzystamy z metody znajdującej plakat po userId
+        return userPosterRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("UserPoster not found for userId: " + userId));
     }
-    // kazdy user moze miec tylko jeden poster mozesz przekierowac na update jesli juz istnieje
+
     @Override
     public UserPoster createUserPoster(UserPoster userPoster) {
-        return null;
+        validateUserPoster(userPoster);
+
+        // Sprawdzamy, czy dla danego userId istnieje już plakat
+        Optional<UserPoster> existingPoster = userPosterRepository.findByUserId(userPoster.getUserId());
+        if (existingPoster.isPresent()) {
+            // Jeśli istnieje, aktualizujemy go zamiast tworzyć nowy
+            return updateUserPoster(userPoster, existingPoster.get().getId());
+        }
+
+        // Jeśli nie istnieje, tworzymy nowy
+        return userPosterRepository.save(userPoster);
     }
-    // wymaga podania wszystkich pól
+
     @Override
     public UserPoster updateUserPoster(UserPoster userPoster, Long userId) {
-        return null;
+        UserPoster existing = userPosterRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("UserPoster not found with id: " + userId));
+
+        validateUserPoster(userPoster);
+
+        existing.setDescription(userPoster.getDescription());
+        existing.setCreatedAt(userPoster.getCreatedAt());
+        existing.setDueDate(userPoster.getDueDate());
+        existing.setUserId(userPoster.getUserId());
+
+        return userPosterRepository.save(existing);
     }
 
     @Override
     public void deleteUserPoster(Long userId) {
+        UserPoster existingPoster = userPosterRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("UserPoster not found for userId: " + userId));
 
+        userPosterRepository.deleteById(existingPoster.getId());
+    }
+
+    private void validateUserPoster(UserPoster userPoster) {
+        if (userPoster.getUserId() == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        if (userPoster.getDescription() == null || userPoster.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Description cannot be empty");
+        }
+        if (userPoster.getCreatedAt() == null) {
+            throw new IllegalArgumentException("CreatedAt date cannot be null");
+        }
+        if (userPoster.getDueDate() != null && userPoster.getDueDate().before(userPoster.getCreatedAt())) {
+            throw new IllegalArgumentException("DueDate cannot be before CreatedAt");
+        }
     }
 }
