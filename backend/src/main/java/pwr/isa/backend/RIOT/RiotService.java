@@ -12,7 +12,7 @@ public interface RiotService {
     List<LeagueDTO> getLeagueDTO(String summonerId);
     MatchDetailsDTO getMatchDetailsDTO(String matchId);
 
-    void getLiveMatchDTO(String puuid);
+    LiveMatchDTO getLiveMatchDTO(String puuid);
 
     Map getLiveMatchInfo(String puuid);
 

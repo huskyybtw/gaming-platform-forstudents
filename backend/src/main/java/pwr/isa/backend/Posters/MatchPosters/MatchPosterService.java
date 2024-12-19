@@ -20,4 +20,6 @@ public interface MatchPosterService {
     MatchPosterDTO joinAsTeam(Long posterId, Long teamId);
 
     MatchPosterDTO startMatch(Long posterId);
+
+    MatchPosterDTO retriveMatchPoster(Long posterId);
 }

@@ -3,11 +3,15 @@ package pwr.isa.backend.GameHistory;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipant;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipantsRepository;
 import pwr.isa.backend.Player.Player;
 import pwr.isa.backend.Player.PlayerRepository;
 import pwr.isa.backend.Posters.MatchPosters.MatchPosterRepository;
+import pwr.isa.backend.Posters.MatchPosters.MatchPosterService;
+import pwr.isa.backend.RIOT.DTO.LiveMatchDTO;
+import pwr.isa.backend.RIOT.DTO.LiveMatchStatus;
 import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
 import pwr.isa.backend.RIOT.RiotService;
 import pwr.isa.backend.Rating.RatingService;
@@ -16,14 +20,10 @@ import java.util.*;
 
 /*
     * Sevice for managing games
-    *
-    *
-    *
-    * GameHistory doesnt contain participants at the moment
-    * So at the moment we are not getting participants in games
-    * Mozna naprawic robiac gameHistory DTO
+    * TODO PRZETESTOWAC
  */
 
+@Transactional
 @Service
 public class GameServiceImpl implements GameService {
 
@@ -31,59 +31,56 @@ public class GameServiceImpl implements GameService {
     private final MatchParticipantsRepository matchParticipantsRepository;
     private final MatchPosterRepository matchPosterRepository;
     private final PlayerRepository playerRepository;
+    private final MatchPosterService matchPosterService;
     private final RiotService riotService;
     private final RatingService ratingService;
-    private final HashSet<GameHistory> onGoingGames = new HashSet<>();
+    private final HashMap<GameHistory, Player> onGoingGames = new HashMap<>();
     private final HashSet<GameHistory> startedGames = new HashSet<>();
 
     public GameServiceImpl(GameHistoryRepository gameHistoryRepository,
                            MatchParticipantsRepository matchParticipantsRepository,
                            MatchPosterRepository matchPosterRepository,
                            PlayerRepository playerRepository,
-                           RiotService riotService, RatingService ratingService) {
+                           RiotService riotService, RatingService ratingService,
+                           MatchPosterService matchPosterService) {
         this.gameHistoryRepository = gameHistoryRepository;
         this.matchParticipantsRepository = matchParticipantsRepository;
         this.matchPosterRepository = matchPosterRepository;
         this.playerRepository = playerRepository;
         this.riotService = riotService;
         this.ratingService = ratingService;
+        this.matchPosterService = matchPosterService;
     }
 
     @Override
-    public Iterable<GameHistory> getAllGameHistories() {
-        return gameHistoryRepository.findAll();
+    public Iterable<GameHistoryDTO> getAllGameHistories() {
+
+        List<GameHistoryDTO> gameHistoryDTOS = new ArrayList<>();
+        for(GameHistory gameHistory : gameHistoryRepository.findAll()) {
+            List<MatchParticipant> matchParticipants = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
+            gameHistoryDTOS.add(buildGameHistoryDTO(gameHistory, matchParticipants));
+        }
+        return gameHistoryDTOS;
     }
 
     @Override
-    public GameHistory getGameHistoryById(Long id) {
-        return gameHistoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Game with ID " + id + " not found"));
-    }
-
-    // POTRZEBNE FEATUERY ALE JEST PROBLEM Z TYM ZE TRZYMAMY GRACZY
-    // W TAKI SPOSOB ZE NIE MA JAK TEGO Z QUERROWAC I NIE MA JAK TEAMOW QUERROWAC
-    // JAKIS JOIN TABLE TRZEBA ZROBIC 
-    @Override
-    public Iterable<GameHistory> getGameHistoriesByUserId(Long userId, int limit) {
-        List<Long> matchIds = matchParticipantsRepository.findMatchesByUserId(userId);
-        return sortGames(matchIds, limit);
+    public GameHistoryDTO getGameHistoryById(Long id) {
+        GameHistory gameHistory = gameHistoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("GameHistory with id: " + id + " not found"));
+        List<MatchParticipant> matchParticipants = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
+        return buildGameHistoryDTO(gameHistory, matchParticipants);
     }
 
     @Override
-    public Iterable<GameHistory> getGameHistoriesByTeamId(Long teamId, int limit) {
-        List<Long> matchIds = matchParticipantsRepository.findMatchesByTeamId(teamId);
-        return sortGames(matchIds, limit);
+    public List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit) {
+        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByUserIdSorted(userId, limit);
+        return buildGameHistoryDTOS(gameHistories);
     }
 
     @Override
-    public GameHistory createGameHistory(GameHistory gameHistory) {
-        return gameHistoryRepository.save(gameHistory);
-    }
-
-    @Override
-    public GameHistory updateGameHistory(GameHistory gameHistory, Long id) {
-        gameHistory.setId(id);
-        return gameHistoryRepository.save(gameHistory);
+    public List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit) {
+        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByTeamIdSorted(teamId, limit);
+        return buildGameHistoryDTOS(gameHistories);
     }
 
     @Override
@@ -91,9 +88,25 @@ public class GameServiceImpl implements GameService {
         gameHistoryRepository.deleteById(id);
     }
 
-
+    @Transactional
     @Override
-    public GameHistory startGame(Long matchId) {
+    public GameHistoryDTO createGameHistory(GameHistory gameHistory) {
+        gameHistory.setId(null);
+        GameHistory savedGame = gameHistoryRepository.save(gameHistory);
+        return getGameHistoryById(savedGame.getId());
+    }
+
+    @Transactional
+    @Override
+    public GameHistoryDTO updateGameHistory(GameHistory gameHistory, Long id) {
+        gameHistory.setId(id);
+        GameHistory savedGame = gameHistoryRepository.save(gameHistory);
+        return getGameHistoryById(savedGame.getId());
+    }
+
+    @Transactional
+    @Override
+    public GameHistoryDTO startGame(Long matchId) {
         GameHistory newGame = GameHistory.builder()
                                     .matchStatus(MatchStatus.ON_GOING)
                                     .matchId(matchId)
@@ -108,61 +121,99 @@ public class GameServiceImpl implements GameService {
         newGame.setMatchStatus(MatchStatus.ON_GOING);
 
         startedGames.add(newGame);
-        return gameHistoryRepository.save(newGame);
+        gameHistoryRepository.save(newGame);
+        return buildGameHistoryDTO(newGame, players);
     }
 
     @Scheduled(fixedRate = 60 * 10000)
     @Override
-    public void findRiotMatchId(){
+    public void LookForStartedMatches(){
         ArrayList<GameHistory> toRemove = new ArrayList<>();
         for(GameHistory game : startedGames) {
             if(game.getMatchStatus() == MatchStatus.ON_GOING) {
-
-            }
-                List<Long> matchParticipants =  matchParticipantsRepository.findPlayersByMatchId(game.getMatchId());
+                List<MatchParticipant> matchParticipants = matchParticipantsRepository.findMatchParticipantsByMatchId(game.getMatchId());
 
                 List<Player> players = new ArrayList<>();
-                players.add(playerRepository.findById(matchParticipants.get(0)).get());
-                players.add(playerRepository.findById(matchParticipants.get(0)).get());
+                for (MatchParticipant matchParticipant : matchParticipants) {
+                    Player player = playerRepository.findByUserId(matchParticipant.getUserId());
 
-                /*
-                riotService.getLiveMatchDTO(players.get(0).getPuuid());
-                riotService.getLiveMatchDTO(players.get(1).getPuuid());
+                    if (player == null || player.getPuuid() == null) {
+                        startedGames.remove(game);
+                        matchPosterService.retriveMatchPoster(game.getMatchId());
+                        break;
+                    }
 
-                porownach otrzymane match id jest dziala to mecz sie zaczal
-                game.setMatchId();
-                gameHistoryRepository.save(game);
-                */
+                    players.add(player);
+                }
 
-                onGoingGames.add(game);
+                LiveMatchDTO liveMatchDTO = riotService.getLiveMatchDTO(players.get(0).getPuuid());
+
+                if (liveMatchDTO.getStatus() != LiveMatchStatus.IN_PROGRESS) {
+                    continue;
+                }
+
+                // CHECK IF PARTICIPANTS MATCHES
+                // nested for loops but its fine beacuse all are size 10
+                // there might be a better way to do this
+                boolean misMatch = false;
+                for (var matchParticipant : liveMatchDTO.getParticipants()) {
+                    for (Player player : players) {
+                        for (MatchParticipant participant : matchParticipants) {
+                            {
+                                if (
+                                        Objects.equals(participant.getUserId(), player.getUserId())
+                                                && !matchParticipant.getPuuid().equals(player.getPuuid())
+                                                && matchParticipant.getTeamId() != participant.getRiot_team_number()
+                                ) {
+                                    misMatch = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (misMatch) {
+                    startedGames.remove(game);
+                    matchPosterService.retriveMatchPoster(game.getMatchId());
+                    continue;
+                }
+
+                onGoingGames.put(game, players.get(0));
                 toRemove.add(game);
+            }
         }
+
         toRemove.forEach(startedGames::remove);
     }
 
     @Scheduled(fixedRate = 60 * 1000)
     @Override
-    public void checkGames() {
+    public void LookForEndedMatches() {
         ArrayList<GameHistory> toRemove = new ArrayList<>();
-        for(GameHistory game : onGoingGames) {
+        for(GameHistory game : onGoingGames.keySet()) {
             if(game.getMatchStatus() == MatchStatus.ON_GOING) {
-                /*
+                LiveMatchDTO liveMatchDTO = riotService.getLiveMatchDTO(onGoingGames.get(game).getPuuid());
 
-                MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.getMatchId());
-                if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
-                game.setMatchStatus(MatchStatus.FINISHED);
-                endGame(game.getId(), match);
-                toRemove.add(game);
-                 */
+                if(liveMatchDTO.getStatus() != LiveMatchStatus.IN_PROGRESS) {
+                    MatchDetailsDTO match = riotService.getMatchDetailsDTO(game.getRiotMatchId());
+
+                    if(!Objects.equals(match.getEndOfGameResult(), "GameComplete")) {continue;}
+
+                    game.setMatchStatus(MatchStatus.FINISHED);
+                    endGame(game, match);
+                    toRemove.add(game);
+                }
             }
         }
-        onGoingGames.removeAll(toRemove);
+        for(GameHistory game : toRemove) {
+            onGoingGames.remove(game);
+        }
     }
 
+    @Transactional
     @Override
-    public GameHistory endGame(Long id, MatchDetailsDTO matchDetailsDTO) {
-        GameHistory gameHistory = gameHistoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Game with ID " + id + " not found"));
+    public GameHistoryDTO endGame(GameHistory gameHistory, MatchDetailsDTO matchDetailsDTO) {
 
         if(gameHistory.getMatchStatus() != MatchStatus.FINISHED) {
             throw new IllegalArgumentException("Game is not on going");
@@ -174,11 +225,6 @@ public class GameServiceImpl implements GameService {
         gameHistory.setJsonData(matchDetailsDTO.toString());
 
         List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
-
-        if(players.size() != 10) {
-            throw new RuntimeException("Game have incorrect amount of players, could not start the game");
-        }
-
         /*
            Placeholder +25 - 25 w przyszlosci algorytm
          */
@@ -189,21 +235,23 @@ public class GameServiceImpl implements GameService {
                 ratingService.updatePlayerRating(player.getUserId(), -25);
             }
         }
-        return gameHistoryRepository.save(gameHistory);
+        GameHistory saved =gameHistoryRepository.save(gameHistory);
+        return buildGameHistoryDTO(saved, players);
     }
 
+    private GameHistoryDTO buildGameHistoryDTO(GameHistory gameHistory, List<MatchParticipant> matchParticipants) {
+        return GameHistoryDTO.builder()
+                .gameHistory(gameHistory)
+                .matchParticipants(matchParticipants)
+                .build();
+    }
 
-    @Override
-    public List<GameHistory> sortGames(List<Long> matchIds, int limit) {
-        List<GameHistory> gameHistories = new ArrayList<>();
-
-        for (Long matchId : matchIds) {
-            gameHistories.add(gameHistoryRepository.findById(matchId)
-                    .orElseThrow(() -> new EntityNotFoundException("Game with ID " + matchId + " not found")));
+    private List<GameHistoryDTO> buildGameHistoryDTOS(List<GameHistory> gameHistories) {
+        List<GameHistoryDTO> gameHistoryDTOS = new ArrayList<>();
+        for(GameHistory gameHistory : gameHistories) {
+            List<MatchParticipant> matchParticipants = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
+            gameHistoryDTOS.add(buildGameHistoryDTO(gameHistory, matchParticipants));
         }
-        // Slow approach but good for now
-        Collections.sort(gameHistories);
-        return gameHistories.subList(0, Math.min(limit, gameHistories.size()));
+        return gameHistoryDTOS;
     }
-
 }

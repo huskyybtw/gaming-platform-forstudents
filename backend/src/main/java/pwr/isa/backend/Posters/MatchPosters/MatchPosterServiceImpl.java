@@ -1,18 +1,27 @@
 package pwr.isa.backend.Posters.MatchPosters;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.GameHistory.GameService;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipant;
 import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipantsRepository;
+import pwr.isa.backend.Team.TeamDTO;
 import pwr.isa.backend.Team.TeamService;
 import pwr.isa.backend.Team.TeamUsers.TeamUsersRepository;
 import pwr.isa.backend.User.UserService;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+/*
+    Service class for MatchPoster
+    TODO - PRZETESTOWAC
+ */
 
 @Transactional
 @Service
@@ -26,7 +35,7 @@ public class MatchPosterServiceImpl implements MatchPosterService{
 
     public MatchPosterServiceImpl(MatchPosterRepository matchPosterRepository,
                                   MatchParticipantsRepository matchParticipantRepository,
-                                  GameService gameService,
+                                  @Lazy GameService gameService,
                                   UserService userService, TeamService teamService, TeamUsersRepository teamUsersRepository) {
         this.matchPosterRepository = matchPosterRepository;
         this.matchParticipantRepository = matchParticipantRepository;
@@ -102,6 +111,13 @@ public class MatchPosterServiceImpl implements MatchPosterService{
     @Transactional
     @Override
     public MatchPosterDTO joinAsTeam(Long posterId, Long teamId) {
+        TeamDTO teamDTO = teamService.getTeamById(teamId);
+        List<Long> teamMembers = teamDTO.getUsers();
+
+        if(teamDTO == null || teamDTO.getUsers() == null || teamDTO.getUsers().size() < 5) {
+            throw new IllegalArgumentException("Invalid Team");
+        }
+
         MatchPoster foundMatchPoster = matchPosterRepository.findById(posterId)
                 .orElseThrow(() -> new IllegalArgumentException("Match poster not found"));
 
@@ -112,12 +128,6 @@ public class MatchPosterServiceImpl implements MatchPosterService{
 
         if (team100 != 0 || team200 != 0) {
             throw new IllegalArgumentException("Teams are already full");
-        }
-
-        List<Long> teamMembers = teamUsersRepository.findUsersByTeamId(teamId);
-
-        if(teamMembers.size() != 5) {
-            throw new IllegalArgumentException("Team size is not 5");
         }
 
         int assignedTeam = (team100 == 0) ? 100 : 200;
@@ -174,6 +184,17 @@ public class MatchPosterServiceImpl implements MatchPosterService{
                 .orElseThrow(() -> new IllegalArgumentException("Match poster not found"));
         gameService.startGame(posterId);
         found.setArchived(true);
+        return buildMatchPosterDTO(posterId);
+    }
+
+    @Override
+    public MatchPosterDTO retriveMatchPoster(Long posterId) {
+        MatchPoster found = matchPosterRepository.findById(posterId)
+                .orElseThrow(() -> new IllegalArgumentException("Match poster not found"));
+
+        Date dueDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        found.setDueDate(dueDate);
+        found.setArchived(false);
         return buildMatchPosterDTO(posterId);
     }
 

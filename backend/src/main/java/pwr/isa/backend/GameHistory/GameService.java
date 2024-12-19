@@ -6,21 +6,20 @@ import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
 import java.util.List;
 
 public interface GameService {
-    GameHistory getGameHistoryById(Long id);
-    Iterable<GameHistory> getAllGameHistories();
-    Iterable<GameHistory> getGameHistoriesByUserId(Long userId, int limit);
-    Iterable<GameHistory> getGameHistoriesByTeamId(Long teamId, int limit);
-    GameHistory createGameHistory(GameHistory gameHistory);
-    GameHistory updateGameHistory(GameHistory gameHistory, Long id);
+    GameHistoryDTO getGameHistoryById(Long id);
+    Iterable<GameHistoryDTO> getAllGameHistories();
+    List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit);
+    List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit);
+    GameHistoryDTO createGameHistory(GameHistory gameHistory);
+    GameHistoryDTO updateGameHistory(GameHistory gameHistory, Long id);
     void deleteGameHistory(Long id);
-    GameHistory startGame(Long id);
-    GameHistory endGame(Long id, MatchDetailsDTO matchDetailsDTO);
+    GameHistoryDTO startGame(Long id);
 
     @Scheduled(fixedRate = 60 * 10000)
-    void findRiotMatchId();
+    void LookForStartedMatches();
 
     @Scheduled(fixedRate = 60 * 1000)
-    void checkGames();
+    void LookForEndedMatches();
 
-    List<GameHistory> sortGames(List<Long> matchIds, int limit);
+    GameHistoryDTO endGame(GameHistory gameHistory, MatchDetailsDTO matchDetailsDTO);
 }

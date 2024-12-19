@@ -8,6 +8,7 @@ import pwr.isa.backend.RIOT.DTO.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /*
@@ -168,17 +169,48 @@ public class RiotServiceImpl implements RiotService {
     }
 
     @Override
-    public void getLiveMatchDTO(String puuid) {
-        Map<String, Object> liveMatchData = getLiveMatchInfo(puuid);
-    }
+    public LiveMatchDTO getLiveMatchDTO(String puuid){
+        Map response = getLiveMatchInfo(puuid);
+        LiveMatchDTO dto = new LiveMatchDTO();
+        if (response.containsKey("status")) {
+            dto.setStatus(LiveMatchStatus.NOT_FOUND);
+            return dto;
+        }
 
+        dto.setStatus(LiveMatchStatus.IN_PROGRESS);
+        dto.setGameId(((Number) response.get("gameId")).longValue()); // Convert to Long
+        dto.setGameStartTimestamp(((Number) response.get("gameStartTime")).longValue()); // Convert to Long
+        dto.setGameLengthTimestamp(((Number) response.get("gameLength")).longValue()); // Convert to Long
+
+        List<Map<String, Object>> participants = (List<Map<String, Object>>) response.get("participants");
+        List<LiveMatchDTO.ParticipantDTO> participantDTOs = participants.stream()
+                .map(participant -> {
+                    LiveMatchDTO.ParticipantDTO participantDTO = new LiveMatchDTO.ParticipantDTO();
+                    participantDTO.setTeamId((Integer) participant.get("teamId"));
+                    participantDTO.setPuuid((String) participant.get("puuid"));
+                    return participantDTO;
+                })
+                .collect(Collectors.toList());
+        dto.setParticipants(participantDTOs);
+
+        return dto;
+    }
     @Override
     public Map getLiveMatchInfo(String puuid) {
         return EUNE_WEB_CLIENT.get()
-                .uri("/lol/spectator/v5/active-games/by-summoner/{encryptedPUUID}" + puuid + "?api_key=" + API_KEY)
-                .retrieve()
-                .bodyToMono(Map.class)
-                .block();
+                .uri("/lol/spectator/v5/active-games/by-summoner/" + puuid + "?api_key=" + API_KEY)
+                .exchangeToMono(response -> {
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(Map.class); // Normal response
+                    } else {
+                        return response.bodyToMono(Map.class) // Error body
+                                .defaultIfEmpty(Map.of("status", Map.of(
+                                        "message", "No content",
+                                        "status_code", response.statusCode().value()
+                                )));
+                    }
+                })
+                .block(); // Blocking to return the result immediately (sync method)
     }
 
     @Override

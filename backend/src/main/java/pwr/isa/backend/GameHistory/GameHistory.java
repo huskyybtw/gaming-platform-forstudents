@@ -16,12 +16,13 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "game_history")
-public class GameHistory implements Comparable<GameHistory> {
+public class GameHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_history_id_seq")
     private Long Id;
 
     private Long matchId;
+    private String riotMatchId;
     private Date startDate;
     private Date endOfMatchDate;
 
@@ -31,9 +32,4 @@ public class GameHistory implements Comparable<GameHistory> {
 
     @Column(columnDefinition = "json")
     private String jsonData;
-
-    @Override
-    public int compareTo(GameHistory o) {
-        return getEndOfMatchDate().compareTo(o.getEndOfMatchDate());
-    }
 }
