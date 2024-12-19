@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Consumer.DTO.LeagueDTO;
+import pwr.isa.backend.Security.AuthSystem.Authorize;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 import java.util.List;
 
@@ -41,11 +43,13 @@ public class PlayerControler {
         return new ResponseEntity<>(playerService.getPlayerRank(userId), HttpStatus.OK);
     }
 
+    @AuthorizeEveryOne
     @PostMapping(path= "/")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         return new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.CREATED);
     }
 
+    @Authorize
     @PutMapping(path= "/{userId}")
     public ResponseEntity<Player> updatePlayer(
             @PathVariable Long userId,
@@ -53,6 +57,7 @@ public class PlayerControler {
         return new ResponseEntity<>(playerService.updatePlayer(player, userId), HttpStatus.OK);
     }
 
+    @Authorize
     @PatchMapping(path= "/{userId}")
     public ResponseEntity<Player> patchPlayer(
             @PathVariable Long userId,
@@ -60,6 +65,7 @@ public class PlayerControler {
         return new ResponseEntity<>(playerService.patchPlayer(player, userId), HttpStatus.OK);
     }
 
+    @Authorize
     @DeleteMapping(path= "/{userId}")
     public ResponseEntity<Player> deletePlayer(@PathVariable Long userId) {
         playerService.deletePlayer(userId);

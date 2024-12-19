@@ -1,6 +1,9 @@
 package pwr.isa.backend.Posters.MatchPosters;
 
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Security.AuthSystem.Authorize;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
+
 import java.util.List;
 
 @RestController
@@ -13,7 +16,6 @@ public class MatchPosterControler {
         this.matchPosterService = matchPosterService;
     }
 
-    // Get all match posters with pagination
     @GetMapping("/")
     public List<MatchPosterDTO> getAllMatchPosters(
             @RequestParam(defaultValue = "10") int limit,
@@ -21,13 +23,12 @@ public class MatchPosterControler {
         return matchPosterService.getAllMatchPosters(limit, offset);
     }
 
-    // Get a single match poster by ID
     @GetMapping("/{posterId}")
     public MatchPosterDTO getMatchPosterById(@PathVariable Long posterId) {
         return matchPosterService.getMatchPosterById(posterId);
     }
 
-    // Create a new match poster
+    @AuthorizeEveryOne
     @PostMapping("/")
     public MatchPosterDTO createMatchPoster(
             @RequestBody MatchPoster matchPoster,
@@ -35,13 +36,13 @@ public class MatchPosterControler {
         return matchPosterService.createMatchPoster(matchPoster, teamId);
     }
 
-    // Start a match for the given poster ID
+    @Authorize
     @PostMapping("/start/{posterId}")
     public MatchPosterDTO startMatch(@PathVariable Long posterId) {
         return matchPosterService.startMatch(posterId);
     }
 
-    // Join a match poster as a user
+    @Authorize
     @PostMapping("/{posterId}/join/{userId}")
     public MatchPosterDTO joinMatchPoster(
             @PathVariable Long posterId,
@@ -50,7 +51,7 @@ public class MatchPosterControler {
         return matchPosterService.joinMatchPoster(posterId, userId, team);
     }
 
-    // Leave a match poster
+    // TODO - AUTORYZACJA DLA TYCH TRZECH METOD
     @PostMapping("/{posterId}/leave/{userId}")
     public MatchPosterDTO leaveMatchPoster(
             @PathVariable Long posterId,
@@ -58,7 +59,6 @@ public class MatchPosterControler {
         return matchPosterService.leaveMatchPoster(posterId, userId);
     }
 
-    // Join a match poster as a team
     @PostMapping("/{posterId}/joinTeam/{teamId}")
     public MatchPosterDTO joinTeam(
             @PathVariable Long posterId,
@@ -66,6 +66,7 @@ public class MatchPosterControler {
         return matchPosterService.joinAsTeam(posterId, teamId);
     }
 
+    @Authorize
     @PutMapping("/{posterId}")
     public MatchPosterDTO updateMatchPoster(
             @PathVariable Long posterId,
@@ -73,7 +74,7 @@ public class MatchPosterControler {
         return matchPosterService.updateMatchPoster(posterId, matchPoster);
     }
 
-    // Delete a match poster by ID
+    @Authorize
     @DeleteMapping("/{posterId}")
     public void deleteMatchPoster(@PathVariable Long posterId) {
         matchPosterService.deleteMatchPoster(posterId);

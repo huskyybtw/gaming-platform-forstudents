@@ -61,12 +61,32 @@ public class AuthorizationAspect {
             case "users":
                 handleUserAuthorization(assignedUser, id);
                 break;
+            case "userPosters":
+                handleUserPosterAuthorization(assignedUser, id);
+                break;
+            case "teamPosters":
+                handleTeamPosterAuthorization(assignedUser, id);
+                break;
             default:
                 throw new NotAuthorizedException("Unsupported resource type");
         }
     }
 
-    // Handle team-specific authorization
+    private void handleTeamPosterAuthorization(User assignedUser, Long id) {
+        Long teamId = teamPosterService.getTeamPosterById(id).getTeamId();
+        Long posterOwnerId = teamService.getTeamById(teamId).getTeam().getTeamCaptain();
+        if (!assignedUser.getID().equals(posterOwnerId)) {
+            throw new NotAuthorizedException("User is not authorized to access this team poster resource");
+        }
+    }
+
+    private void handleUserPosterAuthorization(User assignedUser, Long id) {
+        Long posterOwnerId = userPosterService.getUserPosterById(id).getUserId();;
+        if (!assignedUser.getID().equals(posterOwnerId)) {
+            throw new NotAuthorizedException("User is not authorized to access this user poster resource");
+        }
+    }
+
     private void handleTeamAuthorization(User assignedUser, Long teamId) {
         Long teamCaptainId = teamService.getTeamById(teamId).getTeam().getTeamCaptain();
         if (!assignedUser.getID().equals(teamCaptainId)) {
@@ -74,20 +94,28 @@ public class AuthorizationAspect {
         }
     }
 
-    // Handle user-specific authorization
     private void handleUserAuthorization(User assignedUser, Long userId) {
         if (!assignedUser.getID().equals(userId)) {
             throw new NotAuthorizedException("User is not authorized to access this user resource");
         }
     }
 
-        // Determine resource type from the request URI
         private String getResourceType (String requestUri){
             if (requestUri.startsWith("/api/v1/teams")) {
                 return "teams";
             } else if (requestUri.startsWith("/api/v1/users")) {
                 return "users";
             }
+            else if (requestUri.startsWith("/api/v1/players")) {
+                return "users";
+            }
+            else if (requestUri.startsWith("/api/v1/posters/user")) {
+                return "userPosters";
+            }
+            else if (requestUri.startsWith("/api/v1/posters/team")) {
+                return "teamPosters";
+            }
+
             return "unknown";
         }
     }
