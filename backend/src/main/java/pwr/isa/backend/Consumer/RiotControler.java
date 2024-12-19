@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pwr.isa.backend.Consumer.DTO.*;
-
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import java.util.Map;
-
+@Hidden
 @RestController
 @RequestMapping("testing/riotService")
 public class RiotControler {
