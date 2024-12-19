@@ -3,8 +3,9 @@ package pwr.isa.backend.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pwr.isa.backend.Security.SHA256;
-import pwr.isa.backend.Security.auth.TokenService;
+import pwr.isa.backend.Security.AuthSystem.Authorize;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeAdminOnly;
+import pwr.isa.backend.Security.TokenSystem.TokenService;
 
 
 @RestController
@@ -24,6 +25,7 @@ public class UserControler {
         return userService.getAllUsers();
     }
 
+    @Authorize
     @GetMapping(path= "/{id}")
     public ResponseEntity<User> readUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.FOUND);
@@ -34,6 +36,13 @@ public class UserControler {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
+    @AuthorizeAdminOnly
+    @PostMapping(path= "/admin")
+    public ResponseEntity<User> createAdmin(@RequestBody User user) {
+        return new ResponseEntity<>(userService.createAdmin(user), HttpStatus.CREATED);
+    }
+
+    @Authorize
     @PutMapping(path= "{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
@@ -41,6 +50,7 @@ public class UserControler {
         return new ResponseEntity<>(userService.updateUser(user,id), HttpStatus.OK);
     }
 
+    @Authorize
     @PatchMapping(path= "/{id}")
     public ResponseEntity<User> patchUser(
             @PathVariable Long id,
@@ -48,6 +58,7 @@ public class UserControler {
         return new ResponseEntity<>(userService.patchUser(user,id), HttpStatus.OK);
     }
 
+    @Authorize
     @DeleteMapping(path= "/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

@@ -1,4 +1,4 @@
-package pwr.isa.backend.Security.auth;
+package pwr.isa.backend.Security.TokenSystem;
 import pwr.isa.backend.User.User;
 
 public interface TokenService {

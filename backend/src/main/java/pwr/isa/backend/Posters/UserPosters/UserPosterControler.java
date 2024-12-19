@@ -1,6 +1,8 @@
 package pwr.isa.backend.Posters.UserPosters;
 
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Security.AuthSystem.Authorize;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 @RestController
 @RequestMapping("api/v1/posters/user")
@@ -24,11 +26,13 @@ public class UserPosterControler {
         return userPosterService.getUserPosterById(userId);
     }
 
+    @AuthorizeEveryOne
     @PostMapping(path= "/")
     public UserPoster createUserPoster(@RequestBody UserPoster userPoster) {
         return userPosterService.createUserPoster(userPoster);
     }
 
+    @Authorize
     @PatchMapping(path= "/{userId}")
     public UserPoster updateUserPoster(
             @PathVariable Long userId,
@@ -36,6 +40,7 @@ public class UserPosterControler {
         return userPosterService.updateUserPoster(userPoster, userId);
     }
 
+    @Authorize
     @DeleteMapping(path= "/{userId}")
     public void deleteUserPoster(@PathVariable Long userId) {
         userPosterService.deleteUserPoster(userId);

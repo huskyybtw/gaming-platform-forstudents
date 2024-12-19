@@ -145,9 +145,18 @@ public class UserServiceImpl implements UserService {
     // Validation and Utility Methods
 
     private void validateNewUser(User user) {
+        if(user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("User with this email already exists");
         }
+
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
         validateEmail(user.getEmail());
     }
 

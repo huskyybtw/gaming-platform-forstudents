@@ -3,6 +3,7 @@ package pwr.isa.backend.GameSystem.Rating;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Player.Player;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeAdminOnly;
 import pwr.isa.backend.Team.Team;
 
 import java.util.List;
@@ -15,15 +16,6 @@ public class RatingControler {
 
     public RatingControler(RatingService ratingService) {
         this.ratingService = ratingService;
-    }
-
-    // Player rating endpoints
-    @PatchMapping("/player/{userId}")
-    public ResponseEntity<Player> updatePlayerRating(
-            @PathVariable Long userId,
-            @RequestParam Integer difference) {
-        Player updatedPlayer = ratingService.updatePlayerRating(userId, difference);
-        return ResponseEntity.ok(updatedPlayer);
     }
 
     @GetMapping("/player/{userId}")
@@ -40,14 +32,6 @@ public class RatingControler {
         return ResponseEntity.ok(bestPlayers);
     }
 
-    // Team rating endpoints
-    @PatchMapping("/team/{teamId}")
-    public ResponseEntity<Team> updateTeamRating(
-            @PathVariable Long teamId,
-            @RequestParam Integer difference) {
-        Team updatedTeam = ratingService.updateTeamRating(teamId, difference);
-        return ResponseEntity.ok(updatedTeam);
-    }
 
     @GetMapping("/team/{teamId}")
     public ResponseEntity<Integer> getTeamRating(@PathVariable Long teamId) {
@@ -61,5 +45,23 @@ public class RatingControler {
             @RequestParam(defaultValue = "0") int offset) {
         List<Team> bestTeams = ratingService.getBestTeams(limit, offset);
         return ResponseEntity.ok(bestTeams);
+    }
+
+    @AuthorizeAdminOnly
+    @PatchMapping("/team/{teamId}")
+    public ResponseEntity<Team> updateTeamRating(
+            @PathVariable Long teamId,
+            @RequestParam Integer difference) {
+        Team updatedTeam = ratingService.updateTeamRating(teamId, difference);
+        return ResponseEntity.ok(updatedTeam);
+    }
+
+    @AuthorizeAdminOnly
+    @PatchMapping("/player/{userId}")
+    public ResponseEntity<Player> updatePlayerRating(
+            @PathVariable Long userId,
+            @RequestParam Integer difference) {
+        Player updatedPlayer = ratingService.updatePlayerRating(userId, difference);
+        return ResponseEntity.ok(updatedPlayer);
     }
 }

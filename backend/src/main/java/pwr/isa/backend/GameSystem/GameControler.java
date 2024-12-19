@@ -3,9 +3,10 @@ package pwr.isa.backend.GameSystem;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
 import pwr.isa.backend.Consumer.RiotService;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeAdminOnly;
 
 @RestController
-@RequestMapping("api/v1/gameHistory")
+@RequestMapping("api/v1/gameSystem")
 public class GameControler {
     private final GameService gameHistoryService;
     private final RiotService riotService;
@@ -40,6 +41,7 @@ public class GameControler {
         return gameHistoryService.getGameHistoriesByTeamId(teamId, limit);
     }
 
+    @AuthorizeAdminOnly
     @PostMapping("/")
     public GameHistoryDTO createGameHistory(
             @RequestBody GameHistory gameHistory
@@ -47,6 +49,7 @@ public class GameControler {
         return gameHistoryService.createGameHistory(gameHistory);
     }
 
+    @AuthorizeAdminOnly
     @PatchMapping("/{id}")
     public GameHistoryDTO updateGameHistory(
             @PathVariable Long id,
@@ -55,18 +58,20 @@ public class GameControler {
         return gameHistoryService.updateGameHistory(gameHistory, id);
     }
 
+    @AuthorizeAdminOnly
     @DeleteMapping("/{id}")
     public void deleteGameHistory(@PathVariable Long id) {
         gameHistoryService.deleteGameHistory(id);
     }
 
-
+    @AuthorizeAdminOnly
     @PatchMapping("/stage/{id}")
     public GameHistoryDTO startGame(
             @PathVariable Long id) {
         return gameHistoryService.startGame(id);
     }
 
+    @AuthorizeAdminOnly
     @PutMapping("/stage/{id}/{matchId}")
     public GameHistoryDTO endGame(
             @PathVariable Long id,
