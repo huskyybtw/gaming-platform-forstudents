@@ -1,9 +1,8 @@
 package pwr.isa.backend.Posters.UserPosters;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.web.bind.annotation.*;
+import pwr.isa.backend.Security.AuthSystem.Authorize;
+import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 @RestController
 @RequestMapping("api/v1/posters/user")
@@ -18,9 +17,8 @@ public class UserPosterControler {
     @GetMapping(path= "/")
     public Iterable<UserPoster> readUserPosters(
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false) boolean sortByRating) {
-        return userPosterService.getAllUserPosters(limit, offset, sortByRating);
+            @RequestParam(defaultValue = "0") int offset) {
+        return userPosterService.getAllUserPosters(limit, offset);
     }
 
     @GetMapping(path= "/{userId}")
@@ -28,11 +26,13 @@ public class UserPosterControler {
         return userPosterService.getUserPosterById(userId);
     }
 
+    @AuthorizeEveryOne
     @PostMapping(path= "/")
     public UserPoster createUserPoster(@RequestBody UserPoster userPoster) {
         return userPosterService.createUserPoster(userPoster);
     }
 
+    @Authorize
     @PatchMapping(path= "/{userId}")
     public UserPoster updateUserPoster(
             @PathVariable Long userId,
@@ -40,9 +40,9 @@ public class UserPosterControler {
         return userPosterService.updateUserPoster(userPoster, userId);
     }
 
+    @Authorize
     @DeleteMapping(path= "/{userId}")
     public void deleteUserPoster(@PathVariable Long userId) {
         userPosterService.deleteUserPoster(userId);
     }
 }
-

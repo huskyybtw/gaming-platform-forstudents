@@ -3,10 +3,9 @@ package pwr.isa.backend.Player;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pwr.isa.backend.RIOT.DTO.LeagueDTO;
-import pwr.isa.backend.RIOT.DTO.PlayerDetailsDTO;
-import pwr.isa.backend.RIOT.RiotService;
-import pwr.isa.backend.User.UserRepository;
+import pwr.isa.backend.Consumer.DTO.LeagueDTO;
+import pwr.isa.backend.Consumer.DTO.PlayerDetailsDTO;
+import pwr.isa.backend.Consumer.RiotService;
 import pwr.isa.backend.User.UserService;
 
 import java.lang.reflect.Field;

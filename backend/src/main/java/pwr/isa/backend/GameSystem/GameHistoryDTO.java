@@ -1,4 +1,4 @@
-package pwr.isa.backend.Posters.MatchPosters;
+package pwr.isa.backend.GameSystem;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-public class MatchPosterDTO {
-    MatchPoster matchPoster;
-    List<MatchParticipant> participants;
+public class GameHistoryDTO {
+    GameHistory gameHistory;
+    List<MatchParticipant> matchParticipants;
 }
