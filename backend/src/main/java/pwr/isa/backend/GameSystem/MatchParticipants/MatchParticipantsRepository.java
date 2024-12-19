@@ -1,4 +1,4 @@
-package pwr.isa.backend.GameHistory.MatchParticipants;
+package pwr.isa.backend.GameSystem.MatchParticipants;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

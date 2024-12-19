@@ -1,6 +1,6 @@
 package pwr.isa.backend.Player;
 
-import pwr.isa.backend.RIOT.DTO.LeagueDTO;
+import pwr.isa.backend.Consumer.DTO.LeagueDTO;
 
 import java.util.List;
 

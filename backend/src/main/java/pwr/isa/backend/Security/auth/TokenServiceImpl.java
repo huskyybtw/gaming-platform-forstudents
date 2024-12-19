@@ -2,6 +2,7 @@ package pwr.isa.backend.Security.auth;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import pwr.isa.backend.Exceptions.NotAuthenticatedException;
 import pwr.isa.backend.Exceptions.NotAuthorizedException;
 import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.User.User;
@@ -27,15 +28,15 @@ public class TokenServiceImpl implements TokenService {
         password = SHA256.hash(password);
         User dbUser = userRepository.findByEmail(email);
         if (dbUser == null) {
-            throw new IllegalArgumentException("User with this email does not exist");
+            throw new NotAuthenticatedException("User with this email does not exist");
         }
 
         if(!dbUser.isEnabled()) {
-            throw new IllegalArgumentException("User is not activated");
+            throw new NotAuthenticatedException("User is not activated");
         }
 
         if(!dbUser.getPassword().equals(password) && !dbUser.getEmail().equals(email)) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new NotAuthenticatedException("Invalid credentials");
         }
 
         Token token = Token.builder()

@@ -3,7 +3,7 @@ package pwr.isa.backend.Player;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pwr.isa.backend.RIOT.DTO.LeagueDTO;
+import pwr.isa.backend.Consumer.DTO.LeagueDTO;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package pwr.isa.backend.GameHistory.MatchParticipants;
+package pwr.isa.backend.GameSystem.MatchParticipants;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

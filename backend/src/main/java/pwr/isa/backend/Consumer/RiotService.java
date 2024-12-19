@@ -1,6 +1,6 @@
-package pwr.isa.backend.RIOT;
+package pwr.isa.backend.Consumer;
 
-import pwr.isa.backend.RIOT.DTO.*;
+import pwr.isa.backend.Consumer.DTO.*;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,8 @@
-package pwr.isa.backend.GameHistory;
+package pwr.isa.backend.GameSystem;
 
 import org.springframework.web.bind.annotation.*;
-import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
-import pwr.isa.backend.RIOT.RiotService;
+import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
+import pwr.isa.backend.Consumer.RiotService;
 
 @RestController
 @RequestMapping("api/v1/gameHistory")

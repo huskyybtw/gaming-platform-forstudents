@@ -1,4 +1,4 @@
-package pwr.isa.backend.Rating;
+package pwr.isa.backend.GameSystem.Rating;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;

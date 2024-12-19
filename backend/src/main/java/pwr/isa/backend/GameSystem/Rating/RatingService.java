@@ -1,4 +1,4 @@
-package pwr.isa.backend.Rating;
+package pwr.isa.backend.GameSystem.Rating;
 
 import pwr.isa.backend.Player.Player;
 import pwr.isa.backend.Team.Team;

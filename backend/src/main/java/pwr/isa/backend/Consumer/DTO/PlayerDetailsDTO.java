@@ -1,6 +1,5 @@
-package pwr.isa.backend.RIOT.DTO;
+package pwr.isa.backend.Consumer.DTO;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,13 +9,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class SummonerDTO {
-    @JsonProperty("id")
-    String summonerId;
-
-    String accountId;
+public class PlayerDetailsDTO {
+    // ACCOUNT-V1
     String puuid;
+    String gameName;
+    String tagLine;
+
+    // SUMMONER-V4
+    String summonerid;
+    String accountId;
     int profileIconId;
     long revisionDate;
     long summonerLevel;
+
+    // League-V4
+    LeagueDTO soloQueue;
+    LeagueDTO flexQueue;
 }

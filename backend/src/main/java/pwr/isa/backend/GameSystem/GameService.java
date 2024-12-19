@@ -1,7 +1,7 @@
-package pwr.isa.backend.GameHistory;
+package pwr.isa.backend.GameSystem;
 
 import org.springframework.scheduling.annotation.Scheduled;
-import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
+import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
 
 import java.util.List;
 

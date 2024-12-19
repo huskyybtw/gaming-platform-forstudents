@@ -1,4 +1,4 @@
-package pwr.isa.backend.RIOT.DTO;
+package pwr.isa.backend.Consumer.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

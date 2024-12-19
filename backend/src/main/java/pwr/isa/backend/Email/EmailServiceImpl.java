@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService{
     @Value("${app.BASE_URL}")
     private String baseUrl;
 
-    private InputStream HTMLinputStream = EmailServiceImpl.class.getResourceAsStream("/email-template.html");
+    private InputStream HTMLinputStream = EmailServiceImpl.class.getResourceAsStream("/static/email-template.html");
 
     public EmailServiceImpl(@Lazy UserService userService, JavaMailSender mailSender) {
         this.userService = userService;

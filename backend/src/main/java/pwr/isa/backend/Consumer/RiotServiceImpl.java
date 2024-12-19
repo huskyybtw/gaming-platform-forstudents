@@ -1,9 +1,9 @@
-package pwr.isa.backend.RIOT;
+package pwr.isa.backend.Consumer;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import pwr.isa.backend.RIOT.DTO.*;
+import pwr.isa.backend.Consumer.DTO.*;
 
 import java.util.ArrayList;
 import java.util.List;

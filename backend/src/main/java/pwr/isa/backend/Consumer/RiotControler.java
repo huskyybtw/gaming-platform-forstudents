@@ -1,10 +1,10 @@
-package pwr.isa.backend.RIOT;
+package pwr.isa.backend.Consumer;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pwr.isa.backend.RIOT.DTO.*;
+import pwr.isa.backend.Consumer.DTO.*;
 
 import java.util.List;
 import java.util.Map;

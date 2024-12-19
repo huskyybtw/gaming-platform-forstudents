@@ -1,4 +1,4 @@
-package pwr.isa.backend.Rating;
+package pwr.isa.backend.GameSystem.Rating;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

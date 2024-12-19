@@ -1,20 +1,20 @@
-package pwr.isa.backend.GameHistory;
+package pwr.isa.backend.GameSystem;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipant;
-import pwr.isa.backend.GameHistory.MatchParticipants.MatchParticipantsRepository;
+import pwr.isa.backend.GameSystem.MatchParticipants.MatchParticipant;
+import pwr.isa.backend.GameSystem.MatchParticipants.MatchParticipantsRepository;
 import pwr.isa.backend.Player.Player;
 import pwr.isa.backend.Player.PlayerRepository;
 import pwr.isa.backend.Posters.MatchPosters.MatchPosterRepository;
 import pwr.isa.backend.Posters.MatchPosters.MatchPosterService;
-import pwr.isa.backend.RIOT.DTO.LiveMatchDTO;
-import pwr.isa.backend.RIOT.DTO.LiveMatchStatus;
-import pwr.isa.backend.RIOT.DTO.MatchDetailsDTO;
-import pwr.isa.backend.RIOT.RiotService;
-import pwr.isa.backend.Rating.RatingService;
+import pwr.isa.backend.Consumer.DTO.LiveMatchDTO;
+import pwr.isa.backend.Consumer.DTO.LiveMatchStatus;
+import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
+import pwr.isa.backend.Consumer.RiotService;
+import pwr.isa.backend.GameSystem.Rating.RatingService;
 
 import java.util.*;
 

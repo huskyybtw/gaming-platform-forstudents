@@ -1,4 +1,4 @@
-package pwr.isa.backend.GameHistory;
+package pwr.isa.backend.GameSystem;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
