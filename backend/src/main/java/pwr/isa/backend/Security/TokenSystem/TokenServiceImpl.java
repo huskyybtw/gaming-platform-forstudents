@@ -1,25 +1,27 @@
-package pwr.isa.backend.Security.auth;
+package pwr.isa.backend.Security.TokenSystem;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import pwr.isa.backend.Email.EmailService;
 import pwr.isa.backend.Exceptions.NotAuthenticatedException;
 import pwr.isa.backend.Exceptions.NotAuthorizedException;
 import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.User.User;
 import pwr.isa.backend.User.UserRepository;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 @Service
 public class TokenServiceImpl implements TokenService {
     private UserRepository userRepository;
+    private final EmailService emailService;
     private final HashMap<String,Token> TOKENS;
     private final Long TOKEN_EXPIRATION_TIME = 3600000L;
 
-    public TokenServiceImpl(UserRepository userRepository) {
+    public TokenServiceImpl(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
         this.TOKENS = new HashMap<>();
     }
 
@@ -32,6 +34,13 @@ public class TokenServiceImpl implements TokenService {
         }
 
         if(!dbUser.isEnabled()) {
+            try {
+                emailService.sendEmail(dbUser.getEmail(), dbUser.getID());
+            }
+            catch (Exception e) {
+                throw new NotAuthenticatedException("User is not activated");
+            }
+
             throw new NotAuthenticatedException("User is not activated");
         }
 
