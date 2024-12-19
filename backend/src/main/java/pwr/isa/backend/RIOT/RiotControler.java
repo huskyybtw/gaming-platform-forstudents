@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("testing/riotService")
 public class RiotControler {
-    private RiotService riotService;
+    private final RiotService riotService;
 
     public RiotControler(RiotService riotService) {
         this.riotService = riotService;
@@ -47,6 +47,12 @@ public class RiotControler {
     public MatchDetailsDTO getMatchDetailsDTO(
             @RequestParam("matchid") String matchid) {
         return riotService.getMatchDetailsDTO(matchid);
+    }
+
+    @GetMapping(path= "/liveMatch")
+    public LiveMatchDTO getLiveMatchDTO(
+            @RequestParam("puuid") String puuid) {
+        return riotService.getLiveMatchDTO(puuid);
     }
 
     @GetMapping(path= "/matchMeta")

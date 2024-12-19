@@ -16,39 +16,39 @@ public class GameControler {
     }
 
     @GetMapping("/{matchId}")
-    public GameHistory readGameHistory(@PathVariable Long matchId) {
+    public GameHistoryDTO readGameHistory(@PathVariable Long matchId) {
         return gameHistoryService.getGameHistoryById(matchId);
     }
 
     @GetMapping("/")
-    public Iterable<GameHistory> readGameHistories(
+    public Iterable<GameHistoryDTO> readGameHistories(
     ) {
         return gameHistoryService.getAllGameHistories();
     }
 
     @GetMapping("/userHistory/{userId}")
-    public Iterable<GameHistory> readGameHistoriesByUserId(
+    public Iterable<GameHistoryDTO> readGameHistoriesByUserId(
             @PathVariable Long userId,
             @RequestParam(required = false, defaultValue = "10") int limit) {
         return gameHistoryService.getGameHistoriesByUserId(userId, limit);
     }
 
     @GetMapping("/teamHistory/{teamId}")
-    public Iterable<GameHistory> readGameHistoriesByTeamId(
+    public Iterable<GameHistoryDTO> readGameHistoriesByTeamId(
             @PathVariable Long teamId,
             @RequestParam(required = false, defaultValue = "10") int limit) {
         return gameHistoryService.getGameHistoriesByTeamId(teamId, limit);
     }
 
     @PostMapping("/")
-    public GameHistory createGameHistory(
+    public GameHistoryDTO createGameHistory(
             @RequestBody GameHistory gameHistory
     ) {
         return gameHistoryService.createGameHistory(gameHistory);
     }
 
     @PatchMapping("/{id}")
-    public GameHistory updateGameHistory(
+    public GameHistoryDTO updateGameHistory(
             @PathVariable Long id,
             @RequestBody GameHistory gameHistory
     ) {
@@ -62,15 +62,18 @@ public class GameControler {
 
 
     @PatchMapping("/stage/{id}")
-    public GameHistory startGame(
+    public GameHistoryDTO startGame(
             @PathVariable Long id) {
         return gameHistoryService.startGame(id);
     }
 
-    @PutMapping("/stage/{id}")
-    public GameHistory endGame(@PathVariable Long id) {
-        String matchId = "test";
+    @PutMapping("/stage/{id}/{matchId}")
+    public GameHistoryDTO endGame(
+            @PathVariable Long id,
+            @PathVariable String matchId) {
+
+        GameHistoryDTO gameHistory = gameHistoryService.getGameHistoryById(id);
         MatchDetailsDTO matchDetailsDTO = riotService.getMatchDetailsDTO(matchId);
-        return gameHistoryService.endGame(id,matchDetailsDTO);
+        return gameHistoryService.endGame(gameHistory.getGameHistory(),matchDetailsDTO);
     }
 }
