@@ -38,7 +38,7 @@ public class TeamControler {
     }
 
     @Authorize
-    @PostMapping("/{manage/{userId}/{teamId}")
+    @PostMapping("/manage/{userId}/{teamId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(
             @PathVariable Long teamId,
             @PathVariable Long userId) {
@@ -48,7 +48,7 @@ public class TeamControler {
 
     // TODO Do zastanowienia jak zrobic autoryzajce bo jak narazie tylko capitan moze usuwac
     @Authorize
-    @DeleteMapping("/{manage/{userId}/{teamId}")
+    @DeleteMapping("/manage/{userId}/{teamId}")
     public ResponseEntity<TeamDTO> removePlayerFromTeam(
             @PathVariable Long teamId,
             @PathVariable Long userId) {
