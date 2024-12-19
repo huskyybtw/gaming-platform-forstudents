@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public void sendEmail(String userEmail, Long userId) throws Exception {
         String simple = SHA256.hash(userEmail);
-        String confirm = simple + userEmail;
+        String confirm = "test" + userEmail;
 
         String emailTemplate = new String(HTMLinputStream.readAllBytes(), UTF_8);
 

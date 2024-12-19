@@ -38,7 +38,7 @@ public class PlayerControler {
         return new ResponseEntity<>(playerService.refreshPlayer(userId), HttpStatus.OK);
     }
 
-    @GetMapping(path= "/riot/rank/{userId}")
+    @GetMapping(path= "/rank/{userId}")
     public ResponseEntity<List<LeagueDTO>> getPlayerRank(@PathVariable Long userId) {
         return new ResponseEntity<>(playerService.getPlayerRank(userId), HttpStatus.OK);
     }

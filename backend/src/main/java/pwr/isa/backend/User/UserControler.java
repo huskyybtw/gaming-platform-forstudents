@@ -20,6 +20,7 @@ public class UserControler {
         this.tokenService = tokenService;
     }
 
+    @AuthorizeAdminOnly
     @GetMapping(path= "/")
     public Iterable<User> readUsers() {
         return userService.getAllUsers();

@@ -100,22 +100,22 @@ public class AuthorizationAspect {
         }
     }
 
-        private String getResourceType (String requestUri){
-            if (requestUri.startsWith("/api/v1/teams")) {
-                return "teams";
-            } else if (requestUri.startsWith("/api/v1/users")) {
-                return "users";
-            }
-            else if (requestUri.startsWith("/api/v1/players")) {
-                return "users";
-            }
-            else if (requestUri.startsWith("/api/v1/posters/user")) {
-                return "userPosters";
-            }
-            else if (requestUri.startsWith("/api/v1/posters/team")) {
-                return "teamPosters";
-            }
-
-            return "unknown";
+    private String getResourceType (String requestUri){
+        if (requestUri.startsWith("/api/v1/teams")) {
+            return "teams";
+        } else if (requestUri.startsWith("/api/v1/users")) {
+            return "users";
         }
+        else if (requestUri.startsWith("/api/v1/players")) {
+            return "users";
+        }
+        else if (requestUri.startsWith("/api/v1/posters/user")) {
+            return "userPosters";
+        }
+        else if (requestUri.startsWith("/api/v1/posters/team")) {
+            return "teamPosters";
+        }
+
+        return "unknown";
     }
+}
