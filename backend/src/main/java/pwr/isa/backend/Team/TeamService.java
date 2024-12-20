@@ -11,5 +11,6 @@ public interface TeamService {
 
     void deleteTeam(Long id);
     TeamDTO getTeamById(Long id);
-    List<TeamDTO> getAllTeams();
+
+    List<TeamDTO> getAllTeams(int limit, int offset, String sortBy, String sortDirection);
 }

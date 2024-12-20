@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/posters/team")
 public class TeamPosterControler {
@@ -15,11 +17,12 @@ public class TeamPosterControler {
     }
 
     @GetMapping(path= "/")
-    public Iterable<TeamPoster> readTeamPosters(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false) boolean sortByRating) {
-        return teamPosterService.getAllTeamPosters(limit, offset, sortByRating);
+    public List<TeamPoster> readTeamPosters(
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "created_at") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        return teamPosterService.getAllTeamPosters(limit, offset, sortBy, sortDirection);
     }
 
     @GetMapping(path= "/{teamId}")

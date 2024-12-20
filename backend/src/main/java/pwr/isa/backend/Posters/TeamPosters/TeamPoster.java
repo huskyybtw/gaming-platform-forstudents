@@ -21,9 +21,13 @@ public class TeamPoster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private Long teamId;
-    private String description;
+    @Column(nullable = false)
     private Date CreatedAt;
+    @Column(nullable = false)
     private Date DueDate;
+    @Column(nullable = false)
     private Date UpdatedAt;
+    private String description;
 }

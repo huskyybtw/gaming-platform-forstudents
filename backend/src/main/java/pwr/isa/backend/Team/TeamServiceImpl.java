@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Optional;
 /*
     * TODO do przetestowania
- */
+*/
 @Service
-@Transactional
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
@@ -117,10 +116,17 @@ public class TeamServiceImpl implements TeamService {
         return buildTeamDTO(team, users);
     }
 
-    @Transactional
     @Override
-    public List<TeamDTO> getAllTeams() {
-        Iterable<Team> teams = teamRepository.findAll();
+    public List<TeamDTO> getAllTeams(int limit, int offset, String sortBy, String sortDirection) {
+        String sortColumn = switch (sortBy.toLowerCase()) {
+            case "rating" -> "rating";
+            default -> "team_name";
+        };
+
+        List<Team> teams = sortDirection.equalsIgnoreCase("DESC")
+                ? teamRepository.findAllSortedDesc(limit, offset, sortColumn)
+                : teamRepository.findAllSortedAsc(limit, offset, sortColumn);
+
         List<TeamDTO> teamDTOS = new ArrayList<>();
 
         for (Team team : teams) {

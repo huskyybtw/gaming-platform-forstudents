@@ -12,6 +12,6 @@ import java.util.List;
 @Builder
 @Data
 public class TeamDTO {
-    Team team;
-    List<Long> users;
+    private Team team;
+    private List<Long> users;
 }

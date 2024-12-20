@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "team_users")
+@Entity
 @Table(name = "team_users")
 public class TeamUser {
     @JsonIgnoreProperties
@@ -20,9 +20,9 @@ public class TeamUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "team_id", nullable = false)
+    @Column(nullable = false)
     Long teamId;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(nullable = false)
     Long userId;
 }

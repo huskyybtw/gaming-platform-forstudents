@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Team.TeamService;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class TeamPosterServiceImpl implements TeamPosterService {
     private final TeamPosterRepository teamPosterRepository;
     private final TeamService teamService; // walidacja istnienia
@@ -20,11 +20,17 @@ public class TeamPosterServiceImpl implements TeamPosterService {
     }
 
     @Override
-    public Iterable<TeamPoster> getAllTeamPosters(int limit, int offset, boolean sortByRating) {
-        if (sortByRating) {
-            return teamPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
-        }
-        return teamPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
+    public List<TeamPoster> getAllTeamPosters(int limit, int offset, String sortBy, String sortDirection) {
+        String sortColumn = switch (sortBy.toLowerCase()) {
+            case "rating" -> "rating";
+            case "title" -> "title";
+            case "created_at" -> "created_at";
+            default -> "id";
+        };
+
+        return sortDirection.equalsIgnoreCase("DESC")
+                ? teamPosterRepository.findAllSortedDesc(limit, offset, sortColumn)
+                : teamPosterRepository.findAllSortedAsc(limit, offset, sortColumn);
     }
 
     @Override

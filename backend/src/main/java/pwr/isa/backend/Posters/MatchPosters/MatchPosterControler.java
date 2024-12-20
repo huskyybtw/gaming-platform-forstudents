@@ -18,9 +18,11 @@ public class MatchPosterControler {
 
     @GetMapping("/")
     public List<MatchPosterDTO> getAllMatchPosters(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset) {
-        return matchPosterService.getAllMatchPosters(limit, offset);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "created_at") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        return matchPosterService.getAllMatchPosters(limit, offset, sortBy, sortDirection);
     }
 
     @GetMapping("/{posterId}")

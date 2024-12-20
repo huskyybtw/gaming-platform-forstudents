@@ -12,8 +12,9 @@ public interface PlayerService {
     Player refreshPlayer(Long userId);
     void deletePlayer(Long userId);
 
-    Iterable<Player> getAllPlayers(int limit, int offset, boolean sortByRating);
     boolean existsByUserId(Long userId);
 
     List<LeagueDTO> getPlayerRank(Long userId);
+
+    List<Player> getAllPlayers(int limit, int offset, String sortBy, String sortDirection);
 }

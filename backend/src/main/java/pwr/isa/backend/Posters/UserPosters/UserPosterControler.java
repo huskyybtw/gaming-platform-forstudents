@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/posters/user")
 public class UserPosterControler {
@@ -15,10 +17,12 @@ public class UserPosterControler {
     }
 
     @GetMapping(path= "/")
-    public Iterable<UserPoster> readUserPosters(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset) {
-        return userPosterService.getAllUserPosters(limit, offset);
+    public List<UserPoster> readUserPosters(
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "created_at") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        return userPosterService.getAllUserPosters(limit, offset, sortBy, sortDirection);
     }
 
     @GetMapping(path= "/{userId}")

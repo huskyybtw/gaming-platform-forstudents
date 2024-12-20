@@ -20,7 +20,8 @@ import java.util.*;
 
 /*
     * Sevice for managing games
-    * TODO PRZETESTOWAC
+    *  TODO PRZETESTOWAC
+    *  TODO SORTOWANIA PO NAJSTARSZYCH MECZACH
  */
 
 @Transactional
@@ -53,10 +54,10 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Iterable<GameHistoryDTO> getAllGameHistories() {
+    public Iterable<GameHistoryDTO> getAllGameHistories(int limit, int offset) {
 
         List<GameHistoryDTO> gameHistoryDTOS = new ArrayList<>();
-        for(GameHistory gameHistory : gameHistoryRepository.findAll()) {
+        for(GameHistory gameHistory : gameHistoryRepository.findAll(limit, offset)) {
             List<MatchParticipant> matchParticipants = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());
             gameHistoryDTOS.add(buildGameHistoryDTO(gameHistory, matchParticipants));
         }
@@ -72,14 +73,14 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit) {
-        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByUserIdSorted(userId, limit);
+    public List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit, int offset) {
+        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByUserIdSorted(userId, limit, offset);
         return buildGameHistoryDTOS(gameHistories);
     }
 
     @Override
-    public List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit) {
-        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByTeamIdSorted(teamId, limit);
+    public List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit, int offset) {
+        List<GameHistory> gameHistories = gameHistoryRepository.findAllMatchesByTeamIdSorted(teamId, limit, offset);
         return buildGameHistoryDTOS(gameHistories);
     }
 
@@ -110,7 +111,7 @@ public class GameServiceImpl implements GameService {
         GameHistory newGame = GameHistory.builder()
                                     .matchStatus(MatchStatus.ON_GOING)
                                     .matchId(matchId)
-                                    .startDate(new Date())
+                                    .startMatchDate(new Date())
                                     .build();
 
         List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(matchId);
@@ -221,7 +222,7 @@ public class GameServiceImpl implements GameService {
 
 
         gameHistory.setWinner(matchDetailsDTO.getWinner());
-        gameHistory.setEndOfMatchDate(new Date());
+        gameHistory.setEndMatchDate(new Date());
         gameHistory.setJsonData(matchDetailsDTO.toString());
 
         List<MatchParticipant> players = matchParticipantsRepository.findMatchParticipantsByMatchId(gameHistory.getMatchId());

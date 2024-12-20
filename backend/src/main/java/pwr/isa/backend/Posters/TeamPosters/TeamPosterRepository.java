@@ -11,10 +11,20 @@ import java.util.Optional;
 @Repository
 public interface TeamPosterRepository extends CrudRepository<TeamPoster, Long> {
 
-    @Query(value = "SELECT * FROM team_posters LIMIT :limit OFFSET :offset", nativeQuery = true)
-    List<TeamPoster> findAllWithLimitAndOffset(@Param("limit") int limit, @Param("offset") int offset);
-    @Query(value = "SELECT * FROM team_posters ORDER BY created_at ASC LIMIT :limit OFFSET :offset", nativeQuery = true)
-    List<TeamPoster> findAllWithLimitAndOffsetSortedByDate(@Param("limit") int limit, @Param("offset") int offset);
+    @Query(value = "SELECT * FROM team_posters ORDER BY :sort ASC LIMIT :limit OFFSET :offset",
+            nativeQuery = true)
+    List<TeamPoster> findAllSortedAsc(
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("sort") String sort
+    );
+
+    @Query(value = "SELECT * FROM team_posters ORDER BY :sort DESC LIMIT :limit OFFSET :offset",
+            nativeQuery = true)
+    List<TeamPoster> findAllSortedDesc(
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("sort") String sort
+    );
     Optional<TeamPoster> findByTeamId(Long teamId);
-    // ORDER BY Rating...
 }

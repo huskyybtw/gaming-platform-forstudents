@@ -23,22 +23,25 @@ public class GameControler {
 
     @GetMapping("/")
     public Iterable<GameHistoryDTO> readGameHistories(
-    ) {
-        return gameHistoryService.getAllGameHistories();
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getAllGameHistories(limit, offset);
     }
 
     @GetMapping("/userHistory/{userId}")
     public Iterable<GameHistoryDTO> readGameHistoriesByUserId(
             @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "10") int limit) {
-        return gameHistoryService.getGameHistoriesByUserId(userId, limit);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getGameHistoriesByUserId(userId, limit, offset);
     }
 
     @GetMapping("/teamHistory/{teamId}")
     public Iterable<GameHistoryDTO> readGameHistoriesByTeamId(
             @PathVariable Long teamId,
-            @RequestParam(required = false, defaultValue = "10") int limit) {
-        return gameHistoryService.getGameHistoriesByTeamId(teamId, limit);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getGameHistoriesByTeamId(teamId, limit, offset);
     }
 
     @AuthorizeAdminOnly

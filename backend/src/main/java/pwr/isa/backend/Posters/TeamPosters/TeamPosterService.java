@@ -2,8 +2,10 @@ package pwr.isa.backend.Posters.TeamPosters;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 public interface TeamPosterService {
-    Iterable<TeamPoster> getAllTeamPosters(int limit, int offset, boolean sortByRating);
+    List<TeamPoster> getAllTeamPosters(int limit, int offset, String sortBy, String sortDirection);
 
     TeamPoster getTeamPosterById(Long teamId);
 

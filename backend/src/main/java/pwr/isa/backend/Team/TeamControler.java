@@ -19,9 +19,13 @@ public class TeamControler {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<TeamDTO>> getAllTeams() {
-        List<TeamDTO> teams = teamService.getAllTeams();
-        return ResponseEntity.ok(teams);
+    public ResponseEntity<List<TeamDTO>> getAllTeams(
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "teamName") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection
+    ) {
+        return new ResponseEntity<>(teamService.getAllTeams(limit, offset, sortBy, sortDirection), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

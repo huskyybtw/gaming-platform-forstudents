@@ -18,9 +18,9 @@ public class Team {
     @Column(name = "team_name", unique = true, nullable = false)
     private String teamName;
 
-    @Column(name = "description")
     private String description;
 
+    @Column(nullable = false)
     private Long teamCaptain;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
