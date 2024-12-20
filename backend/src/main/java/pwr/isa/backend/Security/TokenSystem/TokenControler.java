@@ -17,8 +17,8 @@ public class TokenControler {
     }
 
     @PostMapping(path = "/login")
-    public Token getToken(@RequestBody LoginRequestDTO loginRequestDTO) {
-        return tokenService.generateToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+    public ResponseEntity<Token> getToken(@RequestBody LoginRequestDTO loginRequestDTO) {
+        return new ResponseEntity<>(tokenService.generateToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/logout")

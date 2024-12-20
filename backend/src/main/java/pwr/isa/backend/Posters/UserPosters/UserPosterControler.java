@@ -1,5 +1,7 @@
 package pwr.isa.backend.Posters.UserPosters;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
@@ -17,12 +19,12 @@ public class UserPosterControler {
     }
 
     @GetMapping(path= "/")
-    public List<UserPoster> readUserPosters(
+    public ResponseEntity<List<UserPoster>> readUserPosters(
             @RequestParam(required = false, defaultValue = "10") int limit,
             @RequestParam(required = false, defaultValue = "0") int offset,
             @RequestParam(required = false, defaultValue = "created_at") String sortBy,
             @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
-        return userPosterService.getAllUserPosters(limit, offset, sortBy, sortDirection);
+        return new ResponseEntity<>(userPosterService.getAllUserPosters(limit, offset, sortBy, sortDirection), HttpStatus.OK);
     }
 
     @GetMapping(path= "/{userId}")
@@ -32,21 +34,22 @@ public class UserPosterControler {
 
     @AuthorizeEveryOne
     @PostMapping(path= "/")
-    public UserPoster createUserPoster(@RequestBody UserPoster userPoster) {
-        return userPosterService.createUserPoster(userPoster);
+    public ResponseEntity<UserPoster> createUserPoster(@RequestBody UserPoster userPoster) {
+        return new ResponseEntity<>(userPosterService.createUserPoster(userPoster), HttpStatus.CREATED);
     }
 
     @Authorize
     @PatchMapping(path= "/{userId}")
-    public UserPoster updateUserPoster(
+    public ResponseEntity<UserPoster> updateUserPoster(
             @PathVariable Long userId,
             @RequestBody UserPoster userPoster) {
-        return userPosterService.updateUserPoster(userPoster, userId);
+        return new ResponseEntity<>(userPosterService.updateUserPoster( userPoster, userId), HttpStatus.OK);
     }
 
     @Authorize
     @DeleteMapping(path= "/{userId}")
-    public void deleteUserPoster(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUserPoster(@PathVariable Long userId) {
         userPosterService.deleteUserPoster(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

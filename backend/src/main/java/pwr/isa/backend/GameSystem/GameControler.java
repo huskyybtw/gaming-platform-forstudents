@@ -1,5 +1,7 @@
 package pwr.isa.backend.GameSystem;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
 import pwr.isa.backend.Consumer.RiotService;
@@ -46,10 +48,10 @@ public class GameControler {
 
     @AuthorizeAdminOnly
     @PostMapping("/")
-    public GameHistoryDTO createGameHistory(
+    public ResponseEntity<GameHistoryDTO> createGameHistory(
             @RequestBody GameHistory gameHistory
     ) {
-        return gameHistoryService.createGameHistory(gameHistory);
+        return new ResponseEntity<>(gameHistoryService.createGameHistory(gameHistory), HttpStatus.CREATED);
     }
 
     @AuthorizeAdminOnly
@@ -63,8 +65,9 @@ public class GameControler {
 
     @AuthorizeAdminOnly
     @DeleteMapping("/{id}")
-    public void deleteGameHistory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGameHistory(@PathVariable Long id) {
         gameHistoryService.deleteGameHistory(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @AuthorizeAdminOnly

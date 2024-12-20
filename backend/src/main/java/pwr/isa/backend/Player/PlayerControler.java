@@ -68,7 +68,7 @@ public class PlayerControler {
 
     @Authorize
     @DeleteMapping(path= "/{userId}")
-    public ResponseEntity<Player> deletePlayer(@PathVariable Long userId) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable Long userId) {
         playerService.deletePlayer(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -1,5 +1,7 @@
 package pwr.isa.backend.Posters.TeamPosters;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
@@ -32,8 +34,8 @@ public class TeamPosterControler {
 
     // TODO AUTORYZACJA MUSI BYC TEAM CAPITAN A NIE MAM JAK WZIAC ID NA TEN MOMENT
     @PostMapping(path= "/")
-    public TeamPoster createTeamPoster(@RequestBody TeamPoster teamPoster) {
-        return teamPosterService.createTeamPoster(teamPoster);
+    public ResponseEntity<TeamPoster> createTeamPoster(@RequestBody TeamPoster teamPoster) {
+        return new ResponseEntity<>(teamPosterService.createTeamPoster(teamPoster), HttpStatus.CREATED);
     }
 
     @Authorize
@@ -46,8 +48,9 @@ public class TeamPosterControler {
 
     @Authorize
     @DeleteMapping(path= "/{teamId}")
-    public void deleteTeamPoster(@PathVariable Long teamId) {
+    public ResponseEntity<Void> deleteTeamPoster(@PathVariable Long teamId) {
         teamPosterService.deleteTeamPoster(teamId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
