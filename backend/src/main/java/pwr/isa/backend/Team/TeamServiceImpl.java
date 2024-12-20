@@ -3,6 +3,10 @@ package pwr.isa.backend.Team;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pwr.isa.backend.Posters.MatchPosters.MatchPoster;
+import pwr.isa.backend.Posters.MatchPosters.MatchPosterService;
+import pwr.isa.backend.Posters.TeamPosters.TeamPosterRepository;
+import pwr.isa.backend.Posters.TeamPosters.TeamPosterService;
 import pwr.isa.backend.Team.TeamUsers.TeamUsersRepository;
 import pwr.isa.backend.User.UserService;
 
@@ -17,12 +21,16 @@ public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamUsersRepository teamUsersRepository;
+    private final TeamPosterService teamPosterService;
+    private final MatchPosterService matchPosterService;
     private final UserService userService;
 
     public TeamServiceImpl(TeamRepository teamRepository,
-                           TeamUsersRepository teamUsersRepository,
+                           TeamUsersRepository teamUsersRepository, TeamPosterService teamPosterService, MatchPosterService matchPosterService,
                            UserService userService) {
         this.teamRepository = teamRepository;
+        this.teamPosterService = teamPosterService;
+        this.matchPosterService = matchPosterService;
         this.userService = userService;
         this.teamUsersRepository = teamUsersRepository;
     }
@@ -103,8 +111,11 @@ public class TeamServiceImpl implements TeamService {
         if (!teamRepository.existsById(id)) {
             throw new EntityNotFoundException("Team not found with id: " + id);
         }
+        Team team = teamRepository.findById(id).get();
+        team.setArchived(true);
+        teamRepository.save(team);
+        teamPosterService.deleteTeamPoster(id);
         teamUsersRepository.deleteAllByTeamId(id);
-        teamRepository.deleteById(id);
     }
 
     @Transactional

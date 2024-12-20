@@ -2,30 +2,37 @@ package pwr.isa.backend.User;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Email.EmailService;
 import pwr.isa.backend.Email.EmailValidator;
+import pwr.isa.backend.Posters.UserPosters.UserPosterService;
 import pwr.isa.backend.Security.SHA256;
+import pwr.isa.backend.Team.Team;
+import pwr.isa.backend.Team.TeamService;
+import pwr.isa.backend.Team.TeamUsers.TeamUsersRepository;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Optional;
 
 /*
-    TODO PRZETESTOWAC CZY NAPEWNO DZIALAJA WSZYSTKIE FUNKCJE
-    BO PRZENOSILEM WALIDACJE DO INNYCH FUNCKJI Z CHATEM
+    TODO Usuwanie napenwno ma problemy np.usuniecie kapitana
  */
-
-/*
-    TODO Pouwzgledniać transakcje
-*/
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserPosterService userPosterService;
+    private final TeamUsersRepository teamUsersRepository;
     private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository,
+                           UserPosterService userPosterService,
+                           TeamUsersRepository teamUsersRepository,
+                           EmailService emailService) {
         this.userRepository = userRepository;
+        this.userPosterService = userPosterService;
+        this.teamUsersRepository = teamUsersRepository;
         this.emailService = emailService;
     }
 
@@ -110,12 +117,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(target.get());
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User with ID " + id + " not found");
         }
         userRepository.deleteById(id);
+        teamUsersRepository.findTeamsByUserId(id).forEach( (it) ->
+                teamUsersRepository.deleteTeamUser(id, it));
+        userPosterService.deleteUserPoster(id);
     }
 
     @Override

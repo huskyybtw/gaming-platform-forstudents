@@ -21,6 +21,7 @@ import java.util.Optional;
 /*
     Service class for MatchPoster
     TODO - PRZETESTOWAC
+    TODO - Leave as team
  */
 
 @Service
