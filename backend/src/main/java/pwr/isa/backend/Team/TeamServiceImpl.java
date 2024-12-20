@@ -1,6 +1,7 @@
 package pwr.isa.backend.Team;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Posters.MatchPosters.MatchPoster;
@@ -26,7 +27,9 @@ public class TeamServiceImpl implements TeamService {
     private final UserService userService;
 
     public TeamServiceImpl(TeamRepository teamRepository,
-                           TeamUsersRepository teamUsersRepository, TeamPosterService teamPosterService, MatchPosterService matchPosterService,
+                           TeamUsersRepository teamUsersRepository,
+                           @Lazy TeamPosterService teamPosterService,
+                           @Lazy MatchPosterService matchPosterService,
                            UserService userService) {
         this.teamRepository = teamRepository;
         this.teamPosterService = teamPosterService;

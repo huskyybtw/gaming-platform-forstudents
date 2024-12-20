@@ -1,6 +1,7 @@
 package pwr.isa.backend.User;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Email.EmailService;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository,
-                           UserPosterService userPosterService,
+                           @Lazy UserPosterService userPosterService,
                            TeamUsersRepository teamUsersRepository,
                            EmailService emailService) {
         this.userRepository = userRepository;

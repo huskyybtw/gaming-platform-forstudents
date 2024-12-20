@@ -42,7 +42,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public List<Player> getBestPlayers(int limit, int offset) {
 
-        return playerRepository.findBestPlayers(limit, offset);
+        return playerRepository.findAllSortedDesc(limit, offset,"rating");
     }
 
     // TEAM RATING METHODS
@@ -62,7 +62,7 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public List<Team> getBestTeams(int limit, int offset) {
-        return teamRepository.findBestTeams(limit, offset);
+        return teamRepository.findAllSortedDesc(limit, offset, "rating");
     }
 
 
