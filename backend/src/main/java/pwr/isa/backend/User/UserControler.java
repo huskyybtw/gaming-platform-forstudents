@@ -1,11 +1,12 @@
 package pwr.isa.backend.User;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,109 +16,121 @@ import pwr.isa.backend.Security.TokenSystem.TokenService;
 
 @RestController
 @RequestMapping("api/v1/users")
-@Tag(name = "Users", description = "API for managing users")
+@Tag(name = "User", description = "API for managing users")
 public class UserControler {
 
-    private final UserService userService;
-    private final TokenService tokenService;
+    private UserService userService;
+    private TokenService tokenService;
 
-    public UserControler(UserService userService, TokenService tokenService) {
+    public UserControler(UserService userService,TokenService tokenService) {
         this.userService = userService;
         this.tokenService = tokenService;
     }
 
-    @Operation(summary = "Retrieve all users", description = "Get a list of all users")
+    @AuthorizeAdminOnly
+    @Operation(summary = "Get all users", description = "Returns a list of all registered users")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "A list of users")
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "Invalid request parameters"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission to access"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @GetMapping(path = "/")
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(path= "/")
     public Iterable<User> readUsers() {
         return userService.getAllUsers();
     }
 
-    @Operation(summary = "Retrieve a user by ID", description = "Get a single user by their unique ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "User found"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @Authorize
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<User> readUser(
-            @Parameter(description = "ID of the user to retrieve", required = true)
-            @PathVariable Long id) {
+    @Operation(summary = "Get user by ID", description = "Returns data of a single user based on a  identifier ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type =  "Invalid user ID"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission to access this user"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(path= "/{id}")
+    public ResponseEntity<User> readUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.FOUND);
     }
 
-    @Operation(summary = "Create a new user", description = "Add a new user to the system")
+    @Operation(summary = "Create a new user", description = "Creates a new user with the provided data.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "409", description = "User already exists")
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "Email cannot be empty\nPassword cannot be empty\nUser with this email already exists\nInvalid email"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "Failed to send email")))
     })
-    @PostMapping(path = "/")
-    public ResponseEntity<User> createUser(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User object to create", required = true)
-            @RequestBody User user) {
+    @PostMapping(path= "/")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Create a new admin user", description = "Add a new admin user to the system")
+    @AuthorizeAdminOnly
+    @Operation(summary = "Create a new user with administrator role", description = "Creates a new user with administrator privileges.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Admin user created successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "Email cannot be empty\nPassword cannot be empty\nUser with this email already exists\nInvalid email"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission to create an admin user"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
     @SecurityRequirement(name = "bearerAuth")
-    @AuthorizeAdminOnly
-    @PostMapping(path = "/admin")
-    public ResponseEntity<User> createAdmin(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Admin user object to create", required = true)
-            @RequestBody User user) {
+    @PostMapping(path= "/admin")
+    public ResponseEntity<User> createAdmin(@RequestBody User user) {
         return new ResponseEntity<>(userService.createAdmin(user), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update a user", description = "Update the details of an existing user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @Authorize
-    @PutMapping(path = "/{id}")
+    @Operation(summary = "Update an existing user", description = "Updates the data of an existing user identified by ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "Email cannot be empty\nPassword cannot be empty\nUser with this email already exists\nInvalid email"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission to update this user"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping(path= "{id}")
     public ResponseEntity<User> updateUser(
-            @Parameter(description = "ID of the user to update", required = true)
             @PathVariable Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user object", required = true)
             @RequestBody User user) {
-        return new ResponseEntity<>(userService.updateUser(user, id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(user,id), HttpStatus.OK);
     }
 
-    @Operation(summary = "Partially update a user", description = "Update specific fields of an existing user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User patched successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @Authorize
-    @PatchMapping(path = "/{id}")
+    @Operation(summary = "Partially update an existing user", description = "Updates selected fields of an existing user identified by ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "string")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping(path= "/{id}")
     public ResponseEntity<User> patchUser(
-            @Parameter(description = "ID of the user to patch", required = true)
             @PathVariable Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Partial user object with fields to update", required = true)
             @RequestBody User user) {
-        return new ResponseEntity<>(userService.patchUser(user, id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.patchUser(user,id), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a user", description = "Remove a user from the system")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @Authorize
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deleteUser(
-            @Parameter(description = "ID of the user to delete", required = true)
-            @PathVariable Long id) {
+    @Operation(summary = "Delete a user", description = "Deletes the user identified by the ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted", content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(type = "mail cannot be empty\nPassword cannot be empty\nUser with this email already exists\nInvalid email"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(type = "Invalid or missing authentication token"))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(type = "You do not have permission to update this user"))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping(path= "/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
