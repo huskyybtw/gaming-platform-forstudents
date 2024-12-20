@@ -21,9 +21,9 @@ import java.util.Optional;
 /*
     Service class for MatchPoster
     TODO - PRZETESTOWAC
+    TODO - Leave as team
  */
 
-@Transactional
 @Service
 public class MatchPosterServiceImpl implements MatchPosterService{
     private final MatchPosterRepository matchPosterRepository;
@@ -161,13 +161,24 @@ public class MatchPosterServiceImpl implements MatchPosterService{
     }
 
     @Override
-    public List<MatchPosterDTO> getAllMatchPosters(int limit, int offset) {
-        List<MatchPoster> matchPosters = matchPosterRepository.findMatchPostersByDueDate(limit, offset);
+    public List<MatchPosterDTO> getAllMatchPosters(int limit, int offset, String sortBy, String sortDirection) {
+        String sortColumn = switch (sortBy.toLowerCase()) {
+            case "ranked" -> "ranked";
+            case "created_at" -> "created_at";
+            default -> "due_date";
+        };
+
+        List<MatchPoster> matchPosters =
+                sortDirection.equalsIgnoreCase("DESC")
+                        ? matchPosterRepository.findAllSortedDesc(limit, offset, sortColumn)
+                        : matchPosterRepository.findAllSortedAsc(limit, offset, sortColumn);
+
         List<MatchPosterDTO> matchPosterDTOS = new ArrayList<>();
 
         for (MatchPoster matchPoster : matchPosters) {
             matchPosterDTOS.add(buildMatchPosterDTO(matchPoster.getId()));
         }
+
         return matchPosterDTOS;
     }
 
@@ -188,14 +199,14 @@ public class MatchPosterServiceImpl implements MatchPosterService{
     }
 
     @Override
-    public MatchPosterDTO retriveMatchPoster(Long posterId) {
+    public void retriveMatchPoster(Long posterId) {
         MatchPoster found = matchPosterRepository.findById(posterId)
                 .orElseThrow(() -> new IllegalArgumentException("Match poster not found"));
 
         Date dueDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
         found.setDueDate(dueDate);
         found.setArchived(false);
-        return buildMatchPosterDTO(posterId);
+        buildMatchPosterDTO(posterId);
     }
 
     private List<MatchParticipant> validatePlayer(Long matchId, Long userId) {

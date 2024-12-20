@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface GameService {
     GameHistoryDTO getGameHistoryById(Long id);
-    Iterable<GameHistoryDTO> getAllGameHistories();
-    List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit);
-    List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit);
+    Iterable<GameHistoryDTO> getAllGameHistories(int limit, int offset);
+    List<GameHistoryDTO> getGameHistoriesByUserId(Long userId, int limit, int offset);
+    List<GameHistoryDTO> getGameHistoriesByTeamId(Long teamId, int limit, int offset);
     GameHistoryDTO createGameHistory(GameHistory gameHistory);
     GameHistoryDTO updateGameHistory(GameHistory gameHistory, Long id);
     void deleteGameHistory(Long id);

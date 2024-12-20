@@ -22,12 +22,17 @@ public class MatchPoster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private Long ownerId;
-    private String description;
+    @Column(nullable = false)
     private Date CreatedAt;
+    @Column(nullable = false)
     private Date DueDate;
+    @Column(nullable = false)
     private Date UpdatedAt;
+    @Column(nullable = false)
     private Boolean ranked;
+    private String description;
     @JsonIgnore
     private Boolean archived;
 }

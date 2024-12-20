@@ -1,5 +1,7 @@
 package pwr.isa.backend.GameSystem;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Consumer.DTO.MatchDetailsDTO;
 import pwr.isa.backend.Consumer.RiotService;
@@ -23,30 +25,33 @@ public class GameControler {
 
     @GetMapping("/")
     public Iterable<GameHistoryDTO> readGameHistories(
-    ) {
-        return gameHistoryService.getAllGameHistories();
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getAllGameHistories(limit, offset);
     }
 
     @GetMapping("/userHistory/{userId}")
     public Iterable<GameHistoryDTO> readGameHistoriesByUserId(
             @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "10") int limit) {
-        return gameHistoryService.getGameHistoriesByUserId(userId, limit);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getGameHistoriesByUserId(userId, limit, offset);
     }
 
     @GetMapping("/teamHistory/{teamId}")
     public Iterable<GameHistoryDTO> readGameHistoriesByTeamId(
             @PathVariable Long teamId,
-            @RequestParam(required = false, defaultValue = "10") int limit) {
-        return gameHistoryService.getGameHistoriesByTeamId(teamId, limit);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset) {
+        return gameHistoryService.getGameHistoriesByTeamId(teamId, limit, offset);
     }
 
     @AuthorizeAdminOnly
     @PostMapping("/")
-    public GameHistoryDTO createGameHistory(
+    public ResponseEntity<GameHistoryDTO> createGameHistory(
             @RequestBody GameHistory gameHistory
     ) {
-        return gameHistoryService.createGameHistory(gameHistory);
+        return new ResponseEntity<>(gameHistoryService.createGameHistory(gameHistory), HttpStatus.CREATED);
     }
 
     @AuthorizeAdminOnly
@@ -60,8 +65,9 @@ public class GameControler {
 
     @AuthorizeAdminOnly
     @DeleteMapping("/{id}")
-    public void deleteGameHistory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGameHistory(@PathVariable Long id) {
         gameHistoryService.deleteGameHistory(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @AuthorizeAdminOnly

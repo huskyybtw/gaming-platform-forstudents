@@ -20,12 +20,13 @@ public class PlayerControler {
     }
 
     @GetMapping(path= "/")
-    public Iterable<Player> readPlayers(
-            @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false,defaultValue = "false") boolean sortByRating
+    public List<Player> readPlayers(
+            @RequestParam(required = false, defaultValue = "100") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "rating") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection
     ) {
-        return playerService.getAllPlayers(limit, offset, sortByRating);
+        return playerService.getAllPlayers(limit, offset, sortBy, sortDirection);
     }
 
     @GetMapping(path= "/{userId}")
@@ -67,7 +68,7 @@ public class PlayerControler {
 
     @Authorize
     @DeleteMapping(path= "/{userId}")
-    public ResponseEntity<Player> deletePlayer(@PathVariable Long userId) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable Long userId) {
         playerService.deletePlayer(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -1,5 +1,6 @@
 package pwr.isa.backend.Team;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,11 +19,14 @@ public class Team {
     @Column(name = "team_name", unique = true, nullable = false)
     private String teamName;
 
-    @Column(name = "description")
     private String description;
 
+    @Column(nullable = false)
     private Long teamCaptain;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
     private Integer rating = 1000;
+
+    @JsonIgnore
+    private Boolean Archived;
 }

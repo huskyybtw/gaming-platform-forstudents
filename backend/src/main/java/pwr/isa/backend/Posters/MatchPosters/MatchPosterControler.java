@@ -1,5 +1,7 @@
 package pwr.isa.backend.Posters.MatchPosters;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
@@ -18,9 +20,11 @@ public class MatchPosterControler {
 
     @GetMapping("/")
     public List<MatchPosterDTO> getAllMatchPosters(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset) {
-        return matchPosterService.getAllMatchPosters(limit, offset);
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "created_at") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        return matchPosterService.getAllMatchPosters(limit, offset, sortBy, sortDirection);
     }
 
     @GetMapping("/{posterId}")
@@ -30,16 +34,16 @@ public class MatchPosterControler {
 
     @AuthorizeEveryOne
     @PostMapping("/")
-    public MatchPosterDTO createMatchPoster(
+    public ResponseEntity<MatchPosterDTO> createMatchPoster(
             @RequestBody MatchPoster matchPoster,
             @RequestParam(required = false) Long teamId) {
-        return matchPosterService.createMatchPoster(matchPoster, teamId);
+        return new ResponseEntity<>( matchPosterService.createMatchPoster(matchPoster, teamId), HttpStatus.CREATED);
     }
 
     @Authorize
     @PostMapping("/start/{posterId}")
-    public MatchPosterDTO startMatch(@PathVariable Long posterId) {
-        return matchPosterService.startMatch(posterId);
+    public ResponseEntity<MatchPosterDTO> startMatch(@PathVariable Long posterId) {
+        return new ResponseEntity<>( matchPosterService.startMatch(posterId),HttpStatus.CREATED);
     }
 
     @Authorize
@@ -76,7 +80,8 @@ public class MatchPosterControler {
 
     @Authorize
     @DeleteMapping("/{posterId}")
-    public void deleteMatchPoster(@PathVariable Long posterId) {
+    public ResponseEntity<Void> deleteMatchPoster(@PathVariable Long posterId) {
         matchPosterService.deleteMatchPoster(posterId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

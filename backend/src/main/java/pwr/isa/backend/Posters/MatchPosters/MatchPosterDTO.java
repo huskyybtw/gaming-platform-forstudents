@@ -13,6 +13,6 @@ import java.util.List;
 @Builder
 @Data
 public class MatchPosterDTO {
-    MatchPoster matchPoster;
-    List<MatchParticipant> participants;
+    private MatchPoster matchPoster;
+    private List<MatchParticipant> participants;
 }

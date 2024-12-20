@@ -13,13 +13,13 @@ public interface MatchPosterService {
 
     void deleteMatchPoster(Long posterId);
 
-    List<MatchPosterDTO> getAllMatchPosters(int limit, int offset);
-
     MatchPosterDTO getMatchPosterById(Long posterId);
 
     MatchPosterDTO joinAsTeam(Long posterId, Long teamId);
 
     MatchPosterDTO startMatch(Long posterId);
 
-    MatchPosterDTO retriveMatchPoster(Long posterId);
+    void retriveMatchPoster(Long posterId);
+
+    List<MatchPosterDTO> getAllMatchPosters(int limit, int offset, String sortBy, String sortDirection);
 }

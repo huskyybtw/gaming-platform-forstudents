@@ -35,7 +35,7 @@ public class Player {
     private String opgg;
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "last_update",nullable = false)
     private Timestamp lastUpdate;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
@@ -45,11 +45,11 @@ public class Player {
     // FROM RIOT API
 
     String puuid;
+
     // SUMMONER-V4
     String summonerid;
     String accountId;
     int profileIconId;
     long summonerLevel;
-
 
 }

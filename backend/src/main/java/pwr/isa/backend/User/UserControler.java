@@ -29,7 +29,7 @@ public class UserControler {
     @Authorize
     @GetMapping(path= "/{id}")
     public ResponseEntity<User> readUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.FOUND);
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @PostMapping(path= "/")

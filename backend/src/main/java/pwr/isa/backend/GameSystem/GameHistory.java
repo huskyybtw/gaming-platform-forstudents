@@ -22,9 +22,10 @@ public class GameHistory {
     private Long Id;
 
     private Long matchId;
+
     private String riotMatchId;
-    private Date startDate;
-    private Date endOfMatchDate;
+    private Date startMatchDate;
+    private Date endMatchDate;
 
     @Enumerated(EnumType.STRING)
     private MatchStatus matchStatus;

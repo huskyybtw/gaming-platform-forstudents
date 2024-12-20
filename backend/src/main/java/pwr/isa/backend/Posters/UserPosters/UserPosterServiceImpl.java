@@ -2,7 +2,6 @@ package pwr.isa.backend.Posters.UserPosters;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.User.UserService;
 
 import java.util.Optional;
@@ -10,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Transactional
 public class UserPosterServiceImpl implements UserPosterService {
     private final UserPosterRepository userPosterRepository;
     private final UserService userService; // walidacja id
@@ -21,10 +19,15 @@ public class UserPosterServiceImpl implements UserPosterService {
     }
 
     @Override
-    public Iterable<UserPoster> getAllUserPosters(int limit, int offset) {
-        // Pobieramy plakaty posortowane po dacie z limitem i offsetem
-        List<UserPoster> posters = userPosterRepository.findAllWithLimitAndOffsetSortedByDate(limit, offset);
-        return posters;
+    public List<UserPoster> getAllUserPosters(int limit, int offset, String sortBy, String sortDirection) {
+        String sortColumn = switch (sortBy.toLowerCase()) {
+            case "created_at" -> "created_at";
+            default -> "due_date";
+        };
+
+        return sortDirection.equalsIgnoreCase("DESC")
+                ? userPosterRepository.findAllSortedDesc(limit, offset, sortColumn)
+                : userPosterRepository.findAllSortedAsc(limit, offset, sortColumn);
     }
 
     @Override

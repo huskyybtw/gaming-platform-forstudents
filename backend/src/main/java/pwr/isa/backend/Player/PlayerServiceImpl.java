@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Consumer.DTO.LeagueDTO;
 import pwr.isa.backend.Consumer.DTO.PlayerDetailsDTO;
 import pwr.isa.backend.Consumer.RiotService;
+import pwr.isa.backend.Posters.MatchPosters.MatchPoster;
 import pwr.isa.backend.User.UserService;
 
 import java.lang.reflect.Field;
@@ -151,11 +152,15 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Iterable<Player> getAllPlayers(int limit, int offset, boolean sortByRating) {
-        if (sortByRating) {
-            return playerRepository.findBestPlayers(limit, offset);
-        }
-        return playerRepository.findAll();
+    public List<Player> getAllPlayers(int limit, int offset, String sortBy, String sortDirection) {
+        String sortColumn = switch (sortBy.toLowerCase()) {
+            case "last_update" -> "last_update";
+            default -> "rating";
+        };
+
+        return sortDirection.equalsIgnoreCase("DESC")
+                ? playerRepository.findAllSortedDesc(limit, offset, sortColumn)
+                : playerRepository.findAllSortedAsc(limit, offset, sortColumn);
     }
 
     @Override

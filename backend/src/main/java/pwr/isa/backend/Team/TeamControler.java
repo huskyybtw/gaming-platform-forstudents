@@ -19,15 +19,18 @@ public class TeamControler {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<TeamDTO>> getAllTeams() {
-        List<TeamDTO> teams = teamService.getAllTeams();
-        return ResponseEntity.ok(teams);
+    public ResponseEntity<List<TeamDTO>> getAllTeams(
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "teamName") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection
+    ) {
+        return new ResponseEntity<>(teamService.getAllTeams(limit, offset, sortBy, sortDirection), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeamById(@PathVariable Long id) {
-        TeamDTO team = teamService.getTeamById(id);
-        return ResponseEntity.ok(team);
+        return new ResponseEntity<>(teamService.getTeamById(id), HttpStatus.OK);
     }
 
     @AuthorizeEveryOne
@@ -43,7 +46,7 @@ public class TeamControler {
             @PathVariable Long teamId,
             @PathVariable Long userId) {
         TeamDTO team = teamService.addPlayerToTeam(teamId, userId);
-        return ResponseEntity.ok(team);
+        return new ResponseEntity<>(team, HttpStatus.OK);
     }
 
     // TODO Do zastanowienia jak zrobic autoryzajce bo jak narazie tylko capitan moze usuwac
@@ -53,7 +56,7 @@ public class TeamControler {
             @PathVariable Long teamId,
             @PathVariable Long userId) {
         TeamDTO team = teamService.removePlayerFromTeam(teamId, userId);
-        return ResponseEntity.ok(team);
+        return new ResponseEntity<>(team, HttpStatus.NO_CONTENT);
     }
 
     @Authorize
@@ -62,7 +65,7 @@ public class TeamControler {
             @PathVariable Long id,
             @RequestBody Team updatedTeam) {
         TeamDTO team = teamService.updateTeam(id, updatedTeam);
-        return ResponseEntity.ok(team); // 200
+        return new ResponseEntity<>(team,HttpStatus.OK); // 200
     }
 
 
@@ -70,6 +73,6 @@ public class TeamControler {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
