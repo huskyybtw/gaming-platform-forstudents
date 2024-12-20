@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface TeamRepository extends CrudRepository<Team, Long> {
     Optional<Team> findByTeamName(String teamName);
     // find list of players order by id limit= limit offset= offset
-    @Query(value = "SELECT * FROM teams ORDER BY id LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM teams ORDER BY rating LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Team> findBestTeams(int limit, int offset);
 }

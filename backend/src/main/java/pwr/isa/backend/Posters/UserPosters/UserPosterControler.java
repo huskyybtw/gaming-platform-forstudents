@@ -6,12 +6,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 @RestController
 @RequestMapping("api/v1/posters/user")
+@Tag(name = "User Posters", description = "API for managing user posters")
 public class UserPosterControler {
 
     private final UserPosterService userPosterService;

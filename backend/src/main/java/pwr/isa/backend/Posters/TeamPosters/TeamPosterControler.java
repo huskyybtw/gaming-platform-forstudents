@@ -6,12 +6,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import pwr.isa.backend.Security.AuthSystem.Authorize;
 import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 @RestController
 @RequestMapping("api/v1/posters/team")
+@Tag(name = "Team Posters", description = "API for managing team posters")
 public class TeamPosterControler {
 
     private final TeamPosterService teamPosterService;
@@ -78,8 +80,6 @@ public class TeamPosterControler {
         return teamPosterService.createTeamPoster(teamPoster);
     }
 
-
-
     @Operation(summary = "Update a team poster", description = "Partially updates the team poster identified by the team's ID. Non-empty fields overwrite existing values.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated"),
@@ -102,9 +102,6 @@ public class TeamPosterControler {
         return teamPosterService.updateTeamPoster(teamPoster, teamId);
     }
 
-
-
-    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Delete a team poster", description = "Deletes the team poster identified by the team's ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted", content = @Content(schema = @Schema(implementation = Void.class))),

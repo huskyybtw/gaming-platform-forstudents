@@ -11,14 +11,11 @@ import pwr.isa.backend.Team.TeamRepository;
 import java.util.List;
 
 @Service
-@Transactional
 public class RatingServiceImpl implements RatingService {
 
     private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
 
-    private static final int DEFAULT_LIMIT = 100;
-    private static final int DEFAULT_OFFSET = 0;
 
     public RatingServiceImpl(PlayerRepository playerRepository, TeamRepository teamRepository) {
         this.playerRepository = playerRepository;
@@ -44,10 +41,7 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public List<Player> getBestPlayers(int limit, int offset) {
-        if(limit < 0 || offset < 0) {
-            limit = DEFAULT_LIMIT;
-            offset = DEFAULT_OFFSET;
-        }
+
         return playerRepository.findBestPlayers(limit, offset);
     }
 
@@ -68,16 +62,11 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public List<Team> getBestTeams(int limit, int offset) {
-        if (limit < 0 || offset < 0) {
-            limit = DEFAULT_LIMIT;
-            offset = DEFAULT_OFFSET;
-        }
-
         return teamRepository.findBestTeams(limit, offset);
     }
 
 
-    // Validate methods
+
     private Player validatePlayer(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null");
