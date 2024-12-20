@@ -151,6 +151,8 @@ public class MatchPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PostMapping("/{posterId}/leave/{userId}")
     public MatchPosterDTO leaveMatchPoster(
             @PathVariable Long posterId,
@@ -171,6 +173,8 @@ public class MatchPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PostMapping("/{posterId}/joinTeam/{teamId}")
     public MatchPosterDTO joinTeam(
             @PathVariable Long posterId,

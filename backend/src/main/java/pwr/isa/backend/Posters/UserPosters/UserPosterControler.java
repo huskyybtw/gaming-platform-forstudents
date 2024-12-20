@@ -80,6 +80,7 @@ public class UserPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "sAn unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @AuthorizeEveryOne
     @PostMapping(path= "/")
     public ResponseEntity<UserPoster> createUserPoster(@RequestBody UserPoster userPoster) {
@@ -99,8 +100,8 @@ public class UserPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
     @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PatchMapping(path= "/{userId}")
     public ResponseEntity<UserPoster> updateUserPoster(
             @PathVariable Long userId,

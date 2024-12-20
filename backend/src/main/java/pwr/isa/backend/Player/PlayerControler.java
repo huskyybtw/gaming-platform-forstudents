@@ -120,6 +120,7 @@ public class PlayerControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @AuthorizeEveryOne
     @PostMapping(path= "/")
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
@@ -141,8 +142,8 @@ public class PlayerControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
     @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PutMapping(path= "/{userId}")
     public ResponseEntity<Player> updatePlayer(
             @PathVariable Long userId,
@@ -165,6 +166,7 @@ public class PlayerControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @Authorize
     @PatchMapping(path= "/{userId}")
     public ResponseEntity<Player> patchPlayer(
@@ -188,6 +190,7 @@ public class PlayerControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @Authorize
     @DeleteMapping(path= "/{userId}")
     public ResponseEntity<Void> deletePlayer(@PathVariable Long userId) {

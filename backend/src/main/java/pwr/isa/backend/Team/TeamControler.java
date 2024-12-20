@@ -80,6 +80,7 @@ public class TeamControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @AuthorizeEveryOne
     @PostMapping("/")
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
@@ -100,6 +101,7 @@ public class TeamControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @Authorize
     @PostMapping("/manage/{userId}/{teamId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(
@@ -142,8 +144,8 @@ public class TeamControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
     @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PutMapping("/{id}")
     public ResponseEntity<TeamDTO> updateTeam(
             @PathVariable Long id,
@@ -166,8 +168,8 @@ public class TeamControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "string", example="An unexpected error occurred on the server")))
     })
-    @Authorize
     @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);

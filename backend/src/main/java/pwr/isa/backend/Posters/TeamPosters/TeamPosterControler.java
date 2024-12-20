@@ -15,6 +15,11 @@ import pwr.isa.backend.Security.AuthSystem.AuthorizeEveryOne;
 
 import java.util.List;
 
+/*
+    TODO problemy z autoryzacja tam gdzie nie ma /{teamId}
+*/
+
+
 @RestController
 @RequestMapping("api/v1/posters/team")
 @Tag(name = "Team Posters", description = "API for managing team posters")
@@ -80,6 +85,8 @@ public class TeamPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
+    @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PostMapping(path= "/")
     public ResponseEntity<TeamPoster> createTeamPoster(@RequestBody TeamPoster teamPoster) {
         return new ResponseEntity<>(teamPosterService.createTeamPoster(teamPoster), HttpStatus.CREATED);
@@ -98,8 +105,8 @@ public class TeamPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
     @SecurityRequirement(name = "bearerAuth")
+    @Authorize
     @PatchMapping(path= "/{teamId}")
     public TeamPoster updateTeamPoster(
             @PathVariable Long teamId,
