@@ -1,0 +1,3403 @@
+openapi: 3.0.1
+info:
+  title: Backend Serivce for gaming students platform
+  description: API for managing user posters, team posters, player ratings, and user accounts
+  version: '0.1'
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Match Posters
+    description: API for scheduling and managing matches
+  - name: Player
+    description: API for managing RIOT Games Profiles
+  - name: Email
+    description: The Email API for handling email confirmations
+  - name: Teams
+    description: API for managing Teams
+  - name: User
+    description: API for managing users
+  - name: Team Posters
+    description: API for managing team posters
+  - name: Rating
+    description: API for managing Player ladder
+  - name: Game
+    description: API for managing Games and GamesHistory
+  - name: User Posters
+    description: API for managing user posters
+paths:
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - User
+      summary: Get user by ID
+      description: Returns data of a single user based on a  identifier ID.
+      operationId: readUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid user ID
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this user
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - User
+      summary: Update an existing user
+      description: Updates the data of an existing user identified by ID.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Email cannot be empty
+                  Password cannot be empty
+                  User with this email already exists
+                  Invalid email
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this user
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - User
+      summary: Delete a user
+      description: Deletes the user identified by the ID.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  mail cannot be empty
+                  Password cannot be empty
+                  User with this email already exists
+                  Invalid email
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this user
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - User
+      summary: Partially update an existing user
+      description: Updates selected fields of an existing user identified by ID.
+      operationId: patchUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/teams/{id}:
+    get:
+      tags:
+        - Teams
+      summary: Get a team by ID
+      description: Returns data of a single team based on a identifier.
+      operationId: getTeamById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    put:
+      tags:
+        - Teams
+      summary: Update a team
+      description: Updates the team's information by its ID.
+      operationId: updateTeam
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Team name cannot be null or empty
+                  A team with this name already exists
+                  Team captain cannot be null
+                  User with id: X does not exist
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Teams
+      summary: Delete a team
+      description: Deletes a team identified by the unique ID.
+      operationId: deleteTeam
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: You do not have permission to delete this team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/{posterId}:
+    get:
+      tags:
+        - Match Posters
+      summary: Get a match poster by ID
+      description: Returns a single match poster identified by its ID.
+      operationId: getMatchPosterById
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid poster ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this match poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    put:
+      tags:
+        - Match Posters
+      summary: Update a match poster
+      description: Updates the data of an existing match poster.
+      operationId: updateMatchPoster
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPoster'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Match poster not found
+                  Owner needs to exist
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this match poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Match Posters
+      summary: Delete a match poster
+      description: Deletes the match poster identified by the ID.
+      operationId: deleteMatchPoster
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to delete this match poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/players/{userId}:
+    get:
+      tags:
+        - Player
+      summary: Get player by user ID
+      description: Returns a player identified by the user's ID.
+      operationId: readPlayer
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid user ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    put:
+      tags:
+        - Player
+      summary: Update a player
+      description: Updates the data of an existing player identified by the user ID.
+      operationId: updatePlayer
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: |-
+                  Player with user ID  not found
+                  User cannot be changed
+                  Nickname cannot be null or empty
+                  Player with this nickname already exists
+                  Tag line cannot be null or empty
+                  Tag line must be between 3 and 5 characters long
+                  Tag line must contain only alphanumeric characters
+                  Player with this nickname already exists
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Player
+      summary: Delete a player
+      description: Deletes the player identified by the user ID.
+      operationId: deletePlayer
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to delete this player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - Player
+      summary: Partially update a player
+      description: Partially updates selected fields of an existing player identified by the user ID.
+      operationId: patchPlayer
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: |-
+                  Player with user ID X not found
+                  Nickname cannot be null or empty
+                  Player with this nickname already exists
+                  Tag line cannot be null or empty
+                  Tag line must be between 3 and 5 characters long
+                  Tag line must contain only alphanumeric characters
+                  Player with this nickname already exists
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/gameSystem/stage/{id}/{matchId}:
+    put:
+      tags:
+        - Game
+      summary: End Game
+      description: End a game by updating the game history and finalizing the match details.
+      operationId: endGame
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameHistoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/users/admin:
+    post:
+      tags:
+        - User
+      summary: Create a new user with administrator role
+      description: Creates a new user with administrator privileges.
+      operationId: createAdmin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Email cannot be empty
+                  Password cannot be empty
+                  User with this email already exists
+                  Invalid email
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create an admin user
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/users/:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      description: Returns a list of all registered users
+      operationId: readUsers
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - User
+      summary: Create a new user
+      description: Creates a new user with the provided data.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Email cannot be empty
+                  Password cannot be empty
+                  User with this email already exists
+                  Invalid email
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: Failed to send email
+  /api/v1/teams/manage/{userId}/{teamId}:
+    post:
+      tags:
+        - Teams
+      summary: Add a player to a team
+      description: Adds a user to a team by their IDs.
+      operationId: addPlayerToTeam
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Team name cannot be null or empty
+                  A team with this name already exists
+                  Team captain cannot be null
+                  User with this id does not exist
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Teams
+      summary: Remove a player from a team
+      description: Removes a user from a team by their IDs.
+      operationId: removePlayerFromTeam
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: User with this id is not in the team
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to modify this team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/teams/:
+    get:
+      tags:
+        - Teams
+      summary: Get all teams
+      description: Returns a list of all registered teams in the system.
+      operationId: getAllTeams
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: teamName
+        - name: sortDirection
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    post:
+      tags:
+        - Teams
+      summary: Create a team
+      description: Creates a new team with the provided data.
+      operationId: createTeam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Team name cannot be null or empty
+                  A team with this name already exists
+                  Team captain cannot be null
+                  User with this id does not exist
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/user/:
+    get:
+      tags:
+        - User Posters
+      summary: Get all user posters
+      description: Returns a list of all user posters. Supports pagination using limit and offset.
+      operationId: readUserPosters
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: created_at
+        - name: sortDirection
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    post:
+      tags:
+        - User Posters
+      summary: Create a user poster
+      description: Creates a new user poster with the provided data.
+      operationId: createUserPoster
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPoster'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  User ID cannot be null
+                  Description cannot be empty
+                  CreatedAt date cannot be null
+                  DueDate cannot be before CreatedAt
+                  User not found with id: X
+                  Description cannot exceed 500 characters
+                  DueDate cannot be in the past
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a user poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: sAn unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/team/:
+    get:
+      tags:
+        - Team Posters
+      summary: Get all team posters
+      description: Returns a list of all team posters. Supports pagination using limit and offset, and optional sorting by rating.
+      operationId: readTeamPosters
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: created_at
+        - name: sortDirection
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    post:
+      tags:
+        - Team Posters
+      summary: Create a team poster
+      description: Creates a new team poster for the specified team.
+      operationId: createTeamPoster
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamPoster'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Team ID cannot be null
+                  Description cannot be empty
+                  DueDate cannot be before CreatedAt
+                  TeamPoster not found for team with id: X
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a team poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/{posterId}/leave/{userId}:
+    post:
+      tags:
+        - Match Posters
+      summary: Leave a match poster
+      description: Removes the user from the match poster participants.
+      operationId: leaveMatchPoster
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Match poster not found
+                  Invalid user or poster ID
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to leave this match
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/{posterId}/joinTeam/{teamId}:
+    post:
+      tags:
+        - Match Posters
+      summary: Join a match poster as a team
+      description: Allows a full team (5 members) to join the match poster.
+      operationId: joinTeam
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  Match poster not found
+                  Invalid Team
+                  Teams are already full
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to join this match as a team
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/{posterId}/join/{userId}:
+    post:
+      tags:
+        - Match Posters
+      summary: Join a match poster as a player
+      description: Allows a user to join a match poster with an optional team number (defaults to 100).
+      operationId: joinMatchPoster
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: team
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 100
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: |-
+                  Match poster not found
+                  User already joined the match
+                  User does not exist
+                  Team is full
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to join this match poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/start/{posterId}:
+    post:
+      tags:
+        - Match Posters
+      summary: Start a match
+      description: Starts the match identified by the match poster ID.
+      operationId: startMatch
+      parameters:
+        - name: posterId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid match poster ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to start this match
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/match/:
+    get:
+      tags:
+        - Match Posters
+      summary: Get all match posters
+      description: Returns a list of all match posters with optional pagination.
+      operationId: getAllMatchPosters
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: created_at
+        - name: sortDirection
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    post:
+      tags:
+        - Match Posters
+      summary: Create a match poster
+      description: Creates a new match poster. If a teamId is provided, the entire team joins the match poster.
+      operationId: createMatchPoster
+      parameters:
+        - name: teamId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPoster'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MatchPosterDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: |-
+                  Owner does not exist
+                  Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a match poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/players/:
+    get:
+      tags:
+        - Player
+      summary: Get all players
+      description: Returns a list of players with optional pagination and sorting by rating.
+      operationId: readPlayers
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: rating
+        - name: sortDirection
+          in: query
+          required: false
+          schema:
+            type: string
+            default: desc
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    post:
+      tags:
+        - Player
+      summary: Create a new player
+      description: Creates a new player with the provided data.
+      operationId: createPlayer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  User id is not valid or already assigned to another player
+                  Nickname cannot be null or empty
+                  Player with this nickname already exists
+                  Tag line cannot be null or empty
+                  Tag line must be between 3 and 5 characters long
+                  Tag line must contain only alphanumeric characters
+                  Player with this nickname already exists
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to create a player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/gameSystem/:
+    get:
+      tags:
+        - Game
+      summary: Get All Game Histories
+      description: Retrieve a list of all game histories.
+      operationId: readGameHistories
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+    post:
+      tags:
+        - Game
+      summary: Create New Game History
+      description: Create a new game history entry.
+      operationId: createGameHistory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameHistory'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameHistoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/auth/login:
+    post:
+      tags:
+        - token-controler
+      summary: Generate a token
+      description: Generates a token for a user based on provided credentials.
+      operationId: getToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  User with this email does not exist
+                  User is not activated
+                  Invalid credentials
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+  /api/v1/rating/team/{teamId}:
+    get:
+      tags:
+        - Rating
+      summary: Get Team Rating
+      description: Retrieve the current rating of a team by its team ID.
+      operationId: getTeamRating
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+    patch:
+      tags:
+        - Rating
+      summary: Update Team Rating
+      description: Update the rating of a team by adjusting it based on a given difference.
+      operationId: updateTeamRating
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: difference
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/rating/player/{userId}:
+    get:
+      tags:
+        - Rating
+      summary: Get Player Rating
+      description: Retrieve the current rating of a player by their user ID.
+      operationId: getPlayerRating
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+    patch:
+      tags:
+        - Rating
+      summary: Update Player Rating
+      description: Update the rating of a player by adjusting it based on a given difference.
+      operationId: updatePlayerRating
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: difference
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/posters/user/{userId}:
+    get:
+      tags:
+        - User Posters
+      summary: Get a user poster by user ID
+      description: Returns a single user poster identified by the user's ID.
+      operationId: readUserPoster
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid user ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    delete:
+      tags:
+        - User Posters
+      summary: Delete a user poster
+      description: Deletes the user poster identified by the user's ID.
+      operationId: deleteUserPoster
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: nvalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to delete this user poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - User Posters
+      summary: Update a user poster
+      description: Partially updates the user poster identified by the user's ID. Non-empty fields overwrite existing values.
+      operationId: updateUserPoster
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPoster'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: |-
+                  User ID cannot be null
+                  Description cannot be empty
+                  CreatedAt date cannot be null
+                  DueDate cannot be before CreatedAt
+                  User not found with id: X
+                  Description cannot exceed 500 characters
+                  DueDate cannot be in the past
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this user poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/posters/team/{teamId}:
+    get:
+      tags:
+        - Team Posters
+      summary: Get a team poster by team ID
+      description: Returns a single team poster identified by the team's ID.
+      operationId: readTeamPoster
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid team ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to access this resource
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+    delete:
+      tags:
+        - Team Posters
+      summary: Delete a team poster
+      description: Deletes the team poster identified by the team's ID.
+      operationId: deleteTeamPoster
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to delete this team poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - Team Posters
+      summary: Update a team poster
+      description: Partially updates the team poster identified by the team's ID. Non-empty fields overwrite existing values.
+      operationId: updateTeamPoster
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamPoster'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeamPoster'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: |-
+                  Team ID cannot be null
+                  Description cannot be empty
+                  DueDate cannot be before CreatedAt
+                  Team not found with id
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to update this team poster
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+      security:
+        - bearerAuth: []
+  /api/v1/gameSystem/{id}:
+    delete:
+      tags:
+        - Game
+      summary: Delete Game History
+      description: Delete a game history entry by its ID.
+      operationId: deleteGameHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - Game
+      summary: Update Game History
+      description: Update the details of an existing game history entry.
+      operationId: updateGameHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameHistory'
+        required: true
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameHistoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/gameSystem/stage/{id}:
+    patch:
+      tags:
+        - Game
+      summary: Start Game
+      description: Start a game by updating the game history to reflect the started status.
+      operationId: startGame
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameHistoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+  /api/v1/register/:
+    get:
+      tags:
+        - Email
+      summary: Confirm email
+      description: Endpoint to confirm user registration via email
+      operationId: ReciveEmail
+      parameters:
+        - name: confirm
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/rating/team/best:
+    get:
+      tags:
+        - Rating
+      summary: Get Best Teams
+      description: Retrieve a list of the top teams with the highest ratings.
+      operationId: getBestTeams
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/rating/player/best:
+    get:
+      tags:
+        - Rating
+      summary: Get Best Players
+      description: Retrieve a list of the top players with the highest ratings.
+      operationId: getBestPlayers
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/players/rank/{userId}:
+    get:
+      tags:
+        - Player
+      summary: Refresh player data
+      description: Refreshes player data from external services by user ID.
+      operationId: getPlayerRank
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeagueDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: Invalid user ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to refresh this player
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: Player with ID X not found
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+  /api/v1/players/details/{userId}:
+    get:
+      tags:
+        - Player
+      summary: Refresh player data
+      description: Refreshes player data from external services by user ID.
+      operationId: refreshPlayer
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: nvalid user ID format
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: You do not have permission to refresh this player
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: An unexpected error occurred on the server
+  /api/v1/gameSystem/{matchId}:
+    get:
+      tags:
+        - Game
+      summary: Get Game History
+      description: Retrieve the game history for a specific match by its ID.
+      operationId: readGameHistory
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameHistoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/gameSystem/userHistory/{userId}:
+    get:
+      tags:
+        - Game
+      summary: Get User Game Histories
+      description: Retrieve a list of game histories for a specific user by their user ID.
+      operationId: readGameHistoriesByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/gameSystem/teamHistory/{teamId}:
+    get:
+      tags:
+        - Game
+      summary: Get Team Game Histories
+      description: Retrieve a list of game histories for a specific team by their team ID.
+      operationId: readGameHistoriesByTeamId
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UnAuthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/auth/logout:
+    delete:
+      tags:
+        - token-controler
+      summary: Delete a token
+      description: Deletes (invalidates) the token from the system.
+      operationId: deleteToken
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: Invalid request parameters
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: Invalid or missing authentication token
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: You do not have permission to perform this action
+        '500':
+          description: InternalServerError
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: An unexpected error occurred on the server
+components:
+  schemas:
+    User:
+      required:
+        - email
+        - enabled
+        - password
+        - role
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address of the user
+          example: studentx@student.pwr.edu.pl
+        password:
+          type: string
+          description: Password of the user
+          writeOnly: true
+          example: password
+        role:
+          type: string
+          description: Role of the user
+          example: USER
+          enum:
+            - ADMIN
+            - USER
+        enabled:
+          type: boolean
+          description: Flag indicating if the user is verified by email
+          example: false
+        id:
+          type: integer
+          format: int64
+    Team:
+      required:
+        - rating
+        - teamCaptain
+        - teamName
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the team
+          format: int64
+          readOnly: true
+          example: 1
+        teamName:
+          type: string
+          description: Name of the team
+          example: Dream Team
+        description:
+          type: string
+          description: Description of the team
+          example: A team focused on achieving excellence.
+        teamCaptain:
+          type: integer
+          description: ID of the team captain(valid userId)
+          format: int64
+          example: 42
+        rating:
+          type: integer
+          description: Rating of the team
+          format: int32
+          example: 1000
+    TeamDTO:
+      type: object
+      properties:
+        team:
+          $ref: '#/components/schemas/Team'
+        users:
+          type: array
+          items:
+            type: integer
+            format: int64
+    MatchPoster:
+      required:
+        - ownerId
+        - ranked
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the match poster
+          format: int64
+          readOnly: true
+          example: 1
+        ownerId:
+          type: integer
+          description: Owner ID associated with the match poster
+          format: int64
+          example: 303
+        ranked:
+          type: boolean
+          description: Indicates whether the match is ranked
+          example: true
+        description:
+          type: string
+          description: Description of the match poster
+          example: This is a competitive match poster.
+        dueDate:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    MatchParticipant:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        matchId:
+          type: integer
+          format: int64
+        teamId:
+          type: integer
+          format: int64
+        riot_team_number:
+          type: integer
+          format: int32
+    MatchPosterDTO:
+      type: object
+      properties:
+        matchPoster:
+          $ref: '#/components/schemas/MatchPoster'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchParticipant'
+    Player:
+      required:
+        - rating
+        - userId
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the player (cosmetic)
+          format: int64
+          readOnly: true
+          example: 1
+        userId:
+          type: integer
+          description: User ID associated with the player
+          format: int64
+          example: 404
+        nickname:
+          type: string
+          description: Player's nickname
+          example: ShadowHunter
+        tagLine:
+          type: string
+          description: Player's tagline
+          example: '1234'
+        opgg:
+          type: string
+          description: OP.GG link for the player
+          example: https://eune.op.gg/summoner/userName=ShadowHunter
+        description:
+          type: string
+          description: Description of the player
+          example: An experienced player specializing in jungle roles.
+        lastUpdate:
+          type: string
+          description: Timestamp of the last player update
+          format: date-time
+        rating:
+          type: integer
+          description: Player's rating
+          format: int32
+          example: 1000
+        puuid:
+          type: string
+          description: Player's PUUID (from Riot API, not editable by the user)
+          example: 3zX7g4f...
+        summonerid:
+          type: string
+          description: Player's Summoner ID (from Riot API, not editable by the user)
+          example: AB123CDEF456...
+        accountId:
+          type: string
+          description: Player's account ID (from Riot API, not editable by the user)
+          example: XY789Z456...
+        profileIconId:
+          type: integer
+          description: ID of the player's profile icon (from Riot API, not editable by the user)
+          format: int32
+          example: 123
+        summonerLevel:
+          type: integer
+          description: Player's summoner level (from Riot API, not editable by the user)
+          format: int64
+          example: 30
+    GameHistory:
+      required:
+        - matchId
+        - matchStatus
+        - winner
+      type: object
+      properties:
+        matchId:
+          type: integer
+          description: ID of the match associated with this history entry
+          format: int64
+          example: 101
+        riotMatchId:
+          type: string
+          description: Riot's match identifier
+          example: EUW1_1234567890
+        startMatchDate:
+          type: string
+          description: Start date and time of the match
+          format: date-time
+        endMatchDate:
+          type: string
+          description: End date and time of the match
+          format: date-time
+        matchStatus:
+          type: string
+          description: Status of the match
+          example: COMPLETED
+          enum:
+            - ON_GOING
+            - FINISHED
+        winner:
+          type: integer
+          description: ID of the winning team in RIOT's format 100 or 200
+          format: int32
+          example: 100
+        jsonData:
+          type: string
+          description: Match Meta Data details stored as JSON
+          readOnly: true
+        id:
+          type: integer
+          format: int64
+    GameHistoryDTO:
+      type: object
+      properties:
+        gameHistory:
+          $ref: '#/components/schemas/GameHistory'
+        matchParticipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchParticipant'
+    UserPoster:
+      required:
+        - userId
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user poster
+          format: int64
+          readOnly: true
+          example: 1
+        userId:
+          type: integer
+          description: User ID associated with the poster
+          format: int64
+          example: 101
+        description:
+          type: string
+          description: Description of the poster
+          example: This is a user-specific poster.
+        dueDate:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    TeamPoster:
+      required:
+        - teamId
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the team poster
+          format: int64
+          readOnly: true
+          example: 1
+        teamId:
+          type: integer
+          description: Team ID associated with the poster
+          format: int64
+          example: 202
+        description:
+          type: string
+          description: Description of the poster
+          example: This is a team-specific poster.
+        dueDate:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    LoginRequestDTO:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Token:
+      type: object
+      properties:
+        assignedUser:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        due:
+          type: string
+          format: date-time
+    LeagueDTO:
+      type: object
+      properties:
+        leagueId:
+          type: string
+        queueType:
+          type: string
+        tier:
+          type: string
+        rank:
+          type: string
+        summonerId:
+          type: string
+        leaguePoints:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+        losses:
+          type: integer
+          format: int32
+        hotStreak:
+          type: boolean
+        veteran:
+          type: boolean
+        freshBlood:
+          type: boolean
+        inactive:
+          type: boolean
+        miniSeries:
+          type: boolean
+        target:
+          type: integer
+          format: int32
+        progress:
+          type: integer
+          format: int32
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: Custom Bearer Token authentication
+      in: header
+      scheme: bearer
+      bearerFormat: CustomToken
