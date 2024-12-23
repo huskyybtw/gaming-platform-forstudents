@@ -1,7 +1,8 @@
-import './App.css'
+import './styles/App.css';
 
 function App() {
-  return <h1> Bazydanych </h1>
+  return <main>
+  </main>
 }
 
 export default App
