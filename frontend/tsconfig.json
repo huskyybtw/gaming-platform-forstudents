@@ -3,5 +3,13 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+
+  "compilerOptions": {
+    "module": "ESNext",           // Ensure ESNext is used for import.meta support
+    "lib": ["dom", "esnext"],    // Include DOM and ESNext libraries
+    "target": "ESNext",          // Recommended for modern projects
+    "strict": true
+  }
+
 }

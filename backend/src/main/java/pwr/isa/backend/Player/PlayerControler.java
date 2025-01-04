@@ -65,7 +65,7 @@ public class PlayerControler {
     })
     @GetMapping(path= "/{userId}")
     public ResponseEntity<Player> readPlayer(@PathVariable Long userId) {
-        return new ResponseEntity<>(playerService.getPlayerById(userId), HttpStatus.FOUND);
+        return new ResponseEntity<>(playerService.getPlayerById(userId), HttpStatus.OK);
     }
 
 
@@ -105,7 +105,6 @@ public class PlayerControler {
     public ResponseEntity<List<LeagueDTO>> getPlayerRank(@PathVariable Long userId) {
         return new ResponseEntity<>(playerService.getPlayerRank(userId), HttpStatus.OK);
     }
-
 
 
     @Operation(summary = "Create a new player", description = "Creates a new player with the provided data.")

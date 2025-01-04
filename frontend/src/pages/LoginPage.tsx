@@ -1,9 +1,10 @@
-function loginPage(){
+import { useNavigate } from 'react-router-dom';
+
+function LoginPage(){
+    const navigate = useNavigate();
     return (
-        <div>
-            <h1>Login Page</h1>
-        </div>
+        <button onClick={() => navigate("/profile")}> Login</button>
     );
 }
 
-export default loginPage;
+export default LoginPage;

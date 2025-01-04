@@ -1,14 +1,15 @@
-import Profile from "./Profile.tsx";
+import { useNavigate } from 'react-router-dom';
 
-function navBar(){
+function NavBar(){
+    const navigate = useNavigate();
     return <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-            <button className="nav-item btn btn-dark">LeaderBoards</button>
-            <button className="nav-item btn btn-dark">FindGames</button>
-            <button className="nav-item btn btn-dark">FindPlayers</button>
-            <Profile/>
+            <button onClick={() => navigate('/leaderboards')} className="nav-item btn btn-dark">LeaderBoards</button>
+            <button onClick={() => navigate('/games')} className="nav-item btn btn-dark">FindGames</button>
+            <button onClick={() => navigate('/players')} className="nav-item btn btn-dark">FindPlayers</button>
+            <button onClick={() => navigate('/profile')} type="button" className="nav-item btn btn-dark">Profile</button>
         </div>
     </nav>
 }
 
-export default navBar;
+export default NavBar;
