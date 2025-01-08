@@ -14,7 +14,7 @@ interface MatchPoster {
 
 interface TeamPoster {
     id: number;
-    teamId: number;  // Zmieniliśmy teamName na teamId
+    teamId: number;
     description: string;
     dueDate: string;
     createdAt: string;
@@ -22,9 +22,20 @@ interface TeamPoster {
     type: 'TeamPoster';
 }
 
+interface UserPoster {
+    id: number;
+    userId: number;  // Dodajemy userId
+    description: string;
+    dueDate: string;
+    createdAt: string;
+    updatedAt: string;
+    type: 'UserPoster';
+}
+
 const MainPage: React.FC = () => {
     const [matchPosters, setMatchPosters] = useState<MatchPoster[]>([]);
     const [teamPosters, setTeamPosters] = useState<TeamPoster[]>([]);
+    const [userPosters, setUserPosters] = useState<UserPoster[]>([]); // Nowy stan dla UserPoster
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
@@ -32,8 +43,9 @@ const MainPage: React.FC = () => {
             try {
                 const matchResponse = await axios.get<MatchPoster[]>('http://localhost:8080/api/v1/posters/match/');
                 const teamResponse = await axios.get<TeamPoster[]>('http://localhost:8080/api/v1/posters/team/');
+                const userResponse = await axios.get<UserPoster[]>('http://localhost:8080/api/v1/posters/user/'); // Pobieranie danych UserPoster
 
-                // Mapujemy dane z API na odpowiedni format
+                // Mapowanie odpowiedzi na odpowiedni format
                 const formattedMatchPosters: MatchPoster[] = matchResponse.data.map((item: any) => ({
                     id: item.matchPoster.id,
                     title: `Match ${item.matchPoster.id}`,
@@ -54,8 +66,19 @@ const MainPage: React.FC = () => {
                     type: 'TeamPoster',
                 }));
 
+                const formattedUserPosters: UserPoster[] = userResponse.data.map((item: any) => ({
+                    id: item.id,
+                    userId: item.userId,
+                    description: item.description,
+                    dueDate: item.dueDate,
+                    createdAt: item.createdAt,
+                    updatedAt: item.updatedAt,
+                    type: 'UserPoster',
+                }));
+
                 setMatchPosters(formattedMatchPosters);
                 setTeamPosters(formattedTeamPosters);
+                setUserPosters(formattedUserPosters);  // Ustawienie danych UserPoster
             } catch (err) {
                 setError('Nie udało się załadować plakatów. Spróbuj ponownie później.');
             }
@@ -66,7 +89,7 @@ const MainPage: React.FC = () => {
 
     return (
         <div className="main-page">
-            <h1>Ogłoszenia</h1>
+            <h1>Postery/demo</h1>
             {error && <p className="error-message">{error}</p>}
 
             <h2>Match Posters</h2>
@@ -87,6 +110,19 @@ const MainPage: React.FC = () => {
                 {teamPosters.map((poster) => (
                     <div key={poster.id} className="poster-card">
                         <h3>Team {poster.teamId}</h3>
+                        <p>{poster.description}</p>
+                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                        <p>Ostatnia aktualizacja: {new Date(poster.updatedAt).toLocaleDateString()}</p>
+                    </div>
+                ))}
+            </div>
+
+            <h2>User Posters</h2>
+            <div className="posters-container">
+                {userPosters.map((poster) => (
+                    <div key={poster.id} className="poster-card">
+                        <h3>User {poster.userId}</h3>
                         <p>{poster.description}</p>
                         <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
                         <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
