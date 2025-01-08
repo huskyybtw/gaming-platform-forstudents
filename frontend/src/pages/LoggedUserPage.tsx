@@ -6,41 +6,56 @@ interface MatchPoster {
     id: number;
     title: string;
     description: string;
-    date: string;
     dueDate: string;
+    createdAt: string;
+    updatedAt: string;
+    type: 'MatchPoster';
 }
 
-interface ApiResponse {
-    matchPoster: {
-        id: number;
-        ranked: boolean;
-        description: string;
-        dueDate: string;
-    };
-    participants: {
-        userId: number;
-        matchId: number;
-        teamId: number;
-        riot_team_number: number;
-    }[];
+interface TeamPoster {
+    id: number;
+    teamId: number;  // Zmieniliśmy teamName na teamId
+    description: string;
+    dueDate: string;
+    createdAt: string;
+    updatedAt: string;
+    type: 'TeamPoster';
 }
 
 const MainPage: React.FC = () => {
-    const [posters, setPosters] = useState<MatchPoster[]>([]);
+    const [matchPosters, setMatchPosters] = useState<MatchPoster[]>([]);
+    const [teamPosters, setTeamPosters] = useState<TeamPoster[]>([]);
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
         const fetchPosters = async () => {
             try {
-                const response = await axios.get<ApiResponse[]>('http://localhost:8080/api/v1/posters/match/');
-                const formattedData: MatchPoster[] = response.data.map((item) => ({
+                const matchResponse = await axios.get<MatchPoster[]>('http://localhost:8080/api/v1/posters/match/');
+                const teamResponse = await axios.get<TeamPoster[]>('http://localhost:8080/api/v1/posters/team/');
+
+                // Mapujemy dane z API na odpowiedni format
+                const formattedMatchPosters: MatchPoster[] = matchResponse.data.map((item: any) => ({
                     id: item.matchPoster.id,
-                    title: item.matchPoster.ranked ? 'Ranked Match' : 'Casual Match',
+                    title: `Match ${item.matchPoster.id}`,
                     description: item.matchPoster.description,
-                    date: item.matchPoster.dueDate,
                     dueDate: item.matchPoster.dueDate,
+                    createdAt: item.matchPoster.createdAt,
+                    updatedAt: item.matchPoster.updatedAt,
+                    type: 'MatchPoster',
                 }));
-                setPosters(formattedData);
+
+                const formattedTeamPosters: TeamPoster[] = teamResponse.data.map((item: any) => ({
+                    id: item.id,
+                    teamId: item.teamId,
+                    description: item.description,
+                    dueDate: item.dueDate,
+                    createdAt: item.createdAt,
+                    updatedAt: item.updatedAt,
+                    type: 'TeamPoster',
+                }));
+
+                setMatchPosters(formattedMatchPosters);
+                setTeamPosters(formattedTeamPosters);
             } catch (err) {
                 setError('Nie udało się załadować plakatów. Spróbuj ponownie później.');
             }
@@ -51,15 +66,31 @@ const MainPage: React.FC = () => {
 
     return (
         <div className="main-page">
-            <h1>Postery</h1>
+            <h1>Ogłoszenia</h1>
             {error && <p className="error-message">{error}</p>}
+
+            <h2>Match Posters</h2>
             <div className="posters-container">
-                {posters.map((poster) => (
+                {matchPosters.map((poster) => (
                     <div key={poster.id} className="poster-card">
-                        <h2>{poster.title}</h2>
+                        <h3>{poster.title}</h3>
                         <p>{poster.description}</p>
-                        <p>Data utworzenia: {new Date(poster.date).toLocaleDateString()}</p>
+                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
                         <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                        <p>Ostatnia aktualizacja: {new Date(poster.updatedAt).toLocaleDateString()}</p>
+                    </div>
+                ))}
+            </div>
+
+            <h2>Team Posters</h2>
+            <div className="posters-container">
+                {teamPosters.map((poster) => (
+                    <div key={poster.id} className="poster-card">
+                        <h3>Team {poster.teamId}</h3>
+                        <p>{poster.description}</p>
+                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                        <p>Ostatnia aktualizacja: {new Date(poster.updatedAt).toLocaleDateString()}</p>
                     </div>
                 ))}
             </div>
