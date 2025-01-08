@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
             });
             const { token } = response.data;
             localStorage.setItem('authToken', token);
-            navigate('/dashboard'); // Jeszcze nic tu NIE MA
+            navigate('/profile'); // Jeszcze nic tu NIE MA
         } catch (err) {
             setError('Nieprawidłowy e-mail lub hasło.');
         }
