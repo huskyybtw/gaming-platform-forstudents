@@ -10,19 +10,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class LeagueDTO {
-    String leagueId;
-    String queueType;
-    String tier;
-    String rank;
-    String summonerId;
-    int leaguePoints;
-    int wins;
-    int losses;
-    boolean hotStreak;
-    boolean veteran;
-    boolean freshBlood;
-    boolean inactive;
-    boolean miniSeries;
-    int target;
-    int progress;
+    String leagueId = "unranked"; // Default value if no rank
+    String queueType = "unranked"; // Default value if no rank
+    String tier = "unranked"; // Default value
+    String rank = null; // Default value
+    String summonerId = "unranked"; // Default value
+    int leaguePoints = 0; // Default value if no rank
+    int wins = 0; // Default value
+    int losses = 0; // Default value
+    boolean hotStreak = false; // Default value
+    boolean veteran = false; // Default value
+    boolean freshBlood = false; // Default value
+    boolean inactive = false; // Default value
+    boolean miniSeries = false; // Default value
+    int target = 0; // Default value
+    int progress = 0; // Default value
 }
+
