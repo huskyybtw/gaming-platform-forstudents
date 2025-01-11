@@ -5,8 +5,27 @@ import UpdateRiotDetailsFrom from "../components/UpdateRiotDetailsFrom.tsx";
 import UpdateUserDetailsFrom from "../components/UpdateUserDetailsFrom.tsx";
 import MatchHistoryDisplay from "../components/MatchHistoryDisplay.tsx";
 import PlayerRankDisplay from "../components/PlayerRankDisplay.tsx";
+import {useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import Cookies from "js-cookie";
+
+
 
 function ProfilePage() {
+    const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
+
+    useEffect(() => {
+        const userId = Cookies.get("userId");
+
+        if (userId) {
+            setLoggedInUserId(parseInt(userId, 10));
+        }
+    }, []);
+
+    const { id } = useParams<{ id: string }>();
+    const profileId = id ? parseInt(id, 10) : parseInt(Cookies.get('userId') || '', 10);
+
+    const isLoggedInUserProfile = loggedInUserId === profileId;
 
     return (
         <div className="d-flex flex-column vh-100">
@@ -20,9 +39,13 @@ function ProfilePage() {
                     }}
                 >
                     <div className="bg-light p-3 rounded">
-                        <UpdateUserDetailsFrom />
-                        <br></br>
-                        <UpdateRiotDetailsFrom />
+                        {isLoggedInUserProfile && (
+                            <>
+                                <UpdateUserDetailsFrom />
+                                <br />
+                            </>
+                        )}
+                        <UpdateRiotDetailsFrom userId={profileId} isLoggedUser={isLoggedInUserProfile}/>
                         <br></br>
                         <PlayerRankDisplay />
                     </div>

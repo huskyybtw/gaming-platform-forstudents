@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import pwr.isa.backend.Exceptions.NotAuthenticatedException;
 import pwr.isa.backend.Security.TokenSystem.TokenService;
 import pwr.isa.backend.User.User;
 
@@ -21,7 +22,7 @@ public class AuthUtils {
     public static User getUserFromToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         if (authorization == null) {
-            throw new IllegalStateException("No Authorization header found in the request");
+            throw new NotAuthenticatedException("No Authorization header found in the request");
         }
         String token = authorization.substring(7);
         return tokenService.getUserFromToken(token);

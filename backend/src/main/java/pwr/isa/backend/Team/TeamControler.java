@@ -67,7 +67,6 @@ public class TeamControler {
     }
 
 
-
     @Operation(summary = "Create a team", description = "Creates a new team with the provided data.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created"),

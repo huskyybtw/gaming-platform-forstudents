@@ -1,22 +1,35 @@
-import {ChangeEvent, useEffect, useState} from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import axios from "axios";
 import * as React from "react";
 
-interface ProfileData{
-    nickname: string,
-    tagLine: string,
-    rating: number,
-    summonerLevel: number,
-    profileIconId: number,
-    description: string
+interface ProfileData {
+    nickname: string;
+    tagLine: string;
+    rating: number;
+    summonerLevel: number;
+    profileIconId: number;
+    description: string;
 }
 
-function UpdateRiotDetailsFrom(){
+interface Props {
+    userId: number
+    isLoggedUser: boolean
+}
+
+
+function UpdateRiotDetailsFrom(props: Props) {
     const [profileData, setProfileData] = useState({} as ProfileData);
+    const [isEditing, setIsEditing] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastType, setToastType] = useState("success"); // 'success' or 'danger'
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/players/1`);
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/${props.userId}`
+                );
                 setProfileData(response.data);
             } catch (err) {
                 console.error("Error fetching data:", err);
@@ -27,11 +40,16 @@ function UpdateRiotDetailsFrom(){
     }, []);
 
     const refreshData = async () => {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/players/details/1`);
-        setProfileData(response.data);
-    }
-
-    const [isEditing, setIsEditing] = useState(false);
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/details/${props.userId}`
+            );
+            setProfileData(response.data);
+            showToastNotification("Data refreshed successfully!", "success");
+        } catch (err) {
+            showToastNotification("Error refreshing data.", "danger");
+        }
+    };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -43,29 +61,44 @@ function UpdateRiotDetailsFrom(){
 
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Updated user data:', profileData);
+        console.log("Updated user data:", profileData);
         setIsEditing(false);
+        showToastNotification("Profile updated successfully!", "success");
     };
 
     const closeModal = () => {
         setIsEditing(false);
     };
 
+    const showToastNotification = (message: string, type: string) => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000);
+    };
+
     return (
         <div>
-            <h2> Riot Details</h2>
+            <h2>Riot Details</h2>
             <div>
                 {profileData && (
                     <ul className="list-group">
-                        <li className="list-group-item">Nickname: {profileData.nickname}#{profileData.tagLine}</li>
+                        <li className="list-group-item">
+                            Nickname: {profileData.nickname}#{profileData.tagLine}
+                        </li>
                         <li className="list-group-item">Rating: {profileData.rating}</li>
-                        <li className="list-group-item">Summoner Level: {profileData.summonerLevel}</li>
+                        <li className="list-group-item">
+                            Summoner Level: {profileData.summonerLevel}
+                        </li>
                         <li className="list-group-item">
                             {profileData.profileIconId && (
                                 <img
                                     src={`https://ddragon.leagueoflegends.com/cdn/14.24.1/img/profileicon/${profileData.profileIconId}.png`}
                                     alt={`Profile Icon ${profileData.profileIconId}`}
-                                    style={{width: "50px", height: "50px", borderRadius: "50%"}}
+                                    style={{ width: "50px", height: "50px", borderRadius: "50%" }}
                                 />
                             )}
                         </li>
@@ -74,22 +107,24 @@ function UpdateRiotDetailsFrom(){
                                 href={`https://www.op.gg/summoners/eune/${profileData.nickname}-${profileData.tagLine}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{display: "flex", alignItems: "center"}}
+                                style={{ display: "flex", alignItems: "center" }}
                             >
                                 <img
                                     src="https://cdn.brandfetch.io/idrLeSINfM/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B"
                                     alt="op.gg icon"
-                                    style={{width: "24px", height: "24px", marginRight: "10px"}}
+                                    style={{ width: "24px", height: "24px", marginRight: "10px" }}
                                 />
                             </a>
                         </li>
                         <li className="list-group-item">Description: {profileData.description}</li>
                     </ul>
                 )}
-                <br></br>
-                <button className="btn btn-warning" onClick={() => setIsEditing(true)}>
-                    Edit
-                </button>
+                <br />
+                {props.isLoggedUser && (
+                    <button className="btn btn-warning" onClick={() => setIsEditing(true)}>
+                        Edit
+                    </button>
+                )}
                 <button className="btn btn-danger" onClick={() => refreshData()}>
                     Refresh
                 </button>
@@ -97,10 +132,28 @@ function UpdateRiotDetailsFrom(){
 
             {isEditing && (
                 <div style={modalBackdropStyle}>
-                    <div style={modalContainerStyle}>
+                    <div style={{...modalContainerStyle, position: "relative"}}>
                         <h2>Update Profile</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
+                                <button
+                                    type="button"
+                                    onClick={closeModal}
+                                    style={{
+                                        position: "absolute",
+                                        top: "10px",
+                                        right: "10px",
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        fontSize: "24px",
+                                        fontWeight: "bold",
+                                        color: "#333",
+                                        cursor: "pointer",
+                                    }}
+                                    aria-label="Close"
+                                >
+                                    &times;
+                                </button>
                                 <label htmlFor="username" className="form-label">
                                     Riot ID
                                 </label>
@@ -152,42 +205,56 @@ function UpdateRiotDetailsFrom(){
                                 <button type="submit" className="btn btn-primary">
                                     Update
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={closeModal}
-                                >
-                                    Cancel
-                                </button>
                             </div>
                         </form>
+                    </div>
                 </div>
+            )}
+
+            {showToast && (
+                <div
+                    className={`toast align-items-center show ${toastType === "success" ? "bg-success" : "bg-danger"}`}
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    style={{position: "fixed", bottom: "20px", right: "20px", zIndex: 9999}}
+                >
+                    <div className="d-flex">
+                    <div className="toast-body">
+                            {toastMessage}
+                        </div>
+                        <button
+                            type="button"
+                            className="btn-close me-2 m-auto"
+                            aria-label="Close"
+                            onClick={() => setShowToast(false)}
+                        ></button>
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
-
 const modalBackdropStyle: React.CSSProperties = {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1000,
 };
 
 const modalContainerStyle: React.CSSProperties = {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '400px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "8px",
+    width: "400px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
 };
 
 export default UpdateRiotDetailsFrom;

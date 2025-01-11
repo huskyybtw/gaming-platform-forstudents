@@ -1,6 +1,8 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import * as React from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
+import Cookies from "js-cookie";
 
 interface UserData {
     email: string;
@@ -8,29 +10,41 @@ interface UserData {
     confirmPassword: string;
 }
 
-const headers ={
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${"test"}`
-}
+const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${Cookies.get("token")}`,
+};
+
 
 function UpdateUserDetailsForm() {
-
     const [userData, setUserData] = useState({} as UserData);
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastType, setToastType] = useState("success");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/1`, {headers});
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
+                    { headers }
+                );
                 setUserData(response.data);
-            } catch (err) {
-                console.error("Error fetching data:", err);
+            } catch (err: any) {
+                if (err.response && err.response.status === 403) {
+                    navigate("/forbidden");
+                } else {
+                    console.error("Error fetching data:", err);
+                }
             }
         };
 
         fetchData();
-    }, []);
-
-    const [isEditing, setIsEditing] = useState(false);
+    }, [navigate]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -42,14 +56,24 @@ function UpdateUserDetailsForm() {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         if (userData.password !== userData.confirmPassword) {
-            alert("Passwords do not match!");
+            showToastNotification("Passwords do not match!", "danger");
             return;
         }
-        // Add form submission logic here
+        showToastNotification("Password updated successfully!", "success");
     };
 
-    // Close the modal
+    const showToastNotification = (message: string, type: string) => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000);
+    };
+
     const closeModal = () => {
         setIsEditing(false);
     };
@@ -57,22 +81,64 @@ function UpdateUserDetailsForm() {
     return (
         <div>
             <h2>Profile Details</h2>
-
-            {/* Display user details */}
             <div>
                 <ul className={"list-group"}>
-                    <li className={"list-group-item"}><strong>Email:</strong> {userData.email}</li>
+                    <li className={"list-group-item"}>
+                        <strong>Email:</strong> {userData.email}
+                    </li>
                 </ul>
-                <br></br>
+                <br />
                 <button className="btn btn-warning" onClick={() => setIsEditing(true)}>
-                    Change Password
+                    Edit Email/password
                 </button>
             </div>
 
-            {/* Modal for editing */}
             {isEditing && (
                 <div style={modalBackdropStyle}>
-                    <div style={modalContainerStyle}>
+                    <div style={{ ...modalContainerStyle, position: "relative" }}>
+                        {/* Close button */}
+                        <button
+                            type="button"
+                            onClick={closeModal}
+                            style={{
+                                position: "absolute",
+                                top: "10px",
+                                right: "10px",
+                                backgroundColor: "transparent",
+                                border: "none",
+                                fontSize: "24px",
+                                fontWeight: "bold",
+                                color: "#333",
+                                cursor: "pointer",
+                            }}
+                            aria-label="Close"
+                        >
+                            &times;
+                        </button>
+
+                        {/* Email Update Form */}
+                        <h2>Update Email</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="email"
+                                    name="email"
+                                    onChange={handleChange}
+                                    placeholder="example@gmail.com"
+                                />
+                            </div>
+                            <div>
+                                <button type="submit" className="btn btn-primary">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+
+                        <br />
+
+                        {/* Password Update Form */}
                         <h2>Update Password</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
@@ -99,15 +165,39 @@ function UpdateUserDetailsForm() {
                                 <button type="submit" className="btn btn-primary">
                                     Update
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={closeModal}
-                                >
-                                    Cancel
-                                </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+
+
+            {showToast && (
+                <div
+                    className={`toast align-items-center show ${
+                        toastType === "success" ? "bg-success" : "bg-danger"
+                    }`}
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    style={{
+                        position: "fixed",
+                        bottom: "20px",
+                        right: "20px",
+                        zIndex: 9999,
+                        maxWidth: "300px",
+                    }}
+                >
+                    <div className="d-flex">
+                        <div className="toast-body">{toastMessage}</div>
+                        <button
+                            type="button"
+                            className="btn-close me-2 m-auto"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"
+                            onClick={() => setShowToast(false)}
+                        ></button>
                     </div>
                 </div>
             )}
@@ -115,26 +205,25 @@ function UpdateUserDetailsForm() {
     );
 }
 
-// Inline styles for the modal
 const modalBackdropStyle: React.CSSProperties = {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1000,
 };
 
 const modalContainerStyle: React.CSSProperties = {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '400px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "8px",
+    width: "400px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
 };
 
 export default UpdateUserDetailsForm;
