@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/LoginPage.css';
+import Cookies from "js-cookie";
+
+interface AssignedUser {
+    id: string;
+    email: string;
+    role: string;
+    enabled: boolean;
+}
 
 interface LoginResponse {
     token: string;
+    assignedUser: AssignedUser;
 }
 
 const LoginPage: React.FC = () => {
@@ -25,9 +34,12 @@ const LoginPage: React.FC = () => {
                 email,
                 password,
             });
+            console.log(response.data);
+            const userId = response.data.assignedUser.id
             const { token } = response.data;
-            localStorage.setItem('authToken', token);
-            navigate('/profile'); // Jeszcze nic tu NIE MA
+            Cookies.set('userId', userId);
+            Cookies.set('token', token);
+            navigate('/profile/' + userId);
         } catch (err) {
             setError('Nieprawidłowy e-mail lub hasło.');
         }
