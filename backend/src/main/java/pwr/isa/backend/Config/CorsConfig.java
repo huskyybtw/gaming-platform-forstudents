@@ -15,6 +15,7 @@ public class CorsConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:*")
                         .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("http://localhost:5174")
                         .allowedHeaders("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true); // If cookies or credentials are used
