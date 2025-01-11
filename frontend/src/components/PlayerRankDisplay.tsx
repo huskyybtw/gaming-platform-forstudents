@@ -34,8 +34,11 @@ function PlayerRankDisplay() {
 
         fetchData();
     }, []);
-
+    console.log(profileData);
     const getRankIcon = (tier: string): string => {
+        if(tier === "unranked") {
+            return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/unranked-emblem.png`;
+        }
         return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier.toLowerCase()}.png`;
     };
 
@@ -82,7 +85,7 @@ function PlayerRankDisplay() {
                             </p>
                             <p>
                                 <strong>Win Rate:</strong>{" "}
-                                {((rank.wins / (rank.wins + rank.losses)) * 100).toFixed(2)}%
+                                {((rank.wins + rank.losses) === 0 ? "0.00" : ((rank.wins / (rank.wins + rank.losses)) * 100).toFixed(2))}%
                             </p>
                         </div>
                     </div>

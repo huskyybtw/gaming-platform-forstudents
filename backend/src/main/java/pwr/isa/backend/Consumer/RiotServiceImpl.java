@@ -42,8 +42,6 @@ public class RiotServiceImpl implements RiotService {
         SummonerDTO summonerDTO = getSummonerDTO(accountDTO.getPuuid());
         List<LeagueDTO> leagueDTO = getLeagueDTO(summonerDTO.getSummonerId());
 
-        //leaguDTO nie dziala jesli gracz nie ma rangi
-
         return PlayerDetailsDTO.builder()
                 .gameName(username)
                 .tagLine(tag)
@@ -80,12 +78,26 @@ public class RiotServiceImpl implements RiotService {
 
     @Override
     public List<LeagueDTO> getLeagueDTO(String summonerId) {
-        return EUNE_WEB_CLIENT.get()
+        // Fetch the list of LeagueDTO from the API
+        List<LeagueDTO> fetchedLeagueDTO = EUNE_WEB_CLIENT.get()
                 .uri("lol/league/v4/entries/by-summoner/" + summonerId + "?api_key=" + API_KEY)
                 .retrieve()
                 .bodyToFlux(LeagueDTO.class)
                 .collectList()
                 .block();
+
+        for (int i = 0; i < Math.min(fetchedLeagueDTO.size(), 2); i++) {
+            if (fetchedLeagueDTO.get(i) == null) {
+                fetchedLeagueDTO.set(i, new LeagueDTO());  // Replace null with an empty LeagueDTO
+            }
+        }
+
+        // If there are fewer than 2 elements, add an empty LeagueDTO
+        while (fetchedLeagueDTO.size() < 2) {
+            fetchedLeagueDTO.add(new LeagueDTO());
+        }
+
+        return fetchedLeagueDTO;
     }
 
     @Override
