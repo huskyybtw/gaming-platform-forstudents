@@ -8,6 +8,7 @@ import PlayerRankDisplay from "../components/PlayerRankDisplay.tsx";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Cookies from "js-cookie";
+import ProfileSearchBar from "../components/ProfileSearchBar.tsx";
 
 
 
@@ -30,7 +31,6 @@ function ProfilePage() {
     return (
         <div className="d-flex flex-column vh-100">
             <NavBar />
-
             <div className="d-flex flex-grow-1">
                 <main
                     className="d-grid flex-grow-1"
@@ -51,10 +51,10 @@ function ProfilePage() {
                     </div>
 
                     <div className="bg-light p-3 rounded">
+                        <ProfileSearchBar />
                         <MatchHistoryDisplay />
                     </div>
                 </main>
-
                 <aside
                     className="bg-light"
                     style={{width: "200px", minWidth: "200px"}}

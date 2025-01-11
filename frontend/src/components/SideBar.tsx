@@ -5,8 +5,8 @@ function SideBar(){
     return (
         <div className="d-flex flex-column vh-100 bg-light p-3">
             <ul>
-                <li>Lorem ipsum</li>
-                <li>Lorem ipsum</li>
+                <li>My teams</li>
+                <li>My Games</li>
             </ul>
             <button onClick={() => navigate('/')} className="nav-item btn btn-dark">logout</button>
         </div >

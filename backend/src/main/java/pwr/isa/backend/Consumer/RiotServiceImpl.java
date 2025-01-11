@@ -42,6 +42,8 @@ public class RiotServiceImpl implements RiotService {
         SummonerDTO summonerDTO = getSummonerDTO(accountDTO.getPuuid());
         List<LeagueDTO> leagueDTO = getLeagueDTO(summonerDTO.getSummonerId());
 
+        //leaguDTO nie dziala jesli gracz nie ma rangi
+
         return PlayerDetailsDTO.builder()
                 .gameName(username)
                 .tagLine(tag)
