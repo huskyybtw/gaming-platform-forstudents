@@ -1,34 +1,20 @@
-import NavBar from "../components/NavBar.tsx";
-import SideBar from "../components/SideBar.tsx";
-import Footer from "../components/Footer.tsx";
+import React from "react";
+import NavBar from "../components/NavBar";
+import MatchPosters from "../components/MatchPosters"; // Import komponentu MatchPosters
+import Footer from "../components/Footer";
 
-function FindGamesPage (){
+function FindGamesPage() {
     return (
         <div className="d-flex flex-column vh-100">
-            <NavBar/>
-
-            <div className="d-flex flex-grow-1">
-                <main
-                    className="d-grid flex-grow-1"
-                    style={{
-                        gridTemplateColumns: "1fr 1fr",
-                    }}
-                >
-                    <h1>Find Games</h1>
-                </main>
-
-
-                <aside
-                    className="bg-light"
-                    style={{width: "200px", minWidth: "200px"}}
-                >
-                    <SideBar/>
-                </aside>
-            </div>
-
-            <Footer/>
+            <NavBar />
+            <main className="flex-grow-1 p-4">
+                <h1>Find Games</h1>
+                {/* Wyświetlenie komponentu MatchPosters */}
+                <MatchPosters />
+            </main>
+            <Footer />
         </div>
-    )
+    );
 }
 
 export default FindGamesPage;
