@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './MainPage.css';
+import '../styles/MainPage.css';
 
 interface MatchPoster {
     id: number;
