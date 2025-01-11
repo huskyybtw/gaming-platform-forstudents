@@ -34,7 +34,6 @@ const LoginPage: React.FC = () => {
                 email,
                 password,
             });
-            console.log(response.data);
             const userId = response.data.assignedUser.id
             const { token } = response.data;
             Cookies.set('userId', userId);
