@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
 import "../styles/UpdateFromStyles.css"; // Import the CSS file
 
@@ -9,11 +9,14 @@ interface ProfileData {
     summonerLevel: number;
     profileIconId: number;
     description: string;
+    puuid: string;
+    accountId: string;
 }
 
 interface Props {
     userId: number;
     isLoggedUser: boolean;
+    profileData: ProfileData;
 }
 
 function UpdateRiotDetailsForm(props: Props) {
@@ -24,19 +27,8 @@ function UpdateRiotDetailsForm(props: Props) {
     const [toastType, setToastType] = useState("success");
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/${props.userId}`
-                );
-                setProfileData(response.data);
-            } catch (err) {
-                console.error("Error fetching data:", err);
-            }
-        };
-
-        fetchData();
-    }, []);
+        setProfileData(props.profileData);
+    }, [props.profileData]);
 
     const refreshData = async () => {
         try {
