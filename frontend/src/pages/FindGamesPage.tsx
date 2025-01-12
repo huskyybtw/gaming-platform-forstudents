@@ -1,4 +1,4 @@
-import React from "react";
+
 import NavBar from "../components/NavBar";
 import MatchPosters from "../components/MatchPosters"; // Import komponentu MatchPosters
 import Footer from "../components/Footer";
