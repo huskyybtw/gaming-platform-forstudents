@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/MainPage.css';
+import Cookies from "js-cookie";
 
 interface MatchPoster {
     id: number;
@@ -21,7 +22,13 @@ const MainPage: React.FC = () => {
     useEffect(() => {
         const fetchMatchPosters = async () => {
             try {
-                const response = await axios.get<MatchPoster[]>('http://localhost:8080/api/v1/posters/match/');
+                const token = Cookies.get('authToken'); // Pobranie tokenu z cookies
+                const response = await axios.get<MatchPoster[]>('http://localhost:8080/api/v1/posters/match/', {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Dodanie tokenu do nagłówków
+                    },
+                });
+
                 const formattedPosters: MatchPoster[] = response.data.map((item: any) => ({
                     id: item.matchPoster.id,
                     title: `Match ${item.matchPoster.id}`,
@@ -39,6 +46,7 @@ const MainPage: React.FC = () => {
 
         fetchMatchPosters();
     }, []);
+
 
     // Filtrowanie na podstawie wyszukiwania
     const filteredPosters = matchPosters.filter((poster) =>
