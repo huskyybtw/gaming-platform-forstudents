@@ -25,7 +25,6 @@ function ProfilePage() {
 
     const { id } = useParams<{ id: string }>();
     const profileId = id ? parseInt(id, 10) : parseInt(Cookies.get('userId') || '', 10);
-
     const isLoggedInUserProfile = loggedInUserId === profileId;
 
     return (
@@ -47,7 +46,7 @@ function ProfilePage() {
                         )}
                         <UpdateRiotDetailsFrom userId={profileId} isLoggedUser={isLoggedInUserProfile}/>
                         <br></br>
-                        <PlayerRankDisplay />
+                        <PlayerRankDisplay userId={profileId}/>
                     </div>
 
                     <div className="bg-light p-3 rounded">

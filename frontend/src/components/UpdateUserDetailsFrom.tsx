@@ -10,11 +10,6 @@ interface UserData {
     confirmPassword: string;
 }
 
-const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${Cookies.get("token")}`,
-};
-
 
 function UpdateUserDetailsForm() {
     const [userData, setUserData] = useState({} as UserData);
@@ -29,10 +24,16 @@ function UpdateUserDetailsForm() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Cookies.get("token")}`,
+                };
+
                 const response = await axios.get(
                     `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
                     { headers }
                 );
+                console.log(response.data);
                 setUserData(response.data);
             } catch (err: any) {
                 if (err.response && err.response.status === 403) {
