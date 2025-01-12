@@ -1,15 +1,14 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import * as React from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import "../styles/UpdateFromStyles.css"; // Import the CSS file
 
 interface UserData {
     email: string;
     password: string;
     confirmPassword: string;
 }
-
 
 function UpdateUserDetailsForm() {
     const [userData, setUserData] = useState({} as UserData);
@@ -33,7 +32,6 @@ function UpdateUserDetailsForm() {
                     `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
                     { headers }
                 );
-                console.log(response.data);
                 setUserData(response.data);
             } catch (err: any) {
                 if (err.response && err.response.status === 403) {
@@ -83,8 +81,8 @@ function UpdateUserDetailsForm() {
         <div>
             <h2>Profile Details</h2>
             <div>
-                <ul className={"list-group"}>
-                    <li className={"list-group-item"}>
+                <ul className="list-group">
+                    <li className="list-group-item">
                         <strong>Email:</strong> {userData.email}
                     </li>
                 </ul>
@@ -95,29 +93,17 @@ function UpdateUserDetailsForm() {
             </div>
 
             {isEditing && (
-                <div style={modalBackdropStyle}>
-                    <div style={{ ...modalContainerStyle, position: "relative" }}>
-                        {/* Close button */}
+                <div className="modal-backdrop">
+                    <div className="modal-container">
                         <button
                             type="button"
                             onClick={closeModal}
-                            style={{
-                                position: "absolute",
-                                top: "10px",
-                                right: "10px",
-                                backgroundColor: "transparent",
-                                border: "none",
-                                fontSize: "24px",
-                                fontWeight: "bold",
-                                color: "#333",
-                                cursor: "pointer",
-                            }}
+                            className="close-button"
                             aria-label="Close"
                         >
                             &times;
                         </button>
 
-                        {/* Email Update Form */}
                         <h2>Update Email</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
@@ -139,7 +125,6 @@ function UpdateUserDetailsForm() {
 
                         <br />
 
-                        {/* Password Update Form */}
                         <h2>Update Password</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
@@ -172,30 +157,20 @@ function UpdateUserDetailsForm() {
                 </div>
             )}
 
-
-
             {showToast && (
                 <div
-                    className={`toast align-items-center show ${
+                    className={`toast-notification ${
                         toastType === "success" ? "bg-success" : "bg-danger"
                     }`}
                     role="alert"
                     aria-live="assertive"
                     aria-atomic="true"
-                    style={{
-                        position: "fixed",
-                        bottom: "20px",
-                        right: "20px",
-                        zIndex: 9999,
-                        maxWidth: "300px",
-                    }}
                 >
                     <div className="d-flex">
                         <div className="toast-body">{toastMessage}</div>
                         <button
                             type="button"
                             className="btn-close me-2 m-auto"
-                            data-bs-dismiss="toast"
                             aria-label="Close"
                             onClick={() => setShowToast(false)}
                         ></button>
@@ -205,26 +180,5 @@ function UpdateUserDetailsForm() {
         </div>
     );
 }
-
-const modalBackdropStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-};
-
-const modalContainerStyle: React.CSSProperties = {
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    width: "400px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-};
 
 export default UpdateUserDetailsForm;
