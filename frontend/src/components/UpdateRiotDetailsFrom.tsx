@@ -1,6 +1,7 @@
 import {ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
-import "../styles/UpdateFromStyles.css"; // Import the CSS file
+import "../styles/UpdateFromStyles.css";
+import Cookies from "js-cookie"; // Import the CSS file
 
 interface ProfileData {
     nickname: string;
@@ -46,16 +47,49 @@ function UpdateRiotDetailsForm(props: Props) {
         const { name, value } = e.target;
         setProfileData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: value, // Updates the property with the corresponding name
         }));
     };
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("Updated user data:", profileData);
-        setIsEditing(false);
-        showToastNotification("Profile updated successfully!", "success");
+        // Prepare the JSON body, excluding empty fields
+        const requestBody: Partial<ProfileData> = {
+            nickname: profileData.nickname,
+            tagLine: profileData.tagLine,
+            description: profileData.description,
+        };
+
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${Cookies.get("token")}`, // Use token from cookies
+            };
+
+            await axios.patch(
+                `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/${Cookies.get("userId")}`,
+                requestBody,
+                { headers }
+            );
+
+            // Handle success
+            showToastNotification("Profile updated successfully!", "success");
+            setIsEditing(false); // Close modal after success
+        } catch (error: any) {
+            // Handle errors
+            if (error.response) {
+                if (error.response.status === 403) {
+                    showToastNotification("You are not authorized to update this profile.", "danger");
+                } else {
+                    console.log("Error response:", error.response.data);
+                    showToastNotification(error.response.data.message || "Failed to update profile.", "danger");
+                }
+            } else {
+                console.error("Error:", error);
+                showToastNotification("An error occurred. Please try again later.", "danger");
+            }
+        }
     };
 
     const closeModal = () => {
@@ -132,7 +166,7 @@ function UpdateRiotDetailsForm(props: Props) {
                                                 type="text"
                                                 className="form-control"
                                                 id="username"
-                                                name="username"
+                                                name="nickname"
                                                 value={profileData.nickname}
                                                 onChange={handleChange}
                                                 placeholder="Faker"
@@ -144,7 +178,7 @@ function UpdateRiotDetailsForm(props: Props) {
                                                 type="text"
                                                 className="form-control"
                                                 id="changetagLine"
-                                                name="changetagLine"
+                                                name="tagLine"
                                                 value={profileData.tagLine}
                                                 onChange={handleChange}
                                                 placeholder="1234"
@@ -163,7 +197,7 @@ function UpdateRiotDetailsForm(props: Props) {
                                         name="description"
                                         value={profileData.description}
                                         onChange={handleChange}
-                                        placeholder="A short description about yourself"
+                                        placeholder="A short description about yourself as a player"
                                         rows={3}
                                     ></textarea>
                                 </div>

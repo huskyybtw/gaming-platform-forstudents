@@ -53,14 +53,54 @@ function UpdateUserDetailsForm() {
         }));
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (userData.password !== userData.confirmPassword) {
+        // Ensure passwords match if they are provided
+        if (userData.password && userData.password !== userData.confirmPassword) {
             showToastNotification("Passwords do not match!", "danger");
             return;
         }
-        showToastNotification("Password updated successfully!", "success");
+
+        // Prepare the JSON body, excluding empty fields
+        const requestBody: { email?: string; password?: string } = {};
+
+        if (userData.email) {
+            requestBody.email = userData.email; // Add email if provided
+        }
+        if (userData.password) {
+            requestBody.password = userData.password; // Add password if provided
+        }
+
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${Cookies.get("token")}`, // Use token from cookies
+            };
+
+            await axios.patch(
+                `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
+                requestBody,
+                { headers }
+            );
+
+            // Handle success
+            showToastNotification("Profile updated successfully!", "success");
+            setIsEditing(false); // Close modal after success
+        } catch (error: any) {
+            // Handle errors
+            if (error.response) {
+                if (error.response.status === 403) {
+                    navigate("/forbidden");
+                } else {
+                    console.log("Error:", error.response.data);
+                    showToastNotification(error.response.data || "Failed to update profile.", "danger");
+                }
+            } else {
+                console.error("Error:", error.response.data);
+                showToastNotification("An error occurred" + error.response.data, "danger");
+            }
+        }
     };
 
     const showToastNotification = (message: string, type: string) => {
@@ -88,7 +128,7 @@ function UpdateUserDetailsForm() {
                 </ul>
                 <br />
                 <button className="btn btn-warning" onClick={() => setIsEditing(true)}>
-                    Edit Email/password
+                    Edit Profile
                 </button>
             </div>
 
@@ -104,9 +144,12 @@ function UpdateUserDetailsForm() {
                             &times;
                         </button>
 
-                        <h2>Update Email</h2>
+                        <h2>Update Profile</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
+                                <label htmlFor="email" className="form-label">
+                                    Email (optional)
+                                </label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -116,18 +159,10 @@ function UpdateUserDetailsForm() {
                                     placeholder="example@gmail.com"
                                 />
                             </div>
-                            <div>
-                                <button type="submit" className="btn btn-primary">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-
-                        <br />
-
-                        <h2>Update Password</h2>
-                        <form onSubmit={handleSubmit}>
                             <div className="mb-3">
+                                <label htmlFor="password" className="form-label">
+                                    Password (optional)
+                                </label>
                                 <input
                                     type="password"
                                     className="form-control"
@@ -138,6 +173,9 @@ function UpdateUserDetailsForm() {
                                 />
                             </div>
                             <div className="mb-3">
+                                <label htmlFor="confirmPassword" className="form-label">
+                                    Confirm Password (optional)
+                                </label>
                                 <input
                                     type="password"
                                     className="form-control"
