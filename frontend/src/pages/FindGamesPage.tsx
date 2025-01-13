@@ -1,7 +1,7 @@
 import NavBar from "../components/NavBar";
 import MatchPosters from "../components/MatchPosters";
 import Footer from "../components/Footer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Cookies from "js-cookie";
 
 function FindGamesPage() {
@@ -19,15 +19,20 @@ function FindGamesPage() {
         }
     }, []);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target;
+        const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+        setFormData({
+            ...formData,
+            [name]: type === "checkbox" ? checked : value,
+        });
     };
 
-    const handleSubmit = async (e) => {
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const token = Cookies.get("authToken"); // Pobierz token z ciasteczek
+        const token = Cookies.get("token");
 
         if (!token) {
             alert("Nie znaleziono tokenu autoryzacyjnego!");
@@ -80,12 +85,7 @@ function FindGamesPage() {
                                     className="form-check-input"
                                     name="ranked"
                                     checked={formData.ranked}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            ranked: e.target.checked,
-                                        })
-                                    }
+                                    onChange={handleInputChange}
                                 />
                             </label>
                         </div>

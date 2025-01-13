@@ -22,7 +22,7 @@ const MainPage: React.FC = () => {
     useEffect(() => {
         const fetchMatchPosters = async () => {
             try {
-                const token = Cookies.get('authToken'); // Pobranie tokenu z cookies
+                const token = Cookies.get('token'); // Pobranie tokenu z cookies
                 const response = await axios.get<MatchPoster[]>('http://localhost:8080/api/v1/posters/match/', {
                     headers: {
                         Authorization: `Bearer ${token}`, // Dodanie tokenu do nagłówków
