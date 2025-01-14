@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
+console.log(token); // Powinien wyświetlić Twój token
 
 interface TeamPoster {
     id: number;
@@ -27,35 +31,42 @@ const TeamAndUserPosters: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [error, setError] = useState<string>("");
+    const [newPosterType, setNewPosterType] = useState<"TeamPoster" | "UserPoster">("TeamPoster");
+    const [newPoster, setNewPoster] = useState<{ teamId?: number; userId?: number; description: string; dueDate: string }>({
+        description: "",
+        dueDate: "",
+    });
+    const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchPosters = async () => {
             try {
-                const teamResponse = await axios.get<TeamPoster[]>("http://localhost:8080/api/v1/posters/team/");
-                const userResponse = await axios.get<UserPoster[]>("http://localhost:8080/api/v1/posters/user/");
+                const token = Cookies.get("token");
+                if (!token) {
+                    setError("Brak tokenu autoryzacyjnego.");
+                    return;
+                }
 
-                const formattedTeamPosters: TeamPoster[] = teamResponse.data.map((item: any) => ({
-                    id: item.id,
-                    teamId: item.teamId,
-                    description: item.description,
-                    dueDate: item.dueDate,
-                    createdAt: item.createdAt,
-                    updatedAt: item.updatedAt,
-                    type: "TeamPoster",
-                }));
+                const teamResponse = await axios.get<TeamPoster[]>(
+                    "http://localhost:8080/api/v1/posters/team/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-                const formattedUserPosters: UserPoster[] = userResponse.data.map((item: any) => ({
-                    id: item.id,
-                    userId: item.userId,
-                    description: item.description,
-                    dueDate: item.dueDate,
-                    createdAt: item.createdAt,
-                    updatedAt: item.updatedAt,
-                    type: "UserPoster",
-                }));
+                const userResponse = await axios.get<UserPoster[]>(
+                    "http://localhost:8080/api/v1/posters/user/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-                setTeamPosters(formattedTeamPosters);
-                setUserPosters(formattedUserPosters);
+                setTeamPosters(teamResponse.data);
+                setUserPosters(userResponse.data);
             } catch (err) {
                 setError("Nie udało się załadować plakatów. Spróbuj ponownie później.");
             }
@@ -63,6 +74,53 @@ const TeamAndUserPosters: React.FC = () => {
 
         fetchPosters();
     }, []);
+
+
+    const handleSortChange = () => {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setNewPoster((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handlePosterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setNewPosterType(e.target.value as "TeamPoster" | "UserPoster");
+    };
+
+    const handleAddPoster = async () => {
+        try {
+            const token = Cookies.get("token");
+            if (!token) {
+                setError("Brak tokenu autoryzacyjnego.");
+                return;
+            }
+
+            const endpoint = newPosterType === "TeamPoster" ? "/team/" : "/user/";
+            const response = await axios.post(
+                `http://localhost:8080/api/v1/posters${endpoint}`,
+                newPoster,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (newPosterType === "TeamPoster") {
+                setTeamPosters((prev) => [...prev, response.data]);
+            } else {
+                setUserPosters((prev) => [...prev, response.data]);
+            }
+
+            setNewPoster({ description: "", dueDate: "" });
+            setIsFormVisible(false);
+        } catch (err) {
+            setError(`Nie udało się dodać ${newPosterType === "TeamPoster" ? "plakatu zespołu" : "plakatu użytkownika"}.`);
+        }
+    };
+
 
     const filteredTeamPosters = teamPosters.filter((poster) =>
         poster.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -84,10 +142,6 @@ const TeamAndUserPosters: React.FC = () => {
         return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-    const handleSortChange = () => {
-        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    };
-
     return (
         <div>
             {error && <p className="error-message">{error}</p>}
@@ -107,6 +161,57 @@ const TeamAndUserPosters: React.FC = () => {
                     Sortuj według terminu: {sortOrder === "asc" ? "Rosnąco" : "Malejąco"}
                 </button>
             </div>
+
+            <h2>Dodaj Poster</h2>
+            <button onClick={() => setIsFormVisible(!isFormVisible)} className="btn btn-primary">
+                {isFormVisible ? "Anuluj" : "Dodaj Nowy Poster"}
+            </button>
+
+            {isFormVisible && (
+                <div className="add-poster-form">
+                    <select onChange={handlePosterTypeChange} value={newPosterType} className="form-control">
+                        <option value="TeamPoster">Team Poster</option>
+                        <option value="UserPoster">User Poster</option>
+                    </select>
+                    {newPosterType === "TeamPoster" && (
+                        <input
+                            type="number"
+                            name="teamId"
+                            placeholder="Team ID"
+                            value={newPoster.teamId || ""}
+                            onChange={handleInputChange}
+                            className="form-control"
+                        />
+                    )}
+                    {newPosterType === "UserPoster" && (
+                        <input
+                            type="number"
+                            name="userId"
+                            placeholder="User ID"
+                            value={newPoster.userId || ""}
+                            onChange={handleInputChange}
+                            className="form-control"
+                        />
+                    )}
+                    <textarea
+                        name="description"
+                        placeholder="Opis plakatu"
+                        value={newPoster.description}
+                        onChange={handleInputChange}
+                        className="form-control"
+                    />
+                    <input
+                        type="date"
+                        name="dueDate"
+                        value={newPoster.dueDate}
+                        onChange={handleInputChange}
+                        className="form-control"
+                    />
+                    <button onClick={handleAddPoster} className="btn btn-success">
+                        Dodaj Plakat
+                    </button>
+                </div>
+            )}
 
             <h2>Team Posters</h2>
             <div className="posters-container">
