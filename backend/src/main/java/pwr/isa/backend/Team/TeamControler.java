@@ -104,8 +104,8 @@ public class TeamControler {
     @Authorize
     @PostMapping("/manage/{userId}/{teamId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(
-            @PathVariable Long teamId,
-            @PathVariable Long userId) {
+            @PathVariable Long userId,
+            @PathVariable Long teamId) {
         TeamDTO team = teamService.addPlayerToTeam(teamId, userId);
         return new ResponseEntity<>(team, HttpStatus.OK);
     }
@@ -125,8 +125,8 @@ public class TeamControler {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/manage/{userId}/{teamId}")
     public ResponseEntity<TeamDTO> removePlayerFromTeam(
-            @PathVariable Long teamId,
-            @PathVariable Long userId) {
+            @PathVariable Long userId,
+            @PathVariable Long teamId) {
         TeamDTO team = teamService.removePlayerFromTeam(teamId, userId);
         return new ResponseEntity<>(team, HttpStatus.NO_CONTENT);
     }

@@ -9,11 +9,23 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Cookies from "js-cookie";
 import ProfileSearchBar from "../components/ProfileSearchBar.tsx";
+import axios from "axios";
 
+interface ProfileData {
+    nickname: string;
+    tagLine: string;
+    rating: number;
+    summonerLevel: number;
+    profileIconId: number;
+    description: string;
+    puuid: string;
+    accountId: string;
+}
 
 
 function ProfilePage() {
     const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
+    const [profileData, setProfileData] = useState({} as ProfileData);
 
     useEffect(() => {
         const userId = Cookies.get("userId");
@@ -25,8 +37,22 @@ function ProfilePage() {
 
     const { id } = useParams<{ id: string }>();
     const profileId = id ? parseInt(id, 10) : parseInt(Cookies.get('userId') || '', 10);
-
     const isLoggedInUserProfile = loggedInUserId === profileId;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/${profileId}`
+                );
+                setProfileData(response.data);
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <div className="d-flex flex-column vh-100">
@@ -45,14 +71,14 @@ function ProfilePage() {
                                 <br />
                             </>
                         )}
-                        <UpdateRiotDetailsFrom userId={profileId} isLoggedUser={isLoggedInUserProfile}/>
+                        <UpdateRiotDetailsFrom userId={profileId} isLoggedUser={isLoggedInUserProfile} profileData={profileData}/>
                         <br></br>
-                        <PlayerRankDisplay />
+                        <PlayerRankDisplay userId={profileId}/>
                     </div>
 
                     <div className="bg-light p-3 rounded">
                         <ProfileSearchBar />
-                        <MatchHistoryDisplay />
+                        <MatchHistoryDisplay userId={profileId} puuid={profileData.puuid}/>
                     </div>
                 </main>
                 <aside

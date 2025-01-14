@@ -19,13 +19,17 @@ interface RankingData {
     progress: number;
 }
 
-function PlayerRankDisplay() {
+interface Props {
+    userId: number
+}
+
+function PlayerRankDisplay(props: Props) {
     const [profileData, setProfileData] = useState<RankingData[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/players/rank/1`);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/players/rank/${props.userId}`);
                 setProfileData(response.data);
             } catch (err) {
                 console.error("Error fetching data:", err);
@@ -34,7 +38,7 @@ function PlayerRankDisplay() {
 
         fetchData();
     }, []);
-    console.log(profileData);
+
     const getRankIcon = (tier: string): string => {
         if(tier === "unranked") {
             return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/unranked-emblem.png`;

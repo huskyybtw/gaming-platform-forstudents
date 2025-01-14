@@ -49,7 +49,6 @@ public class AuthorizationAspect {
         User assignedUser = AuthUtils.getUserFromToken(request);
 
         String requestUri = request.getRequestURI();
-
         if (assignedUser.getRole().equals(UserRole.ADMIN)) {
             return;
         }

@@ -1,59 +1,61 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import '../styles/PlayerSearchBar.css';
 
-interface Player {
+interface Team {
     id: number;
-    userId: number;
-    nickname: string;
-    tagLine: string;
-    opgg: string | null;
+    teamName: string;
     description: string;
-    lastUpdate: string;
+    teamCaptain: number;
     rating: number;
-    puuid: string;
-    summonerid: string;
-    accountId: string;
-    profileIconId: number;
-    summonerLevel: number;
 }
 
-function PlayerSearchBar() {
-    const [players, setPlayers] = useState<Player[]>([]);
+interface TeamResponse {
+    team: Team;
+    users: number[];
+}
+
+function TeamSearchBar() {
+    const [teams, setTeams] = useState<Team[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [suggestions, setSuggestions] = useState<Player[]>([]);
+    const [suggestions, setSuggestions] = useState<Team[]>([]);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [toastType, setToastType] = useState<"success" | "danger">("success");
     const navigate = useNavigate();
 
+    // Fetch teams data
     useEffect(() => {
-        const fetchPlayers = async () => {
+        const fetchTeams = async () => {
             try {
-                const response = await axios.get<Player[]>(
-                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/players/`
+                const response = await axios.get<TeamResponse[]>(
+                    `${import.meta.env.VITE_BACKEND_URI}/api/v1/teams/`
                 );
-                setPlayers(response.data);
+                // Extract teams from the response data
+                setTeams(response.data.map((item) => item.team));
+                console.log("Fetched teams:", response.data);
             } catch (err) {
-                showToastNotification("Error fetching players data.", "danger");
+                showToastNotification("Error fetching teams data.", "danger");
+                console.error("Error fetching teams:", err);
             }
         };
 
-        fetchPlayers();
+        fetchTeams();
     }, []);
 
+    // Handle search button click
     const handleSearch = () => {
-        const matchedPlayer = players.find(
-            (player) => player.nickname.toLowerCase() === searchTerm.trim().toLowerCase()
+        const matchedTeam = teams.find((team) =>
+            team.teamName.toLowerCase().includes(searchTerm.trim().toLowerCase())
         );
-        if (matchedPlayer) {
-            navigate(`/profile/${matchedPlayer.userId}`);
+        if (matchedTeam) {
+            navigate(`/teams/${matchedTeam.id}`);
         } else {
-            showToastNotification("Player not found. Please check the nickname.", "danger");
+            showToastNotification("Team not found. Please check the name.", "danger");
         }
     };
 
+    // Handle input change and update suggestions
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -61,18 +63,14 @@ function PlayerSearchBar() {
         if (value.trim() === "") {
             setSuggestions([]);
         } else {
-            const filteredSuggestions = players.filter((player) =>
-                player.nickname.toLowerCase().includes(value.toLowerCase())
+            const filteredSuggestions = teams.filter((team) =>
+                team.teamName.toLowerCase().includes(value.toLowerCase())
             );
             setSuggestions(filteredSuggestions);
         }
     };
 
-    const handleSuggestionClick = (player: Player) => {
-        setSearchTerm(player.nickname);
-        setSuggestions([]); // Clear suggestions after selecting one
-    };
-
+    // Display toast notification
     const showToastNotification = (message: string, type: "success" | "danger") => {
         setToastMessage(message);
         setToastType(type);
@@ -88,7 +86,7 @@ function PlayerSearchBar() {
             <div className="search-bar">
                 <input
                     type="text"
-                    placeholder="Search for a player..."
+                    placeholder="Search for a team..."
                     value={searchTerm}
                     onChange={handleInputChange}
                     className="search-input"
@@ -103,13 +101,16 @@ function PlayerSearchBar() {
 
             {suggestions.length > 0 && (
                 <ul className="suggestions-list">
-                    {suggestions.map((player) => (
+                    {suggestions.map((team) => (
                         <li
-                            key={player.id}
-                            onClick={() => handleSuggestionClick(player)}
+                            key={team.id}
+                            onClick={() => {
+                                setSearchTerm(team.teamName);
+                                setSuggestions([]);
+                            }}
                             className="suggestion-item"
                         >
-                            {player.nickname}#{player.tagLine}
+                            {team.teamName}
                         </li>
                     ))}
                 </ul>
@@ -146,4 +147,4 @@ function PlayerSearchBar() {
     );
 }
 
-export default PlayerSearchBar;
+export default TeamSearchBar;

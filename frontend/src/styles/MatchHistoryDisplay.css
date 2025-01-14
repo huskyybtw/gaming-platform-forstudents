@@ -1,0 +1,87 @@
+/* Ensure the parent container takes the full height */
+.match-history-container {
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space evenly between elements */
+    overflow: auto; /* Allow scrolling if the content exceeds the viewport */
+    width: 100%;
+}
+
+/* Ensure each match item uses full available vertical space */
+.match-history-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0px;
+    width: 100%; /* Ensure it takes up the full width */
+    box-sizing: border-box; /* Prevents margin/padding from affecting the width */
+    flex-grow: 1; /* Allow it to grow and fill available space */
+}
+
+.match-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center; /* Vertically center items */
+    width: 100%;
+    max-width: 100%; /* Prevent overflow */
+    box-sizing: border-box; /* Ensure padding doesn't cause overflow */
+    overflow: hidden; /* Prevent any content from overflowing */
+}
+
+/* Keep other styles as is, no need to change */
+.nickname-role {
+    flex: 1;
+    display: flex;
+    justify-content: space-between; /* Align nickname and role horizontally */
+    flex-wrap: wrap;
+    overflow: hidden; /* Prevents overflow within this section */
+    gap: 5px; /* Small gap to save space */
+}
+
+.champion-info {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Reduced gap to fit elements inside */
+    flex-wrap: wrap; /* Allow wrapping if necessary */
+    justify-content: flex-start; /* Align to the left */
+    overflow: hidden; /* Ensure nothing overflows */
+}
+
+.kda {
+    font-size: 1.2rem; /* Adjust font size to reduce width */
+    margin-right: 5px; /* Reduced margin for compactness */
+}
+
+.items {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Align to the left */
+    gap: 5px; /* Small gap to save space */
+    overflow: hidden; /* Prevent overflow */
+}
+
+.item-icons img {
+    width: 40px; /* Reduced size of icons to prevent overflow */
+    height: 40px;
+    object-fit: contain; /* Maintain aspect ratio */
+}
+
+.champion-icon-img {
+    margin-left: 5px; /* Reduced margin */
+    width: 40px; /* Smaller size of the champion icon */
+    height: 40px;
+}
+
+.game-duration {
+    margin-top: 10px;
+    font-size: 1rem;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.role-icon {
+    margin-top: 10px;
+    width: 24px; /* Reduced size of the role icon */
+    height: 24px;
+}

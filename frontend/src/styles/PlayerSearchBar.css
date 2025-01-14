@@ -1,0 +1,68 @@
+/* PlayerSearchBar.css */
+
+/* Container for search bar */
+.search-container {
+    position: relative; /* Ensure the container is relative to the input and suggestions */
+    display: flex;
+    justify-content: flex-start; /* Align elements to the left */
+    align-items: center; /* Vertically align input and button */
+    gap: 10px; /* Space between input and button */
+    padding: 0; /* Remove extra padding */
+}
+
+/* Input field styling */
+.search-input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 300px; /* Limit the width of the input */
+    margin: 0; /* Ensure there's no extra margin */
+}
+
+/* Search button styling */
+.search-button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+/* Suggestions dropdown */
+.suggestions-list {
+    position: absolute;
+    top: 100%; /* Positions below the input field */
+    left: 0;
+    width: 300px; /* Match input width */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* Remove margin to avoid space */
+}
+
+/* Individual suggestion item */
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* Hover effect for suggestion item */
+.suggestion-item:hover {
+    background-color: #f9f9f9;
+}
+
+/* Toast notification container */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    transition: opacity 0.5s ease-in-out;
+}

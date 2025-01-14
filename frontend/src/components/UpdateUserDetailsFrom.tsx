@@ -1,20 +1,14 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import * as React from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import "../styles/UpdateFromStyles.css"; // Import the CSS file
 
 interface UserData {
     email: string;
     password: string;
     confirmPassword: string;
 }
-
-const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${Cookies.get("token")}`,
-};
-
 
 function UpdateUserDetailsForm() {
     const [userData, setUserData] = useState({} as UserData);
@@ -29,6 +23,11 @@ function UpdateUserDetailsForm() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Cookies.get("token")}`,
+                };
+
                 const response = await axios.get(
                     `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
                     { headers }
@@ -54,14 +53,54 @@ function UpdateUserDetailsForm() {
         }));
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (userData.password !== userData.confirmPassword) {
+        // Ensure passwords match if they are provided
+        if (userData.password && userData.password !== userData.confirmPassword) {
             showToastNotification("Passwords do not match!", "danger");
             return;
         }
-        showToastNotification("Password updated successfully!", "success");
+
+        // Prepare the JSON body, excluding empty fields
+        const requestBody: { email?: string; password?: string } = {};
+
+        if (userData.email) {
+            requestBody.email = userData.email; // Add email if provided
+        }
+        if (userData.password) {
+            requestBody.password = userData.password; // Add password if provided
+        }
+
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${Cookies.get("token")}`, // Use token from cookies
+            };
+
+            await axios.patch(
+                `${import.meta.env.VITE_BACKEND_URI}/api/v1/users/${Cookies.get("userId")}`,
+                requestBody,
+                { headers }
+            );
+
+            // Handle success
+            showToastNotification("Profile updated successfully!", "success");
+            setIsEditing(false); // Close modal after success
+        } catch (error: any) {
+            // Handle errors
+            if (error.response) {
+                if (error.response.status === 403) {
+                    navigate("/forbidden");
+                } else {
+                    console.log("Error:", error.response.data);
+                    showToastNotification(error.response.data || "Failed to update profile.", "danger");
+                }
+            } else {
+                console.error("Error:", error.response.data);
+                showToastNotification("An error occurred" + error.response.data, "danger");
+            }
+        }
     };
 
     const showToastNotification = (message: string, type: string) => {
@@ -82,44 +121,35 @@ function UpdateUserDetailsForm() {
         <div>
             <h2>Profile Details</h2>
             <div>
-                <ul className={"list-group"}>
-                    <li className={"list-group-item"}>
+                <ul className="list-group">
+                    <li className="list-group-item">
                         <strong>Email:</strong> {userData.email}
                     </li>
                 </ul>
                 <br />
                 <button className="btn btn-warning" onClick={() => setIsEditing(true)}>
-                    Edit Email/password
+                    Edit Profile
                 </button>
             </div>
 
             {isEditing && (
-                <div style={modalBackdropStyle}>
-                    <div style={{ ...modalContainerStyle, position: "relative" }}>
-                        {/* Close button */}
+                <div className="modal-backdrop">
+                    <div className="modal-container">
                         <button
                             type="button"
                             onClick={closeModal}
-                            style={{
-                                position: "absolute",
-                                top: "10px",
-                                right: "10px",
-                                backgroundColor: "transparent",
-                                border: "none",
-                                fontSize: "24px",
-                                fontWeight: "bold",
-                                color: "#333",
-                                cursor: "pointer",
-                            }}
+                            className="close-button"
                             aria-label="Close"
                         >
                             &times;
                         </button>
 
-                        {/* Email Update Form */}
-                        <h2>Update Email</h2>
+                        <h2>Update Profile</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
+                                <label htmlFor="email" className="form-label">
+                                    Email (optional)
+                                </label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -129,19 +159,10 @@ function UpdateUserDetailsForm() {
                                     placeholder="example@gmail.com"
                                 />
                             </div>
-                            <div>
-                                <button type="submit" className="btn btn-primary">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-
-                        <br />
-
-                        {/* Password Update Form */}
-                        <h2>Update Password</h2>
-                        <form onSubmit={handleSubmit}>
                             <div className="mb-3">
+                                <label htmlFor="password" className="form-label">
+                                    Password (optional)
+                                </label>
                                 <input
                                     type="password"
                                     className="form-control"
@@ -152,6 +173,9 @@ function UpdateUserDetailsForm() {
                                 />
                             </div>
                             <div className="mb-3">
+                                <label htmlFor="confirmPassword" className="form-label">
+                                    Confirm Password (optional)
+                                </label>
                                 <input
                                     type="password"
                                     className="form-control"
@@ -171,30 +195,20 @@ function UpdateUserDetailsForm() {
                 </div>
             )}
 
-
-
             {showToast && (
                 <div
-                    className={`toast align-items-center show ${
+                    className={`toast-notification ${
                         toastType === "success" ? "bg-success" : "bg-danger"
                     }`}
                     role="alert"
                     aria-live="assertive"
                     aria-atomic="true"
-                    style={{
-                        position: "fixed",
-                        bottom: "20px",
-                        right: "20px",
-                        zIndex: 9999,
-                        maxWidth: "300px",
-                    }}
                 >
                     <div className="d-flex">
                         <div className="toast-body">{toastMessage}</div>
                         <button
                             type="button"
                             className="btn-close me-2 m-auto"
-                            data-bs-dismiss="toast"
                             aria-label="Close"
                             onClick={() => setShowToast(false)}
                         ></button>
@@ -204,26 +218,5 @@ function UpdateUserDetailsForm() {
         </div>
     );
 }
-
-const modalBackdropStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-};
-
-const modalContainerStyle: React.CSSProperties = {
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    width: "400px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-};
 
 export default UpdateUserDetailsForm;
