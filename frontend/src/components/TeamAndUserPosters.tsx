@@ -131,108 +131,118 @@ const TeamAndUserPosters: React.FC = () => {
     });
 
     return (
-        <div>
-            {error && <p className="error-message">{error}</p>}
+        <div className="container">
+            {error && <p className="alert alert-danger">{error}</p>}
 
-            <div className="search-bar">
+            <div className="search-sort-bar">
                 <input
                     type="text"
                     placeholder="Szukaj plakatów..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="form-control"
+                    className="form-control search-input"
                 />
-            </div>
-
-            <div className="sort-bar">
-                <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="btn btn-secondary">
-                    Sortuj według terminu: {sortOrder === "asc" ? "Rosnąco" : "Malejąco"}
+                <button
+                    onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                    className="btn btn-secondary sort-button"
+                >
+                    Sortuj: {sortOrder === "asc" ? "Rosnąco" : "Malejąco"}
                 </button>
             </div>
 
-            <h2>Dodaj Poster</h2>
-            <button onClick={() => setIsFormVisible(!isFormVisible)} className="btn btn-primary">
-                {isFormVisible ? "Anuluj" : "Dodaj Nowy Poster"}
-            </button>
-
-            {isFormVisible && (
-                <div className="add-poster-form">
-                    <select onChange={handlePosterTypeChange} value={newPosterType} className="form-control">
-                        <option value="TeamPoster">Team Poster</option>
-                        <option value="UserPoster">User Poster</option>
-                    </select>
-                    {newPosterType === "TeamPoster" && (
-                        <input
-                            type="number"
-                            name="teamId"
-                            placeholder="Team ID"
-                            value={newPoster.teamId || ""}
+            <div className="add-poster-section">
+                <h2>Dodaj Poster</h2>
+                <button onClick={() => setIsFormVisible(!isFormVisible)} className="btn btn-primary toggle-form-button">
+                    {isFormVisible ? "Anuluj" : "Dodaj Nowy Poster"}
+                </button>
+                {isFormVisible && (
+                    <div className="add-poster-form">
+                        <select onChange={handlePosterTypeChange} value={newPosterType} className="form-control">
+                            <option value="TeamPoster">Team Poster</option>
+                            <option value="UserPoster">User Poster</option>
+                        </select>
+                        {newPosterType === "TeamPoster" && (
+                            <input
+                                type="number"
+                                name="teamId"
+                                placeholder="Team ID"
+                                value={newPoster.teamId || ""}
+                                onChange={handleInputChange}
+                                className="form-control"
+                            />
+                        )}
+                        {newPosterType === "UserPoster" && (
+                            <p>User ID: {userId || "Brak danych użytkownika w ciasteczku."}</p>
+                        )}
+                        <textarea
+                            name="description"
+                            placeholder="Opis plakatu"
+                            value={newPoster.description}
                             onChange={handleInputChange}
                             className="form-control"
                         />
-                    )}
-                    {newPosterType === "UserPoster" && (
-                        <p>User ID (z ciasteczka): {userId || "Brak danych użytkownika w ciasteczku."}</p>
-                    )}
-                    <textarea
-                        name="description"
-                        placeholder="Opis plakatu"
-                        value={newPoster.description}
-                        onChange={handleInputChange}
-                        className="form-control"
-                    />
-                    <input
-                        type="date"
-                        name="dueDate"
-                        value={newPoster.dueDate}
-                        onChange={handleInputChange}
-                        className="form-control"
-                    />
-                    <button onClick={handleAddPoster} className="btn btn-success">
-                        Dodaj Plakat
-                    </button>
-                </div>
-            )}
-
-            <h2>Team Posters</h2>
-            <div className="posters-container">
-                {sortedTeamPosters.map((poster) => (
-                    <div key={poster.id} className="poster-card">
-                        <h3>Team {poster.teamId}</h3>
-                        <p>{poster.description}</p>
-                        <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
-                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
-                        <button
-                            onClick={() => handleDeletePoster(poster.id, "TeamPoster")}
-                            className="btn btn-danger"
-                        >
-                            Usuń
+                        <input
+                            type="date"
+                            name="dueDate"
+                            value={newPoster.dueDate}
+                            onChange={handleInputChange}
+                            className="form-control"
+                        />
+                        <button onClick={handleAddPoster} className="btn btn-success add-poster-button">
+                            Dodaj Plakat
                         </button>
                     </div>
-                ))}
-                {sortedTeamPosters.length === 0 && <p>Brak plakatów dla zespołów.</p>}
+                )}
             </div>
 
-            <h2>User Posters</h2>
-            <div className="posters-container">
-                {sortedUserPosters.map((poster) => (
-                    <div key={poster.id} className="poster-card">
-                        <h3>User {poster.userId}</h3>
-                        <p>{poster.description}</p>
-                        <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
-                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
-                        <button
-                            onClick={() => handleDeletePoster(poster.id, "UserPoster")}
-                            className="btn btn-danger"
-                        >
-                            Usuń
-                        </button>
-                    </div>
-                ))}
-                {sortedUserPosters.length === 0 && <p>Brak plakatów użytkowników.</p>}
+            <div className="posters-section">
+                <h2>Team Posters</h2>
+                <div className="posters-container">
+                    {sortedTeamPosters.length > 0 ? (
+                        sortedTeamPosters.map((poster) => (
+                            <div key={poster.id} className="card poster-card">
+                                <h3>Team {poster.teamId}</h3>
+                                <p>{poster.description}</p>
+                                <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                                <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                                <button
+                                    onClick={() => handleDeletePoster(poster.id, "TeamPoster")}
+                                    className="btn btn-danger delete-button"
+                                >
+                                    Usuń
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Brak plakatów dla zespołów.</p>
+                    )}
+                </div>
+
+                <h2>User Posters</h2>
+                <div className="posters-container">
+                    {sortedUserPosters.length > 0 ? (
+                        sortedUserPosters.map((poster) => (
+                            <div key={poster.id} className="card poster-card">
+                                <h3>User {poster.userId}</h3>
+                                <p>{poster.description}</p>
+                                <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                                <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                                <button
+                                    onClick={() => handleDeletePoster(poster.id, "UserPoster")}
+                                    className="btn btn-danger delete-button"
+                                >
+                                    Usuń
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Brak plakatów użytkowników.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
+
 
 };
 

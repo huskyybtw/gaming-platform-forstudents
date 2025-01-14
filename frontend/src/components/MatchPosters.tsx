@@ -47,7 +47,6 @@ const MainPage: React.FC = () => {
         fetchMatchPosters();
     }, []);
 
-
     // Filtrowanie na podstawie wyszukiwania
     const filteredPosters = matchPosters.filter((poster) =>
         poster.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -64,6 +63,27 @@ const MainPage: React.FC = () => {
     // Obsługa zmiany sortowania
     const handleSortChange = () => {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
+
+    // Funkcja usuwania plakatu
+    const handleDeletePoster = async (posterId: number) => {
+        try {
+            const token = Cookies.get('token');
+            if (!token) {
+                setError('Brak tokenu autoryzacyjnego.');
+                return;
+            }
+
+            // Wysłanie żądania DELETE do serwera
+            await axios.delete(`http://localhost:8080/api/v1/posters/match/${posterId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            // Usuwanie plakatu z lokalnego stanu
+            setMatchPosters((prev) => prev.filter((poster) => poster.id !== posterId));
+        } catch (err) {
+            setError('Nie udało się usunąć plakatu. Spróbuj ponownie później.');
+        }
     };
 
     return (
@@ -101,6 +121,13 @@ const MainPage: React.FC = () => {
                         <p>{poster.description}</p>
                         <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
                         <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        {/* Przycisk usuwania */}
+                        <button
+                            onClick={() => handleDeletePoster(poster.id)}
+                            className="btn btn-danger"
+                        >
+                            Usuń
+                        </button>
                     </div>
                 ))}
                 {sortedPosters.length === 0 && <p>Brak plakatów spełniających kryteria wyszukiwania.</p>}

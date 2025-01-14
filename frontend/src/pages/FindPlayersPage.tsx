@@ -1,15 +1,19 @@
 import NavBar from "../components/NavBar.tsx";
-//import SideBar from "../components/SideBar.tsx";
 import Footer from "../components/Footer.tsx";
 import TeamAndUserPosters from "../components/TeamAndUserPosters";
+import "../styles/FindPlayersPage.css";
 
 function FindPlayersPage() {
     return (
-        <div className="d-flex flex-column vh-100">
+        <div className="page-container">
             <NavBar />
-            <main className="flex-grow-1 p-4">
-                <h1>Find Players</h1>
-                {/* Wyświetlenie komponentu TeamAndUserPosters */}
+            <main className="content-container">
+                <div className="page-header">
+                    <h1>Find Players</h1>
+                    <p className="page-description">
+                        Explore available players and posters for team collaboration.
+                    </p>
+                </div>
                 <TeamAndUserPosters />
             </main>
             <Footer />
