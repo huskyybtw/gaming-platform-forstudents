@@ -86,6 +86,30 @@ const TeamAndUserPosters: React.FC = () => {
         }
     };
 
+    const handleDeletePoster = async (posterId: number, type: "TeamPoster" | "UserPoster") => {
+        try {
+            const token = Cookies.get("token");
+            if (!token) {
+                setError("Brak tokenu autoryzacyjnego.");
+                return;
+            }
+
+            const endpoint = type === "TeamPoster" ? "/team/" : "/user/";
+            await axios.delete(`http://localhost:8080/api/v1/posters${endpoint}${posterId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (type === "TeamPoster") {
+                setTeamPosters((prev) => prev.filter((poster) => poster.id !== posterId));
+            } else {
+                setUserPosters((prev) => prev.filter((poster) => poster.id !== posterId));
+            }
+        } catch (err) {
+            setError("Nie udało się usunąć plakatu. Spróbuj ponownie później.");
+        }
+    };
+
+
     const filteredTeamPosters = teamPosters.filter((poster) =>
         poster.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -178,6 +202,12 @@ const TeamAndUserPosters: React.FC = () => {
                         <p>{poster.description}</p>
                         <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
                         <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        <button
+                            onClick={() => handleDeletePoster(poster.id, "TeamPoster")}
+                            className="btn btn-danger"
+                        >
+                            Usuń
+                        </button>
                     </div>
                 ))}
                 {sortedTeamPosters.length === 0 && <p>Brak plakatów dla zespołów.</p>}
@@ -191,12 +221,19 @@ const TeamAndUserPosters: React.FC = () => {
                         <p>{poster.description}</p>
                         <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
                         <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        <button
+                            onClick={() => handleDeletePoster(poster.id, "UserPoster")}
+                            className="btn btn-danger"
+                        >
+                            Usuń
+                        </button>
                     </div>
                 ))}
                 {sortedUserPosters.length === 0 && <p>Brak plakatów użytkowników.</p>}
             </div>
         </div>
     );
+
 };
 
 export default TeamAndUserPosters;
