@@ -41,8 +41,29 @@ const TeamAndUserPosters: React.FC = () => {
     useEffect(() => {
         const fetchPosters = async () => {
             try {
-                const teamResponse = await axios.get<TeamPoster[]>("http://localhost:8080/api/v1/posters/team/");
-                const userResponse = await axios.get<UserPoster[]>("http://localhost:8080/api/v1/posters/user/");
+                const token = Cookies.get("token");
+                if (!token) {
+                    setError("Brak tokenu autoryzacyjnego.");
+                    return;
+                }
+
+                const teamResponse = await axios.get<TeamPoster[]>(
+                    "http://localhost:8080/api/v1/posters/team/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const userResponse = await axios.get<UserPoster[]>(
+                    "http://localhost:8080/api/v1/posters/user/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
                 setTeamPosters(teamResponse.data);
                 setUserPosters(userResponse.data);
@@ -53,6 +74,7 @@ const TeamAndUserPosters: React.FC = () => {
 
         fetchPosters();
     }, []);
+
 
     const handleSortChange = () => {
         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -69,8 +91,22 @@ const TeamAndUserPosters: React.FC = () => {
 
     const handleAddPoster = async () => {
         try {
+            const token = Cookies.get("token");
+            if (!token) {
+                setError("Brak tokenu autoryzacyjnego.");
+                return;
+            }
+
             const endpoint = newPosterType === "TeamPoster" ? "/team/" : "/user/";
-            const response = await axios.post(`http://localhost:8080/api/v1/posters${endpoint}`, newPoster);
+            const response = await axios.post(
+                `http://localhost:8080/api/v1/posters${endpoint}`,
+                newPoster,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             if (newPosterType === "TeamPoster") {
                 setTeamPosters((prev) => [...prev, response.data]);
@@ -84,6 +120,7 @@ const TeamAndUserPosters: React.FC = () => {
             setError(`Nie udało się dodać ${newPosterType === "TeamPoster" ? "plakatu zespołu" : "plakatu użytkownika"}.`);
         }
     };
+
 
     const filteredTeamPosters = teamPosters.filter((poster) =>
         poster.description.toLowerCase().includes(searchQuery.toLowerCase())
