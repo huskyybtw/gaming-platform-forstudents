@@ -2,28 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const token = Cookies.get("token");
-console.log(token); // Powinien wyświetlić Twój token
 
-interface TeamPoster {
-    id: number;
-    teamId: number;
-    description: string;
-    dueDate: string;
-    createdAt: string;
-    updatedAt: string;
-    type: "TeamPoster";
-}
-
-interface UserPoster {
-    id: number;
-    userId: number;
-    description: string;
-    dueDate: string;
-    createdAt: string;
-    updatedAt: string;
-    type: "UserPoster";
-}
 
 const TeamAndUserPosters: React.FC = () => {
     const [teamPosters, setTeamPosters] = useState<TeamPoster[]>([]);
@@ -32,11 +11,12 @@ const TeamAndUserPosters: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [error, setError] = useState<string>("");
     const [newPosterType, setNewPosterType] = useState<"TeamPoster" | "UserPoster">("TeamPoster");
-    const [newPoster, setNewPoster] = useState<{ teamId?: number; userId?: number; description: string; dueDate: string }>({
+    const [newPoster, setNewPoster] = useState<{ teamId?: number; description: string; dueDate: string }>({
         description: "",
         dueDate: "",
     });
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+    const userId = Cookies.get("userId"); // Pobieranie userId z ciasteczka
 
     useEffect(() => {
         const fetchPosters = async () => {
@@ -47,23 +27,13 @@ const TeamAndUserPosters: React.FC = () => {
                     return;
                 }
 
-                const teamResponse = await axios.get<TeamPoster[]>(
-                    "http://localhost:8080/api/v1/posters/team/",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const teamResponse = await axios.get<TeamPoster[]>("http://localhost:8080/api/v1/posters/team/", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
 
-                const userResponse = await axios.get<UserPoster[]>(
-                    "http://localhost:8080/api/v1/posters/user/",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const userResponse = await axios.get<UserPoster[]>("http://localhost:8080/api/v1/posters/user/", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
 
                 setTeamPosters(teamResponse.data);
                 setUserPosters(userResponse.data);
@@ -74,11 +44,6 @@ const TeamAndUserPosters: React.FC = () => {
 
         fetchPosters();
     }, []);
-
-
-    const handleSortChange = () => {
-        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -98,15 +63,15 @@ const TeamAndUserPosters: React.FC = () => {
             }
 
             const endpoint = newPosterType === "TeamPoster" ? "/team/" : "/user/";
-            const response = await axios.post(
-                `http://localhost:8080/api/v1/posters${endpoint}`,
-                newPoster,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const payload = { ...newPoster };
+
+            if (newPosterType === "UserPoster" && userId) {
+                payload["userId"] = parseInt(userId, 10);
+            }
+
+            const response = await axios.post(`http://localhost:8080/api/v1/posters${endpoint}`, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
             if (newPosterType === "TeamPoster") {
                 setTeamPosters((prev) => [...prev, response.data]);
@@ -120,7 +85,6 @@ const TeamAndUserPosters: React.FC = () => {
             setError(`Nie udało się dodać ${newPosterType === "TeamPoster" ? "plakatu zespołu" : "plakatu użytkownika"}.`);
         }
     };
-
 
     const filteredTeamPosters = teamPosters.filter((poster) =>
         poster.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -157,7 +121,7 @@ const TeamAndUserPosters: React.FC = () => {
             </div>
 
             <div className="sort-bar">
-                <button onClick={handleSortChange} className="btn btn-secondary">
+                <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="btn btn-secondary">
                     Sortuj według terminu: {sortOrder === "asc" ? "Rosnąco" : "Malejąco"}
                 </button>
             </div>
@@ -184,14 +148,7 @@ const TeamAndUserPosters: React.FC = () => {
                         />
                     )}
                     {newPosterType === "UserPoster" && (
-                        <input
-                            type="number"
-                            name="userId"
-                            placeholder="User ID"
-                            value={newPoster.userId || ""}
-                            onChange={handleInputChange}
-                            className="form-control"
-                        />
+                        <p>User ID (z ciasteczka): {userId || "Brak danych użytkownika w ciasteczku."}</p>
                     )}
                     <textarea
                         name="description"
