@@ -33,11 +33,23 @@ function FindGamesPage() {
         e.preventDefault();
 
         const token = Cookies.get("token");
+        const ownerId = Cookies.get("userId");
 
         if (!token) {
             alert("Nie znaleziono tokenu autoryzacyjnego!");
             return;
         }
+
+        if (!ownerId) {
+            alert("Nie znaleziono ID użytkownika!");
+            return;
+        }
+
+        // Dodanie ownerId do formData
+        const dataToSend = {
+            ...formData,
+            ownerId, // Wstawienie ownerId
+        };
 
         try {
             const response = await fetch("http://localhost:8080/api/v1/posters/match/", {
@@ -46,15 +58,22 @@ function FindGamesPage() {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(dataToSend), // Użycie zaktualizowanego obiektu
             });
+
+            const textResponse = await response.text();
+            console.log("Response:", textResponse);
 
             if (response.ok) {
                 alert("Ogłoszenie zostało dodane!");
                 setIsFormVisible(false);
             } else {
-                const error = await response.json();
-                alert(`Błąd: ${error.message}`);
+                try {
+                    const error = JSON.parse(textResponse);
+                    alert(`Błąd: ${error.message}`);
+                } catch {
+                    alert(`Błąd: Otrzymano nieoczekiwaną odpowiedź: ${textResponse}`);
+                }
             }
         } catch (error) {
             console.error("Wystąpił problem z połączeniem:", error);

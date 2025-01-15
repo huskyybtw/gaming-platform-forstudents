@@ -22,6 +22,7 @@ function App() {
       <Route path="/teams/:teamid" element={<TeamDetailsPage />} />
       <Route path="/leaderboards" element={<LeaderBoardPage />} />
       <Route path="/forbidden" element={<AccessForbiddenPage/>} />
+
     </Routes>
   </Router>
 }
