@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/MainPage.css';
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 interface MatchPoster {
     id: number;
@@ -18,7 +19,7 @@ const MainPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [error, setError] = useState<string>('');
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchMatchPosters = async () => {
             try {
@@ -114,7 +115,7 @@ const MainPage: React.FC = () => {
                     <div
                         key={poster.id}
                         className="poster-card"
-                        onClick={() => console.log(`Kliknięto plakat ${poster.id}`)}
+                        onClick={() => navigate(`/matchpage/${poster.id}`)}
                         style={{ cursor: 'pointer' }}
                     >
                         <h3>{poster.title}</h3>

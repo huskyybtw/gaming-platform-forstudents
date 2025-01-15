@@ -206,7 +206,7 @@ const TeamAndUserPosters: React.FC = () => {
                                 <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
                                 <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
                                 <button
-                                    onClick={() => handleDeletePoster(poster.id, "TeamPoster")}
+                                    onClick={() => handleDeletePoster(poster.teamId, "TeamPoster")}
                                     className="btn btn-danger delete-button"
                                 >
                                     Usuń
@@ -228,7 +228,7 @@ const TeamAndUserPosters: React.FC = () => {
                                 <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
                                 <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
                                 <button
-                                    onClick={() => handleDeletePoster(poster.id, "UserPoster")}
+                                    onClick={() => handleDeletePoster(poster.userId, "UserPoster")}
                                     className="btn btn-danger delete-button"
                                 >
                                     Usuń

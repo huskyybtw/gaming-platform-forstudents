@@ -1,7 +1,7 @@
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import NavBar from "../components/NavBar";
 import MatchPosters from "../components/MatchPosters";
 import Footer from "../components/Footer";
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Cookies from "js-cookie";
 
 function FindGamesPage() {
@@ -11,6 +11,9 @@ function FindGamesPage() {
         description: "",
         dueDate: "",
     });
+
+    // Dodaj stan do wymuszania odświeżenia
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         const userId = Cookies.get("userId");
@@ -28,7 +31,6 @@ function FindGamesPage() {
         });
     };
 
-
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -45,10 +47,9 @@ function FindGamesPage() {
             return;
         }
 
-        // Dodanie ownerId do formData
         const dataToSend = {
             ...formData,
-            ownerId, // Wstawienie ownerId
+            ownerId,
         };
 
         try {
@@ -56,9 +57,9 @@ function FindGamesPage() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(dataToSend), // Użycie zaktualizowanego obiektu
+                body: JSON.stringify(dataToSend),
             });
 
             const textResponse = await response.text();
@@ -67,6 +68,9 @@ function FindGamesPage() {
             if (response.ok) {
                 alert("Ogłoszenie zostało dodane!");
                 setIsFormVisible(false);
+
+                // Wymuś odświeżenie listy
+                setRefreshKey((prevKey) => prevKey + 1);
             } else {
                 try {
                     const error = JSON.parse(textResponse);
@@ -85,7 +89,6 @@ function FindGamesPage() {
             <NavBar />
             <main className="flex-grow-1 p-4">
                 <h1>Find Games</h1>
-                {/* Przycisk otwierający formularz */}
                 <button
                     className="btn btn-primary mb-3"
                     onClick={() => setIsFormVisible(true)}
@@ -93,7 +96,6 @@ function FindGamesPage() {
                     Dodaj ogłoszenie
                 </button>
 
-                {/* Formularz dodania ogłoszenia */}
                 {isFormVisible && (
                     <form onSubmit={handleSubmit} className="mb-4">
                         <div className="form-group">
@@ -146,8 +148,8 @@ function FindGamesPage() {
                     </form>
                 )}
 
-                {/* Wyświetlenie komponentu MatchPosters */}
-                <MatchPosters />
+                {/* Przekazanie klucza odświeżania */}
+                <MatchPosters key={refreshKey} />
             </main>
             <Footer />
         </div>
