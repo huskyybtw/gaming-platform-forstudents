@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pwr.isa.backend.Email.EmailService;
 import pwr.isa.backend.Email.EmailValidator;
+import pwr.isa.backend.Player.Player;
+import pwr.isa.backend.Player.PlayerRepository;
+import pwr.isa.backend.Player.PlayerService;
 import pwr.isa.backend.Posters.UserPosters.UserPosterService;
 import pwr.isa.backend.Security.SHA256;
 import pwr.isa.backend.Team.Team;
@@ -13,6 +16,8 @@ import pwr.isa.backend.Team.TeamService;
 import pwr.isa.backend.Team.TeamUsers.TeamUsersRepository;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,15 +31,18 @@ public class UserServiceImpl implements UserService {
     private final UserPosterService userPosterService;
     private final TeamUsersRepository teamUsersRepository;
     private final EmailService emailService;
+    private final PlayerRepository playerRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            @Lazy UserPosterService userPosterService,
                            TeamUsersRepository teamUsersRepository,
-                           EmailService emailService) {
+                           EmailService emailService,
+                           PlayerRepository playerRepository) {
         this.userRepository = userRepository;
         this.userPosterService = userPosterService;
         this.teamUsersRepository = teamUsersRepository;
         this.emailService = emailService;
+        this.playerRepository = playerRepository;
     }
 
     @Override
@@ -45,9 +53,15 @@ public class UserServiceImpl implements UserService {
         user.setID(null);
         user.setRole(UserRole.USER);
 
-        userRepository.save(user);
+        var saved = userRepository.save(user);
         sendActivationEmail(user);
 
+        // TEMPORARY SOLUTION
+        playerRepository.save(Player.builder()
+                .userId(saved.getID())
+                .lastUpdate(new Timestamp(new Date().getTime()))
+                        .rating(1000)
+                .build());
         return user;
     }
 

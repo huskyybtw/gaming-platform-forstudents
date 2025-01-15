@@ -1,87 +1,130 @@
-/* Ensure the parent container takes the full height */
 .match-history-container {
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Distribute space evenly between elements */
-    overflow: auto; /* Allow scrolling if the content exceeds the viewport */
+    width: 100%;
+    max-width: 100%; /* Take full width of grid column */
+    padding: 0.5rem;
+}
+
+.list-group {
+    padding: 0;
+    list-style: none;
     width: 100%;
 }
 
-/* Ensure each match item uses full available vertical space */
 .match-history-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0px;
-    width: 100%; /* Ensure it takes up the full width */
-    box-sizing: border-box; /* Prevents margin/padding from affecting the width */
-    flex-grow: 1; /* Allow it to grow and fill available space */
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .match-details {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center; /* Vertically center items */
-    width: 100%;
-    max-width: 100%; /* Prevent overflow */
-    box-sizing: border-box; /* Ensure padding doesn't cause overflow */
-    overflow: hidden; /* Prevent any content from overflowing */
+    flex-direction: column;
+    gap: 0.4rem;
 }
 
-/* Keep other styles as is, no need to change */
-.nickname-role {
-    flex: 1;
+.match-id {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.player-info {
     display: flex;
-    justify-content: space-between; /* Align nickname and role horizontally */
-    flex-wrap: wrap;
-    overflow: hidden; /* Prevents overflow within this section */
-    gap: 5px; /* Small gap to save space */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.nickname-role {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.player-nickname {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.role {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.role-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 .champion-info {
     display: flex;
     align-items: center;
-    gap: 8px; /* Reduced gap to fit elements inside */
-    flex-wrap: wrap; /* Allow wrapping if necessary */
-    justify-content: flex-start; /* Align to the left */
-    overflow: hidden; /* Ensure nothing overflows */
+    gap: 0.5rem;
 }
 
 .kda {
-    font-size: 1.2rem; /* Adjust font size to reduce width */
-    margin-right: 5px; /* Reduced margin for compactness */
-}
-
-.items {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; /* Align to the left */
-    gap: 5px; /* Small gap to save space */
-    overflow: hidden; /* Prevent overflow */
-}
-
-.item-icons img {
-    width: 40px; /* Reduced size of icons to prevent overflow */
-    height: 40px;
-    object-fit: contain; /* Maintain aspect ratio */
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .champion-icon-img {
-    margin-left: 5px; /* Reduced margin */
-    width: 40px; /* Smaller size of the champion icon */
-    height: 40px;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.level-items {
+    margin-top: 0.4rem;
+}
+
+.level-items p {
+    margin: 0 0 0.4rem 0;
+    font-size: 0.75rem;
+}
+
+.items {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.items h6 {
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.item-icons {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+}
+
+.item-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    border-radius: 3px;
 }
 
 .game-duration {
-    margin-top: 10px;
-    font-size: 1rem;
-    white-space: nowrap; /* Prevent text wrapping */
+    margin: 0.4rem 0 0 0;
+    font-size: 0.75rem;
+    color: #666;
 }
 
-.role-icon {
-    margin-top: 10px;
-    width: 24px; /* Reduced size of the role icon */
-    height: 24px;
+.win {
+    background-color: rgba(212, 237, 218, 0.5);
+    border: 1px solid #c3e6cb;
+}
+
+.loss {
+    background-color: rgba(248, 215, 218, 0.5);
+    border: 1px solid #f5c6cb;
 }

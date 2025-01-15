@@ -1,0 +1,122 @@
+/* Main Layout */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+.page-header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Main Content Area */
+.page-main {
+    display: flex;
+    flex-grow: 1;
+    padding: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.team-list,
+.player-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    flex-grow: 1;
+}
+
+.team-item,
+.player-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.team-item:hover,
+.player-item:hover {
+    background-color: #f7f7f7;
+    transform: scale(1.02);
+}
+
+/* Player/Team Header */
+.team-header,
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.team-rating,
+.player-rating {
+    font-size: 1rem;
+    color: #007bff;
+}
+
+.team-description,
+.player-description {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.view-details-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.view-details-link:hover {
+    text-decoration: underline;
+}
+
+/* Button to Toggle Between Players/Teams */
+.toggle-button {
+    background-color: #0056b3;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #004494;
+    transform: scale(1.05);
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #f8f9fa;
+    width: 200px; /* Keep sidebar width at 200px */
+    min-width: 200px;
+    padding: 20px;
+    margin-left: 20px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+/* Footer */
+.footer {
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    font-size: 1rem;
+    color: #333;
+}

@@ -6,6 +6,8 @@ import Footer from "../components/Footer.tsx";
 import { Link } from "react-router-dom";
 import TeamsList from "../components/TeamsList.tsx";
 
+import "../styles/LeaderBoardPage.css";
+
 interface Player {
     userId: number;
     nickname: string;
@@ -72,17 +74,17 @@ function LeaderBoardPage() {
                 >
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <h1>Leaderboards</h1>
-                        <button className="btn btn-primary" onClick={toggleDisplay}>
+                        <button className="toggle-button" onClick={toggleDisplay}>
                             {displayTeams ? "Show Best Players" : "Show Best Teams"}
                         </button>
                     </div>
 
                     {!displayTeams ? (
-                        <ul className="list-group">
+                        <ul className="player-list">
                             {players.map((player) => (
                                 <li
                                     key={player.userId}
-                                    className="list-group-item d-flex align-items-center mb-3"
+                                    className="player-item d-flex align-items-center mb-3"
                                     style={{ position: "relative" }}
                                 >
                                     <Link

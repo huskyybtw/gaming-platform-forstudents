@@ -45,6 +45,7 @@ public class MatchPosterServiceImpl implements MatchPosterService{
         this.teamUsersRepository = teamUsersRepository;
     }
 
+    @Transactional
     @Override
     public MatchPosterDTO createMatchPoster(MatchPoster matchPoster, Long teamId) {
         matchPoster.setId(null);
@@ -56,6 +57,8 @@ public class MatchPosterServiceImpl implements MatchPosterService{
         matchPoster.setCreatedAt(new Date());
         matchPoster.setUpdatedAt(new Date());
 
+        var SavedMatch = matchPosterRepository.save(matchPoster);
+        matchPoster.setId(SavedMatch.getId());
         if (teamId != null) {
             List<Long> teamMembers = teamUsersRepository.findUsersByTeamId(teamId);
             for (Long userId : teamMembers) {
@@ -66,7 +69,6 @@ public class MatchPosterServiceImpl implements MatchPosterService{
             matchParticipantRepository.addMatchParticipant(matchPoster.getId(), matchPoster.getOwnerId(), null, 100);
         }
 
-        matchPosterRepository.save(matchPoster);
         return buildMatchPosterDTO(matchPoster.getId());
     }
 

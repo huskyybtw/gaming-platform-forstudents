@@ -49,7 +49,7 @@ public class Player {
     @Schema(description = "Timestamp of the last player update", example = "2023-12-20T10:15:30")
     private Timestamp lastUpdate;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1000")
+    @Column(nullable = true, columnDefinition = "INTEGER DEFAULT 1000")
     @Schema(description = "Player's rating", example = "1000", required = true)
     private Integer rating = 1000;
 

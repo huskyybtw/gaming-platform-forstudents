@@ -106,7 +106,7 @@ public class MatchPosterControler {
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
     @SecurityRequirement(name = "bearerAuth")
-    @Authorize
+    //@Authorize
     @PostMapping("/start/{posterId}")
     public ResponseEntity<MatchPosterDTO> startMatch(@PathVariable Long posterId) {
         return new ResponseEntity<>( matchPosterService.startMatch(posterId),HttpStatus.CREATED);
@@ -126,7 +126,7 @@ public class MatchPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
+    //@Authorize
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{posterId}/join/{userId}")
     public MatchPosterDTO joinMatchPoster(
@@ -152,7 +152,7 @@ public class MatchPosterControler {
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
     @SecurityRequirement(name = "bearerAuth")
-    @Authorize
+    //@Authorize
     @PostMapping("/{posterId}/leave/{userId}")
     public MatchPosterDTO leaveMatchPoster(
             @PathVariable Long posterId,
@@ -174,7 +174,7 @@ public class MatchPosterControler {
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
     @SecurityRequirement(name = "bearerAuth")
-    @Authorize
+    //@Authorize
     @PostMapping("/{posterId}/joinTeam/{teamId}")
     public MatchPosterDTO joinTeam(
             @PathVariable Long posterId,
@@ -197,7 +197,7 @@ public class MatchPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
+    //@Authorize
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{posterId}")
     public MatchPosterDTO updateMatchPoster(
@@ -220,7 +220,7 @@ public class MatchPosterControler {
             @ApiResponse(responseCode = "500", description = "InternalServerError",
                     content = @Content(schema = @Schema(type = "An unexpected error occurred on the server")))
     })
-    @Authorize
+    //@Authorize
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{posterId}")
     public ResponseEntity<Void> deleteMatchPoster(@PathVariable Long posterId) {
