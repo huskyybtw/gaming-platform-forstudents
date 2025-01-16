@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import NavBar from "../components/NavBar.tsx";  // Importujemy pasek nawigacyjny
-
+import NavBar from "../components/NavBar.tsx"; // Importujemy pasek nawigacyjny
 import Footer from "../components/Footer.tsx";
-import '../styles/PosterDetailsPage.css';
+import "../styles/PosterDetailsPage.css";
 
 interface TeamUser {
     id: number;
@@ -52,6 +51,25 @@ const PosterDetailsPage: React.FC = () => {
         fetchPosterDetails();
     }, [id]);
 
+    const handleRemoveUser = async (userId: number, team: "left" | "right") => {
+        try {
+            await axios.delete(`http://localhost:8080/api/v1/posters/match/remove/${userId}`);
+            setMatchPoster((prev) => {
+                if (!prev) return null;
+
+                const updatedUsersLeft =
+                    team === "left" ? prev.usersLeft.filter((user) => user.id !== userId) : prev.usersLeft;
+                const updatedUsersRight =
+                    team === "right" ? prev.usersRight.filter((user) => user.id !== userId) : prev.usersRight;
+
+                return { ...prev, usersLeft: updatedUsersLeft, usersRight: updatedUsersRight };
+            });
+        } catch (err) {
+            console.error("Błąd usuwania użytkownika:", err);
+            setError("Nie udało się usunąć użytkownika.");
+        }
+    };
+
     if (error) {
         return (
             <div className="container mt-4">
@@ -70,19 +88,15 @@ const PosterDetailsPage: React.FC = () => {
 
     return (
         <div className="d-flex flex-column vh-100">
-            {/* Pasek nawigacyjny */}
             <NavBar />
 
             <div className="container mt-4">
-                {/* Informacje o plakacie */}
                 <div className="mb-4">
                     <h1 className="text-primary">{matchPoster.title}</h1>
                     <p>{matchPoster.description}</p>
                 </div>
 
-                {/* Layout 2 tabelki */}
                 <div className="row">
-                    {/* Lewa tabelka - drużyna 1 */}
                     <div className="col-md-6">
                         <h2 className="font-weight-bold">Drużyna 1</h2>
                         <div className="table-responsive">
@@ -91,6 +105,7 @@ const PosterDetailsPage: React.FC = () => {
                                 <tr>
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
+                                    <th className="text-center">Akcje</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -98,6 +113,14 @@ const PosterDetailsPage: React.FC = () => {
                                     <tr key={user.id}>
                                         <td className="text-center">{user.id}</td>
                                         <td className="text-center">{user.name}</td>
+                                        <td className="text-center">
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => handleRemoveUser(user.id, "left")}
+                                            >
+                                                Usuń
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -105,7 +128,6 @@ const PosterDetailsPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Prawa tabelka - drużyna 2 */}
                     <div className="col-md-6">
                         <h2 className="font-weight-bold">Drużyna 2</h2>
                         <div className="table-responsive">
@@ -114,6 +136,7 @@ const PosterDetailsPage: React.FC = () => {
                                 <tr>
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
+                                    <th className="text-center">Akcje</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -121,6 +144,14 @@ const PosterDetailsPage: React.FC = () => {
                                     <tr key={user.id}>
                                         <td className="text-center">{user.id}</td>
                                         <td className="text-center">{user.name}</td>
+                                        <td className="text-center">
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => handleRemoveUser(user.id, "right")}
+                                            >
+                                                Usuń
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>

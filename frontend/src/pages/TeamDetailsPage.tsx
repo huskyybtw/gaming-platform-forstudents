@@ -267,20 +267,11 @@ function TeamDetailsPage() {
                                     {captain && captain.userId === parseInt(Cookies.get("userId")!) && (
                                         <button
                                             className="btn btn-danger ms-auto"
-                                            style={{
-                                                position: "absolute",
-                                                right: "10px",
-                                                top: "50%",
-                                                transform: "translateY(-50%)"
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Zatrzymaj propagację zdarzenia
-                                                handleRemovePlayer(player.userId);
-                                            }}
+                                            style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}
+                                            onClick={() => handleRemovePlayer(player.userId)}
                                         >
                                             X
                                         </button>
-
                                     )}
                                 </li>
                             ))}
