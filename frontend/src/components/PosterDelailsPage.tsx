@@ -53,7 +53,7 @@ const PosterDetailsPage: React.FC = () => {
 
     const handleRemoveUser = async (userId: number, team: "left" | "right") => {
         try {
-            await axios.delete(`http://localhost:8080/api/v1/posters/match/remove/${userId}`);
+            await axios.delete(`http://localhost:8080/api/v1/posters/match/leave/${userId}`);
             setMatchPoster((prev) => {
                 if (!prev) return null;
 
