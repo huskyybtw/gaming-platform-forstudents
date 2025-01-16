@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-
+import "../styles/FindPlayersPage.css";
 
 
 const TeamAndUserPosters: React.FC = () => {

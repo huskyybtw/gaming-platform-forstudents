@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar";
 import MatchPosters from "../components/MatchPosters";
 import Footer from "../components/Footer";
 import Cookies from "js-cookie";
+import {useNavigate} from "react-router-dom";
 
 function FindGamesPage() {
     const [isFormVisible, setIsFormVisible] = useState(false);
@@ -14,6 +15,7 @@ function FindGamesPage() {
 
     // Dodaj stan do wymuszania odświeżenia
     const [refreshKey, setRefreshKey] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userId = Cookies.get("userId");
@@ -71,6 +73,8 @@ function FindGamesPage() {
 
                 // Wymuś odświeżenie listy
                 setRefreshKey((prevKey) => prevKey + 1);
+                // Przekierowanie na stronę /games po pomyślnym dodaniu plakatu
+                navigate("/games"); // Przekierowanie
             } else {
                 try {
                     const error = JSON.parse(textResponse);

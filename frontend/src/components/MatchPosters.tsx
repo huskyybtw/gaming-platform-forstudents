@@ -20,6 +20,7 @@ const MainPage: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchMatchPosters = async () => {
             try {
@@ -82,6 +83,7 @@ const MainPage: React.FC = () => {
 
             // Usuwanie plakatu z lokalnego stanu
             setMatchPosters((prev) => prev.filter((poster) => poster.id !== posterId));
+            navigate("/games");
         } catch (err) {
             setError('Nie udało się usunąć plakatu. Spróbuj ponownie później.');
         }
