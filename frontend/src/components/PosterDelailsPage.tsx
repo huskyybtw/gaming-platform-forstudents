@@ -91,7 +91,7 @@ const PosterDetailsPage: React.FC = () => {
     const handleLeave = async () => {
         if (!loggedInUserId) return;
         try {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/leave/${loggedInUserId}`);
+            await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/leave/${loggedInUserId}`);
             window.location.reload();
         } catch (err) {
             console.error("Błąd podczas opuszczania meczu:", err);
@@ -101,7 +101,7 @@ const PosterDetailsPage: React.FC = () => {
 
     const handleRemoveUser = async (userId: number, team: "left" | "right") => {
         try {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/leave/${userId}`);
+            await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/leave/${userId}`);
             setMatchPoster((prev) => {
                 if (!prev) return null;
 
