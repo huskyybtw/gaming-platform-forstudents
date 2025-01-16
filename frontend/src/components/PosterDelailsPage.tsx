@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom"; // Dodano useSearchParams
 import axios from "axios";
 import Cookies from "js-cookie";
 import NavBar from "../components/NavBar.tsx";
@@ -23,17 +23,27 @@ interface MatchPosterDetails {
 
 const PosterDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const [searchParams] = useSearchParams(); // Dodano searchParams
     const [matchPoster, setMatchPoster] = useState<MatchPosterDetails | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
+    const [selectedTeam, setSelectedTeam] = useState<"left" | "right">("left");
 
     useEffect(() => {
         const userId = Cookies.get("userId");
         if (userId) {
             setLoggedInUserId(parseInt(userId, 10));
         }
-    }, []);
+
+        // Pobranie drużyny z parametru zapytania
+        const teamParam = searchParams.get("team");
+        if (teamParam === "100") {
+            setSelectedTeam("left");
+        } else if (teamParam === "200") {
+            setSelectedTeam("right");
+        }
+    }, [searchParams]);
 
     const isUserInMatch = (poster: MatchPosterDetails) => {
         return [...poster.usersLeft, ...poster.usersRight].some(user => user.id === loggedInUserId);
@@ -49,6 +59,8 @@ const PosterDetailsPage: React.FC = () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}`);
                 const data = response.data;
+
+                console.log(data.participants); // Sprawdź, jak wyglądają uczestnicy
 
                 setMatchPoster({
                     id: data.matchPoster.id,
@@ -66,6 +78,7 @@ const PosterDetailsPage: React.FC = () => {
                         frag: user.frag || 0
                     })),
                 });
+
             } catch (err) {
                 setError("Nie udało się załadować danych. Spróbuj ponownie później.");
                 console.error("Błąd ładowania szczegółów plakatu:", err);
@@ -77,16 +90,24 @@ const PosterDetailsPage: React.FC = () => {
         fetchPosterDetails();
     }, [id]);
 
-    const handleJoin = async () => {
+    const handleJoin = async (team: "left" | "right") => {
         if (!loggedInUserId) return;
+
+        // Mapowanie "left" -> 100 i "right" -> 200get
+        const teamCode = team === "left" ? 100 : 200;
+
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/join/${loggedInUserId}`);
-            window.location.reload();
+            // Wysłanie zapytania z odpowiednimi parametrami
+            await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/join/${loggedInUserId}`, null, {
+                params: { team: teamCode }, // Parametr team w zapytaniu
+            });
+            window.location.reload(); // Odświeżenie strony
         } catch (err) {
-            console.error("Błąd podczas dołączania do meczu:", err);
-            setError("Nie udało się dołączyć do meczu.");
+            console.error(`Błąd podczas dołączania do drużyny ${team}:`, err);
+            setError(`Nie udało się dołączyć do drużyny ${team === "left" ? "1" : "2"}.`);
         }
     };
+
 
     const handleLeave = async () => {
         if (!loggedInUserId) return;
@@ -116,6 +137,14 @@ const PosterDetailsPage: React.FC = () => {
             console.error("Błąd usuwania użytkownika:", err);
             setError("Nie udało się usunąć użytkownika.");
         }
+    };
+
+    // Sprawdzanie czy drużyna jest pełna
+    const isTeamFull = (team: "left" | "right"): boolean => {
+        if (!matchPoster) return false;
+        return team === "left"
+            ? matchPoster.usersLeft.length >= 5
+            : matchPoster.usersRight.length >= 5;
     };
 
     if (isLoading) {
@@ -154,9 +183,27 @@ const PosterDetailsPage: React.FC = () => {
                     {loggedInUserId && !isUserOwner(matchPoster) && (
                         <div className="mb-3">
                             {!isUserInMatch(matchPoster) ? (
-                                <button className="btn btn-success" onClick={handleJoin}>
-                                    Dołącz do meczu
-                                </button>
+                                <div className="d-flex gap-2 align-items-center">
+                                    <select
+                                        className="form-select w-auto"
+                                        value={selectedTeam}
+                                        onChange={(e) => setSelectedTeam(e.target.value as "left" | "right")}
+                                    >
+                                        <option value="left" disabled={isTeamFull("left")}>
+                                            Drużyna 1 {isTeamFull("left") ? "(Pełna)" : ""}
+                                        </option>
+                                        <option value="right" disabled={isTeamFull("right")}>
+                                            Drużyna 2 {isTeamFull("right") ? "(Pełna)" : ""}
+                                        </option>
+                                    </select>
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={() => handleJoin(selectedTeam)}
+                                        disabled={isTeamFull(selectedTeam)}
+                                    >
+                                        Dołącz do meczu
+                                    </button>
+                                </div>
                             ) : (
                                 <button className="btn btn-warning" onClick={handleLeave}>
                                     Opuść mecz
@@ -167,6 +214,7 @@ const PosterDetailsPage: React.FC = () => {
                 </div>
 
                 <div className="row">
+                    {/* Drużyna 1 */}
                     <div className="col-md-6">
                         <h2 className="font-weight-bold">Drużyna 1</h2>
                         <div className="table-responsive">
@@ -202,6 +250,7 @@ const PosterDetailsPage: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Drużyna 2 */}
                     <div className="col-md-6">
                         <h2 className="font-weight-bold">Drużyna 2</h2>
                         <div className="table-responsive">
@@ -242,6 +291,7 @@ const PosterDetailsPage: React.FC = () => {
             <Footer />
         </div>
     );
+
 };
 
 export default PosterDetailsPage;
