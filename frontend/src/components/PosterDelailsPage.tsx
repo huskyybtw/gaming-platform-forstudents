@@ -67,17 +67,22 @@ const PosterDetailsPage: React.FC = () => {
                     title: `Match Poster ${data.matchPoster.id}`,
                     description: data.matchPoster.description,
                     ownerId: data.matchPoster.ownerId,
-                    usersLeft: data.participants.slice(0, 5).map((user: any) => ({
-                        id: user.userId,
-                        name: `User ${user.userId}`,
-                        frag: user.frag || 0
-                    })),
-                    usersRight: data.participants.slice(5, 10).map((user: any) => ({
-                        id: user.userId,
-                        name: `User ${user.userId}`,
-                        frag: user.frag || 0
-                    })),
+                    usersLeft: data.participants
+                        .filter((user: any) => user.riot_team_number === 100)
+                        .map((user: any) => ({
+                            id: user.userId,
+                            name: `User ${user.userId}`,
+                            frag: user.frag || 0
+                        })),
+                    usersRight: data.participants
+                        .filter((user: any) => user.riot_team_number === 200)
+                        .map((user: any) => ({
+                            id: user.userId,
+                            name: `User ${user.userId}`,
+                            frag: user.frag || 0
+                        })),
                 });
+
 
             } catch (err) {
                 setError("Nie udało się załadować danych. Spróbuj ponownie później.");
