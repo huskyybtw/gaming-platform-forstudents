@@ -137,7 +137,7 @@ const TeamAndUserPosters: React.FC = () => {
             <div className="search-sort-bar">
                 <input
                     type="text"
-                    placeholder="Szukaj plakatów..."
+                    placeholder="Search Posters..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="form-control search-input"
@@ -146,14 +146,14 @@ const TeamAndUserPosters: React.FC = () => {
                     onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
                     className="btn btn-secondary sort-button"
                 >
-                    Sortuj: {sortOrder === "asc" ? "Rosnąco" : "Malejąco"}
+                    Sort: {sortOrder === "asc" ? "Ascending" : "Descending"}
                 </button>
             </div>
 
             <div className="add-poster-section">
-                <h2>Dodaj Poster</h2>
+                <h2>Add Poster</h2>
                 <button onClick={() => setIsFormVisible(!isFormVisible)} className="btn btn-primary toggle-form-button">
-                    {isFormVisible ? "Anuluj" : "Dodaj Nowy Poster"}
+                    {isFormVisible ? "Cancel" : "Add New Poster"}
                 </button>
                 {isFormVisible && (
                     <div className="add-poster-form">
@@ -172,11 +172,11 @@ const TeamAndUserPosters: React.FC = () => {
                             />
                         )}
                         {newPosterType === "UserPoster" && (
-                            <p>User ID: {userId || "Brak danych użytkownika w ciasteczku."}</p>
+                            <p>User ID: {userId || "No user data in cookie."}</p>
                         )}
                         <textarea
                             name="description"
-                            placeholder="Opis plakatu"
+                            placeholder="Poster Description"
                             value={newPoster.description}
                             onChange={handleInputChange}
                             className="form-control"
@@ -189,7 +189,7 @@ const TeamAndUserPosters: React.FC = () => {
                             className="form-control"
                         />
                         <button onClick={handleAddPoster} className="btn btn-success add-poster-button">
-                            Dodaj Plakat
+                            Add Poster
                         </button>
                     </div>
                 )}
@@ -203,18 +203,18 @@ const TeamAndUserPosters: React.FC = () => {
                             <div key={poster.id} className="card poster-card">
                                 <h3>Team {poster.teamId}</h3>
                                 <p>{poster.description}</p>
-                                <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
-                                <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                                <p>Due Date: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                                <p>Created: {new Date(poster.createdAt).toLocaleDateString()}</p>
                                 <button
                                     onClick={() => handleDeletePoster(poster.teamId, "TeamPoster")}
                                     className="btn btn-danger delete-button"
                                 >
-                                    Usuń
+                                    Delete
                                 </button>
                             </div>
                         ))
                     ) : (
-                        <p>Brak plakatów dla zespołów.</p>
+                        <p>No team posters.</p>
                     )}
                 </div>
 
@@ -225,18 +225,18 @@ const TeamAndUserPosters: React.FC = () => {
                             <div key={poster.id} className="card poster-card">
                                 <h3>User {poster.userId}</h3>
                                 <p>{poster.description}</p>
-                                <p>Termin: {new Date(poster.dueDate).toLocaleDateString()}</p>
-                                <p>Utworzono: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                                <p>Due Date: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                                <p>Created: {new Date(poster.createdAt).toLocaleDateString()}</p>
                                 <button
                                     onClick={() => handleDeletePoster(poster.userId, "UserPoster")}
                                     className="btn btn-danger delete-button"
                                 >
-                                    Usuń
+                                    Delete
                                 </button>
                             </div>
                         ))
                     ) : (
-                        <p>Brak plakatów użytkowników.</p>
+                        <p>No user posters.</p>
                     )}
                 </div>
             </div>

@@ -42,7 +42,8 @@ const MainPage: React.FC = () => {
                 }));
                 setMatchPosters(formattedPosters);
             } catch (err) {
-                setError('Nie udało się załadować plakatów. Spróbuj ponownie później.');
+                setError('Failed to load posters. Please try again later.');
+
             }
         };
 
@@ -72,7 +73,7 @@ const MainPage: React.FC = () => {
         try {
             const token = Cookies.get('token');
             if (!token) {
-                setError('Brak tokenu autoryzacyjnego.');
+                setError('Missing authorization token.');
                 return;
             }
 
@@ -85,7 +86,7 @@ const MainPage: React.FC = () => {
             setMatchPosters((prev) => prev.filter((poster) => poster.id !== posterId));
             navigate("/games");
         } catch (err) {
-            setError('Nie udało się usunąć plakatu. Spróbuj ponownie później.');
+            setError('Failed to delete the poster. Please try again later.');
         }
     };
 
@@ -93,25 +94,25 @@ const MainPage: React.FC = () => {
         <div className="main-page">
             {error && <p className="error-message">{error}</p>}
 
-            {/* Wyszukiwarka */}
+            {/* Search bar */}
             <div className="search-bar">
                 <input
                     type="text"
-                    placeholder="Szukaj plakatów..."
+                    placeholder="Search posters..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="form-control"
                 />
             </div>
 
-            {/* Sortowanie */}
+            {/* Sorting */}
             <div className="sort-bar">
                 <button onClick={handleSortChange} className="btn btn-secondary">
-                    Sortuj według terminu: {sortOrder === 'asc' ? 'Rosnąco' : 'Malejąco'}
+                    Sort by deadline: {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                 </button>
             </div>
 
-            {/* Lista plakatów */}
+            {/* Posters list */}
             <div className="posters-container">
                 {sortedPosters.map((poster) => (
                     <div
@@ -122,21 +123,22 @@ const MainPage: React.FC = () => {
                     >
                         <h3>{poster.title}</h3>
                         <p>{poster.description}</p>
-                        <p>Termin zgłoszeń: {new Date(poster.dueDate).toLocaleDateString()}</p>
-                        <p>Data utworzenia: {new Date(poster.createdAt).toLocaleDateString()}</p>
-                        {/* Przycisk usuwania */}
+                        <p>Submission deadline: {new Date(poster.dueDate).toLocaleDateString()}</p>
+                        <p>Creation date: {new Date(poster.createdAt).toLocaleDateString()}</p>
+                        {/* Delete button */}
                         <button
                             onClick={() => handleDeletePoster(poster.id)}
                             className="btn btn-danger"
                         >
-                            Usuń
+                            Delete
                         </button>
                     </div>
                 ))}
-                {sortedPosters.length === 0 && <p>Brak plakatów spełniających kryteria wyszukiwania.</p>}
+                {sortedPosters.length === 0 && <p>No posters matching the search criteria.</p>}
             </div>
         </div>
     );
+
 };
 
 export default MainPage;

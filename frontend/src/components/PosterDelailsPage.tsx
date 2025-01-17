@@ -85,8 +85,9 @@ const PosterDetailsPage: React.FC = () => {
 
 
             } catch (err) {
-                setError("Nie udało się załadować danych. Spróbuj ponownie później.");
-                console.error("Błąd ładowania szczegółów plakatu:", err);
+                setError("Failed to load data. Please try again later.");
+                console.error("Error loading poster details:", err);
+
             } finally {
                 setIsLoading(false);
             }
@@ -108,8 +109,9 @@ const PosterDetailsPage: React.FC = () => {
             });
             window.location.reload(); // Odświeżenie strony
         } catch (err) {
-            console.error(`Błąd podczas dołączania do drużyny ${team}:`, err);
-            setError(`Nie udało się dołączyć do drużyny ${team === "left" ? "1" : "2"}.`);
+            console.error(`Error while joining team ${team}:`, err);
+            setError(`Failed to join team ${team === "left" ? "1" : "2"}.`);
+
         }
     };
 
@@ -120,8 +122,9 @@ const PosterDetailsPage: React.FC = () => {
             await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posters/match/${id}/leave/${loggedInUserId}`);
             window.location.reload();
         } catch (err) {
-            console.error("Błąd podczas opuszczania meczu:", err);
-            setError("Nie udało się opuścić meczu.");
+            console.error("Error while leaving the match:", err);
+            setError("Failed to leave the match.");
+
         }
     };
 
@@ -139,8 +142,9 @@ const PosterDetailsPage: React.FC = () => {
                 return { ...prev, usersLeft: updatedUsersLeft, usersRight: updatedUsersRight };
             });
         } catch (err) {
-            console.error("Błąd usuwania użytkownika:", err);
-            setError("Nie udało się usunąć użytkownika.");
+            console.error("Error removing user:", err);
+            setError("Failed to remove user.");
+
         }
     };
 
@@ -155,7 +159,7 @@ const PosterDetailsPage: React.FC = () => {
     if (isLoading) {
         return (
             <div className="container mt-4">
-                <p>Ładowanie danych...</p>
+                <p>Loading...</p>
             </div>
         );
     }
@@ -171,7 +175,7 @@ const PosterDetailsPage: React.FC = () => {
     if (!matchPoster) {
         return (
             <div className="container mt-4">
-                <p>Nie znaleziono meczu.</p>
+                <p>Match not found.</p>
             </div>
         );
     }
@@ -195,10 +199,10 @@ const PosterDetailsPage: React.FC = () => {
                                         onChange={(e) => setSelectedTeam(e.target.value as "left" | "right")}
                                     >
                                         <option value="left" disabled={isTeamFull("left")}>
-                                            Drużyna 1 {isTeamFull("left") ? "(Pełna)" : ""}
+                                            Team {isTeamFull("left") ? "(Full)" : ""}
                                         </option>
                                         <option value="right" disabled={isTeamFull("right")}>
-                                            Drużyna 2 {isTeamFull("right") ? "(Pełna)" : ""}
+                                            Team 2 {isTeamFull("right") ? "(Full)" : ""}
                                         </option>
                                     </select>
                                     <button
@@ -206,12 +210,12 @@ const PosterDetailsPage: React.FC = () => {
                                         onClick={() => handleJoin(selectedTeam)}
                                         disabled={isTeamFull(selectedTeam)}
                                     >
-                                        Dołącz do meczu
+                                        Join Match
                                     </button>
                                 </div>
                             ) : (
                                 <button className="btn btn-warning" onClick={handleLeave}>
-                                    Opuść mecz
+                                    Leave Match
                                 </button>
                             )}
                         </div>
@@ -221,7 +225,7 @@ const PosterDetailsPage: React.FC = () => {
                 <div className="row">
                     {/* Drużyna 1 */}
                     <div className="col-md-6">
-                        <h2 className="font-weight-bold">Drużyna 1</h2>
+                        <h2 className="font-weight-bold">Team 1</h2>
                         <div className="table-responsive">
                             <table className="table table-bordered table-striped table-hover">
                                 <thead className="table-dark">
@@ -229,7 +233,7 @@ const PosterDetailsPage: React.FC = () => {
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
                                     <th className="text-center">Frag</th>
-                                    {isUserOwner(matchPoster) && <th className="text-center">Akcje</th>}
+                                    {isUserOwner(matchPoster) && <th className="text-center">Action</th>}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -244,7 +248,7 @@ const PosterDetailsPage: React.FC = () => {
                                                     className="btn btn-danger"
                                                     onClick={() => handleRemoveUser(user.id, "left")}
                                                 >
-                                                    Usuń
+                                                    Delete
                                                 </button>
                                             </td>
                                         )}
@@ -257,7 +261,7 @@ const PosterDetailsPage: React.FC = () => {
 
                     {/* Drużyna 2 */}
                     <div className="col-md-6">
-                        <h2 className="font-weight-bold">Drużyna 2</h2>
+                        <h2 className="font-weight-bold">Team 2</h2>
                         <div className="table-responsive">
                             <table className="table table-bordered table-striped table-hover">
                                 <thead className="table-dark">
@@ -265,7 +269,7 @@ const PosterDetailsPage: React.FC = () => {
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
                                     <th className="text-center">Frag</th>
-                                    {isUserOwner(matchPoster) && <th className="text-center">Akcje</th>}
+                                    {isUserOwner(matchPoster) && <th className="text-center">Action</th>}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -280,7 +284,7 @@ const PosterDetailsPage: React.FC = () => {
                                                     className="btn btn-danger"
                                                     onClick={() => handleRemoveUser(user.id, "right")}
                                                 >
-                                                    Usuń
+                                                    Delete
                                                 </button>
                                             </td>
                                         )}
