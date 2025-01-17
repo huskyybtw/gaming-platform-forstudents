@@ -10,6 +10,8 @@ import AccessForbiddenPage from "./pages/AccessForbiddenPage.tsx";
 import TeamsPage from "./pages/TeamsPage.tsx";
 import TeamDetailsPage from "./pages/TeamDetailsPage.tsx";
 
+import PosterDelailsPage from "./components/PosterDelailsPage.tsx";
+
 function App() {
 
   return <Router>
@@ -22,6 +24,8 @@ function App() {
       <Route path="/teams/:teamid" element={<TeamDetailsPage />} />
       <Route path="/leaderboards" element={<LeaderBoardPage />} />
       <Route path="/forbidden" element={<AccessForbiddenPage/>} />
+      <Route path="/matchpage/:id" element={<PosterDelailsPage/>} />
+
     </Routes>
   </Router>
 }
