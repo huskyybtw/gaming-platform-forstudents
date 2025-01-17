@@ -9,7 +9,6 @@ import "../styles/PosterDetailsPage.css";
 interface TeamUser {
     id: number;
     name: string;
-    frag: number;
 }
 
 interface MatchPosterDetails {
@@ -72,14 +71,12 @@ const PosterDetailsPage: React.FC = () => {
                         .map((user: any) => ({
                             id: user.userId,
                             name: `User ${user.userId}`,
-                            frag: user.frag || 0
                         })),
                     usersRight: data.participants
                         .filter((user: any) => user.riot_team_number === 200)
                         .map((user: any) => ({
                             id: user.userId,
                             name: `User ${user.userId}`,
-                            frag: user.frag || 0
                         })),
                 });
 
@@ -232,7 +229,6 @@ const PosterDetailsPage: React.FC = () => {
                                 <tr>
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
-                                    <th className="text-center">Frag</th>
                                     {isUserOwner(matchPoster) && <th className="text-center">Action</th>}
                                 </tr>
                                 </thead>
@@ -241,7 +237,6 @@ const PosterDetailsPage: React.FC = () => {
                                     <tr key={user.id}>
                                         <td className="text-center">{user.id}</td>
                                         <td className="text-center">{user.name}</td>
-                                        <td className="text-center">{user.frag}</td>
                                         {isUserOwner(matchPoster) && (
                                             <td className="text-center">
                                                 <button
@@ -268,7 +263,6 @@ const PosterDetailsPage: React.FC = () => {
                                 <tr>
                                     <th className="text-center">ID</th>
                                     <th className="text-center">Nick</th>
-                                    <th className="text-center">Frag</th>
                                     {isUserOwner(matchPoster) && <th className="text-center">Action</th>}
                                 </tr>
                                 </thead>
@@ -277,7 +271,6 @@ const PosterDetailsPage: React.FC = () => {
                                     <tr key={user.id}>
                                         <td className="text-center">{user.id}</td>
                                         <td className="text-center">{user.name}</td>
-                                        <td className="text-center">{user.frag}</td>
                                         {isUserOwner(matchPoster) && (
                                             <td className="text-center">
                                                 <button

@@ -9,22 +9,21 @@ import LeaderBoardPage from "./pages/LeaderBoardPage.tsx";
 import AccessForbiddenPage from "./pages/AccessForbiddenPage.tsx";
 import TeamsPage from "./pages/TeamsPage.tsx";
 import TeamDetailsPage from "./pages/TeamDetailsPage.tsx";
-
-import PosterDelailsPage from "./components/PosterDelailsPage.tsx";
+import MatchDetailsPage from "./pages/MatchDetailsPage.tsx";
 
 function App() {
 
   return <Router>
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/profile/:id" element={<ProfilePage />} />
       <Route path="/games" element={<FindGamesPage />} />
       <Route path="/players" element={<FindPlayersPage />} />
       <Route path="/teams" element={<TeamsPage />} />
       <Route path="/teams/:teamid" element={<TeamDetailsPage />} />
-      <Route path="/leaderboards" element={<LeaderBoardPage />} />
+      <Route path="/" element={<LeaderBoardPage />} />
       <Route path="/forbidden" element={<AccessForbiddenPage/>} />
-      <Route path="/matchpage/:id" element={<PosterDelailsPage/>} />
+      <Route path="/games/:id" element={<MatchDetailsPage/>} />
 
     </Routes>
   </Router>

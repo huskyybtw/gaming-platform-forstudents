@@ -36,7 +36,7 @@ function LeaderBoardPage() {
                 );
                 setPlayers(response.data);
             } catch (err) {
-                setError("Error fetching leaderboard data.");
+                setError("Error fetching leaderboard data. error: " + err);
             }
         };
 
@@ -47,7 +47,7 @@ function LeaderBoardPage() {
                 );
                 setTeams(response.data);
             } catch (err) {
-                setError("Error fetching team leaderboard data.");
+                setError("Error fetching team leaderboard data. error: " + err);
             }
         };
 

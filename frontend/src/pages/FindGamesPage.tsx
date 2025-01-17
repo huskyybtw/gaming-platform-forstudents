@@ -1,6 +1,6 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import NavBar from "../components/NavBar";
-import MatchPosters from "../components/MatchPosters";
+import MatchPosters from "./MatchPosterPage.tsx";
 import Footer from "../components/Footer";
 import Cookies from "js-cookie";
 import {useNavigate} from "react-router-dom";

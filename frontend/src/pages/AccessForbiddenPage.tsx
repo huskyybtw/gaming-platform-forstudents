@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar.tsx";
 
 function AccessForbiddenPage() {
     const navigate = useNavigate();
@@ -9,8 +10,11 @@ function AccessForbiddenPage() {
 
     return (
         <div>
-            <h1>Access Forbidden</h1>
-            <button onClick={handleBackToLogin}>Back To Login</button>
+            <NavBar />
+            <div>
+                <h1>Access Forbidden</h1>
+                <button onClick={handleBackToLogin}>Try Login</button>
+            </div>
         </div>
     );
 }

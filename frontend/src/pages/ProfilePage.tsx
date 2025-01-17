@@ -5,7 +5,7 @@ import UpdateRiotDetailsFrom from "../components/UpdateRiotDetailsFrom.tsx";
 import UpdateUserDetailsFrom from "../components/UpdateUserDetailsFrom.tsx";
 import MatchHistoryDisplay from "../components/MatchHistoryDisplay.tsx";
 import PlayerRankDisplay from "../components/PlayerRankDisplay.tsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Cookies from "js-cookie";
 import ProfileSearchBar from "../components/ProfileSearchBar.tsx";
@@ -26,12 +26,15 @@ interface ProfileData {
 function ProfilePage() {
     const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
     const [profileData, setProfileData] = useState({} as ProfileData);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const userId = Cookies.get("userId");
 
         if (userId) {
             setLoggedInUserId(parseInt(userId, 10));
+        }
+        else {
+            navigate("/forbidden");
         }
     }, []);
 

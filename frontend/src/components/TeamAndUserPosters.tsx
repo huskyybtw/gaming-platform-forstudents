@@ -2,7 +2,23 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import "../styles/FindPlayersPage.css";
+import {useNavigate} from "react-router-dom";
 
+interface TeamPoster {
+    id: number;
+    teamId: number;
+    description: string;
+    dueDate: string;
+    createdAt: string;
+}
+
+interface UserPoster {
+    id: number;
+    userId: number;
+    description: string;
+    dueDate: string;
+    createdAt: string;
+}
 
 const TeamAndUserPosters: React.FC = () => {
     const [teamPosters, setTeamPosters] = useState<TeamPoster[]>([]);
@@ -11,20 +27,19 @@ const TeamAndUserPosters: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [error, setError] = useState<string>("");
     const [newPosterType, setNewPosterType] = useState<"TeamPoster" | "UserPoster">("TeamPoster");
-    const [newPoster, setNewPoster] = useState<{ teamId?: number; description: string; dueDate: string }>({
+    const [newPoster, setNewPoster] = useState<{ teamId?: number; userId?: number;description: string; dueDate: string }>({
         description: "",
         dueDate: "",
     });
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
     const userId = Cookies.get("userId"); // Pobieranie userId z ciasteczka
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchPosters = async () => {
             try {
                 const token = Cookies.get("token");
                 if (!token) {
-                    setError("Brak tokenu autoryzacyjnego.");
-                    return;
+                    navigate("/forbidden");
                 }
 
                 const teamResponse = await axios.get<TeamPoster[]>("http://localhost:8080/api/v1/posters/team/", {
@@ -38,7 +53,7 @@ const TeamAndUserPosters: React.FC = () => {
                 setTeamPosters(teamResponse.data);
                 setUserPosters(userResponse.data);
             } catch (err) {
-                setError("Nie udało się załadować plakatów. Spróbuj ponownie później.");
+                setError(`Nie udało się załadować plakatów. Spróbuj ponownie później ${err}.`,);
             }
         };
 
@@ -81,8 +96,9 @@ const TeamAndUserPosters: React.FC = () => {
 
             setNewPoster({ description: "", dueDate: "" });
             setIsFormVisible(false);
+            window.location.reload();
         } catch (err) {
-            setError(`Nie udało się dodać ${newPosterType === "TeamPoster" ? "plakatu zespołu" : "plakatu użytkownika"}.`);
+            setError(`Nie udało się dodać ${newPosterType === "TeamPoster" ? "plakatu zespołu" : "plakatu użytkownika" }${err}`);
         }
     };
 
@@ -104,11 +120,11 @@ const TeamAndUserPosters: React.FC = () => {
             } else {
                 setUserPosters((prev) => prev.filter((poster) => poster.id !== posterId));
             }
+            window.location.reload();
         } catch (err) {
-            setError("Nie udało się usunąć plakatu. Spróbuj ponownie później.");
+            setError(`Nie udało się usunąć plakatu. Spróbuj ponownie później${err}.`);
         }
     };
-
 
     const filteredTeamPosters = teamPosters.filter((poster) =>
         poster.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -242,8 +258,6 @@ const TeamAndUserPosters: React.FC = () => {
             </div>
         </div>
     );
-
-
 };
 
 export default TeamAndUserPosters;

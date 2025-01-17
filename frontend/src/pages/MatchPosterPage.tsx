@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/MainPage.css';
+import '../styles/MatchPosterPage.css';
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ interface MatchPoster {
     type: 'MatchPoster';
 }
 
-const MainPage: React.FC = () => {
+const MatchPosterPage: React.FC = () => {
     const [matchPosters, setMatchPosters] = useState<MatchPoster[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -42,7 +42,7 @@ const MainPage: React.FC = () => {
                 }));
                 setMatchPosters(formattedPosters);
             } catch (err) {
-                setError('Failed to load posters. Please try again later.');
+                setError('Failed to load posters. Please try again later. error: ' + err);
 
             }
         };
@@ -86,7 +86,7 @@ const MainPage: React.FC = () => {
             setMatchPosters((prev) => prev.filter((poster) => poster.id !== posterId));
             navigate("/games");
         } catch (err) {
-            setError('Failed to delete the poster. Please try again later.');
+            setError('Failed to delete the poster. Please try again later. error: ' + err);
         }
     };
 
@@ -118,7 +118,7 @@ const MainPage: React.FC = () => {
                     <div
                         key={poster.id}
                         className="poster-card"
-                        onClick={() => navigate(`/matchpage/${poster.id}`)}
+                        onClick={() => navigate(`/games/${poster.id}`)}
                         style={{ cursor: 'pointer' }}
                     >
                         <h3>{poster.title}</h3>
@@ -141,4 +141,4 @@ const MainPage: React.FC = () => {
 
 };
 
-export default MainPage;
+export default MatchPosterPage;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/MainPage.css';
+import '../styles/MatchPosterPage.css';
 
 interface MatchPoster {
     id: number;
@@ -80,7 +80,7 @@ const MainPage: React.FC = () => {
                 setTeamPosters(formattedTeamPosters);
                 setUserPosters(formattedUserPosters);  // Ustawienie danych UserPoster
             } catch (err) {
-                setError('Nie udało się załadować plakatów. Spróbuj ponownie później.');
+                setError('Nie udało się załadować plakatów. Spróbuj ponownie później. error: ' + err);
             }
         };
 

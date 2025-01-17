@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/LoginPage.css';
 import Cookies from "js-cookie";
+import NavBar from "../components/NavBar.tsx";
+import Footer from "../components/Footer.tsx";
 
 interface AssignedUser {
     id: string;
@@ -40,7 +42,7 @@ const LoginPage: React.FC = () => {
             Cookies.set('token', token);
             navigate('/profile/' + userId);
         } catch (err) {
-            setError('Nieprawidłowy e-mail lub hasło.');
+            setError('Nieprawidłowy e-mail lub hasło. error: ' + err);
         }
     };
 
@@ -62,11 +64,13 @@ const LoginPage: React.FC = () => {
             setIsLogin(true); // Po zarejestrowaniu przełączenie na formularz logowania
             setError('');
         } catch (err) {
-            setError('Błąd rejestracji. Spróbuj ponownie.');
+            setError('Błąd rejestracji. Spróbuj ponownie. error: ' + err);
         }
     };
 
     return (
+        <>
+        <NavBar />
         <div className="login-page">
             <div className="login-container">
                 <h1 className="login-title">{isLogin ? 'Logowanie' : 'Rejestracja'}</h1>
@@ -124,6 +128,8 @@ const LoginPage: React.FC = () => {
                 </div>
             </div>
         </div>
+            <Footer />
+        </>
     );
 };
 

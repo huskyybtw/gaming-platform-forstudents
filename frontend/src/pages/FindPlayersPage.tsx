@@ -1,6 +1,6 @@
 import NavBar from "../components/NavBar.tsx";
 import Footer from "../components/Footer.tsx";
-import TeamAndUserPosters from "../components/TeamAndUserPosters";
+import TeamAndUserPosters from "../components/TeamAndUserPosters.tsx";
 import "../styles/FindPlayersPage.css";
 
 function FindPlayersPage() {

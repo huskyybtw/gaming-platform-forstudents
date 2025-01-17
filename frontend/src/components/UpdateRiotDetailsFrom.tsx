@@ -39,7 +39,7 @@ function UpdateRiotDetailsForm(props: Props) {
             setProfileData(response.data);
             showToastNotification("Data refreshed successfully!", "success");
         } catch (err) {
-            showToastNotification("Error refreshing data.", "danger");
+            showToastNotification(`Error refreshing data. error: ${err}`, "danger");
         }
     };
 
