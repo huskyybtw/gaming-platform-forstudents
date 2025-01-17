@@ -31,6 +31,7 @@ function SideBar() {
                     team.users.includes(userId)
                 );
                 setTeams(filteredTeams);
+                console.log(teams)
             } catch (err) {
                 console.error("Error fetching data:", err);
             }
@@ -87,7 +88,7 @@ function SideBar() {
                                 padding: "10px",
                                 borderRadius: "8px",
                             }}
-                            onClick={() => navigate(`/teams/${team.id}`)}
+                            onClick={() => navigate(`/teams/${team.team.id}`)}
                         >
                             {team.team.teamName}
                         </button>

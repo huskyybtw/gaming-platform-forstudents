@@ -76,6 +76,8 @@ function UpdateRiotDetailsForm(props: Props) {
             // Handle success
             showToastNotification("Profile updated successfully!", "success");
             setIsEditing(false); // Close modal after success
+
+            window.location.reload();
         } catch (error: any) {
             // Handle errors
             if (error.response) {

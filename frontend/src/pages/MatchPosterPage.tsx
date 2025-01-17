@@ -68,7 +68,7 @@ const MatchPosterPage: React.FC = () => {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     };
 
-    // Funkcja usuwania plakatu
+    /* Funkcja usuwania plakatu
     const handleDeletePoster = async (posterId: number) => {
         try {
             const token = Cookies.get('token');
@@ -89,6 +89,7 @@ const MatchPosterPage: React.FC = () => {
             setError('Failed to delete the poster. Please try again later. error: ' + err);
         }
     };
+    */
 
     return (
         <div className="main-page">
@@ -125,13 +126,6 @@ const MatchPosterPage: React.FC = () => {
                         <p>{poster.description}</p>
                         <p>Submission deadline: {new Date(poster.dueDate).toLocaleDateString()}</p>
                         <p>Creation date: {new Date(poster.createdAt).toLocaleDateString()}</p>
-                        {/* Delete button */}
-                        <button
-                            onClick={() => handleDeletePoster(poster.id)}
-                            className="btn btn-danger"
-                        >
-                            Delete
-                        </button>
                     </div>
                 ))}
                 {sortedPosters.length === 0 && <p>No posters matching the search criteria.</p>}
