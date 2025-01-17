@@ -20,7 +20,7 @@ function FindGamesPage() {
     useEffect(() => {
         const userId = Cookies.get("userId");
         if (userId) {
-            console.log("Zalogowany użytkownik o ID:", userId);
+            console.log("Logged in user with ID:", userId);
         }
     }, []);
 
@@ -40,14 +40,15 @@ function FindGamesPage() {
         const ownerId = Cookies.get("userId");
 
         if (!token) {
-            alert("Nie znaleziono tokenu autoryzacyjnego!");
+            alert("Authorization token not found!");
             return;
         }
 
         if (!ownerId) {
-            alert("Nie znaleziono ID użytkownika!");
+            alert("User ID not found!");
             return;
         }
+
 
         const dataToSend = {
             ...formData,
@@ -68,7 +69,7 @@ function FindGamesPage() {
             console.log("Response:", textResponse);
 
             if (response.ok) {
-                alert("Ogłoszenie zostało dodane!");
+                alert("The announcement has been added!");
                 setIsFormVisible(false);
 
                 // Wymuś odświeżenie listy
@@ -78,11 +79,12 @@ function FindGamesPage() {
             } else {
                 try {
                     const error = JSON.parse(textResponse);
-                    alert(`Błąd: ${error.message}`);
+                    alert(`Error: ${error.message}`);
                 } catch {
-                    alert(`Błąd: Otrzymano nieoczekiwaną odpowiedź: ${textResponse}`);
+                    alert(`Error: Unexpected response received: ${textResponse}`);
                 }
             }
+
         } catch (error) {
             console.error("Wystąpił problem z połączeniem:", error);
         }
@@ -97,14 +99,14 @@ function FindGamesPage() {
                     className="btn btn-primary mb-3"
                     onClick={() => setIsFormVisible(true)}
                 >
-                    Dodaj ogłoszenie
+                    Add Announcement
                 </button>
 
                 {isFormVisible && (
                     <form onSubmit={handleSubmit} className="mb-4">
                         <div className="form-group">
                             <label>
-                                Czy rankingowy:
+                                Ranked:
                                 <input
                                     type="checkbox"
                                     className="form-check-input"
@@ -116,7 +118,7 @@ function FindGamesPage() {
                         </div>
                         <div className="form-group">
                             <label>
-                                Opis:
+                                Description:
                                 <textarea
                                     className="form-control"
                                     name="description"
@@ -128,7 +130,7 @@ function FindGamesPage() {
                         </div>
                         <div className="form-group">
                             <label>
-                                Data zakończenia:
+                                Due Date:
                                 <input
                                     type="datetime-local"
                                     className="form-control"
@@ -140,24 +142,25 @@ function FindGamesPage() {
                             </label>
                         </div>
                         <button type="submit" className="btn btn-success">
-                            Dodaj
+                            Add
                         </button>
                         <button
                             type="button"
                             className="btn btn-secondary ml-2"
                             onClick={() => setIsFormVisible(false)}
                         >
-                            Anuluj
+                            Cancel
                         </button>
                     </form>
                 )}
 
-                {/* Przekazanie klucza odświeżania */}
+                {/* Pass refresh key */}
                 <MatchPosters key={refreshKey} />
             </main>
             <Footer />
         </div>
     );
+
 }
 
 export default FindGamesPage;
